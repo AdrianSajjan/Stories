@@ -161,4 +161,89 @@ router.get("/:userID", auth, async (req, res) => {
   }
 });
 
+//@type: PUT
+//@desc:  Update following and followers
+//@access: Private
+router.put("/follow/:id", auth, async (req, res) => {
+  const id = req.user.id;
+  const otherUser = req.params.id;
+
+  if (!ObjectID.isValid(otherUser) || new ObjectID(otherUser) != otherUser)
+    return res.status(400).json({
+      type: NOTFOUND,
+      errors: [
+        {
+          msg: "Profile not found!!",
+        },
+      ],
+    });
+
+  try {
+    let otherProfile = await Profile.findOne({ user: otherUser });
+    if (!otherProfile)
+      return res.status(400).json({
+        type: NOTFOUND,
+        errors: [
+          {
+            msg: "Profile not found",
+          },
+        ],
+      });
+
+    let profile = await Profile.findOne({ user: id });
+    if (!profile)
+      return res.status(404).json({
+        type: NOTFOUND,
+        errors: [
+          {
+            msg: "Create your profile before following other users",
+          },
+        ],
+      });
+
+    const checkIfFollowing = await Profile.findOne({
+      user: id,
+      "following.user": otherUser,
+    });
+
+    // If Following Unfollow User
+    if (checkIfFollowing) {
+      profile.following = profile.following.filter(
+        (item) => item.user != otherUser
+      );
+      otherProfile.followers = otherProfile.followers.filter(
+        (item) => item.user != id
+      );
+      await profile.save();
+      await profile.populate("following.profile", "username").execPopulate();
+      await otherProfile.save();
+
+      return res.json({ profile });
+    }
+
+    let body = {
+      user: otherUser,
+      profile: otherProfile.id,
+      date: new Date(),
+    };
+    profile.following.push(body);
+    await profile.save();
+    await profile.populate("following.profile", "username").execPopulate();
+
+    body = {
+      user: id,
+      profile: profile.id,
+      date: new Date(),
+    };
+    otherProfile.followers.push(body);
+    await otherProfile.save();
+
+    return res.json({ profile });
+    // Handle Errors
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
+});
+
 module.exports = router;

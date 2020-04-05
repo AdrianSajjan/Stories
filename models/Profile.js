@@ -28,6 +28,41 @@ const ProfileSchema = new Schema({
   bio: {
     type: String,
   },
+  following: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+      profile: {
+        type: Schema.Types.ObjectId,
+        ref: "profile",
+      },
+      date: Date,
+    },
+  ],
+  followers: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+      profile: {
+        type: Schema.Types.ObjectId,
+        ref: "profile",
+      },
+      date: Date,
+    },
+  ],
+  blacklist: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+      date: Date,
+    },
+  ],
 });
 
 module.exports = Profile = mongoose.model("profile", ProfileSchema, "Profiles");

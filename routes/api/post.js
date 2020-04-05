@@ -4,7 +4,6 @@ const ObjectID = require("mongoose").Types.ObjectId;
 const { check, validationResult } = require("express-validator");
 const Post = require("../../models/Post");
 const Profile = require("../../models/Profile");
-const Follow = require("../../models/Follow");
 const auth = require("../../middleware/token-auth");
 const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
 
@@ -16,14 +15,19 @@ router.get("/", auth, async (req, res) => {
   const posts = [];
 
   try {
-    const follow = await Follow.findOne({ user: userID });
+    const profile = await Profile.findOne({ user: userID });
 
-    if (!follow || follow.following.length == 0)
+    if (!profile)
       return res.json({
-        msg: "No posts found. Start following People to see their posts.",
+        msg: "Create your profile to see other user's posts.",
       });
 
-    const following = follow.following;
+    const following = await profile.following;
+
+    if (following.length == 0)
+      return res.json({
+        msg: "Start following people to see their posts.",
+      });
 
     following.forEach(async ({ user }) => {
       const _posts = await Post.find({ user })
@@ -47,6 +51,11 @@ router.get("/me", auth, async (req, res) => {
   // Get Current User ID
   const id = req.user.id;
   try {
+    const profile = await Profile.findOne({ user: id });
+    if (!profile)
+      return res.json({
+        msg: "Create your profile to see other user's posts.",
+      });
     const posts = await Post.find({ user: id }).populate("profile", "username");
     if (!posts.length) return res.json({ msg: "No Posts Found" });
     res.json({ posts });
@@ -105,8 +114,8 @@ router.post(
         profile: profile._id,
         content: req.body.content,
       });
-      await post.save();
-      res.send({ msg: "Post Created!" });
+      const _post = await post.save();
+      res.send({ msg: "Post Created!", post: _post });
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);

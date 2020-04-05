@@ -11,9 +11,9 @@
 - **npm run server** -
   Only runs the development server.
 
-- npm run client -
+- **npm run client** -
   Runs the react client app.
-- ## npm run dev
+- **npm run dev** -
   Concurrently runs both the scripts.
 
 ## **Server**
