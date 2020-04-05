@@ -3,8 +3,15 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const bcrypt = require("bcrypt");
 const { check, validationResult } = require("express-validator");
-
+const {
+  VALIDATION,
+  SERVER,
+  NOTFOUND,
+  AUTHENTICATION,
+} = require("../../config/errors");
 const User = require("../../models/User");
+const Profile = require("../../models/Profile");
+const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
 
@@ -63,7 +70,7 @@ router.post(
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: "Validation",
+        type: VALIDATION,
         errors: errors.array({ onlyFirstError: true }),
       });
     // Continue to store in database
@@ -95,7 +102,61 @@ router.post(
       //Catch Errors
     } catch (err) {
       console.log(err.message);
-      res.status(500).send("Internal Server Error. Please Try Again.");
+      res.status(500).send(SERVER);
+    }
+  }
+);
+
+//@type: POST
+//@desc: Register an User
+//@access: Public
+router.delete(
+  "/",
+  [
+    auth,
+    [check("password").not().isEmpty().withMessage("Password cannot be empty")],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true }),
+      });
+
+    const userID = req.user.id;
+    const { password } = req.body;
+    try {
+      const user = await User.findById(userID);
+      //Check if User Exists
+      if (!user)
+        return res.status(404).json({
+          type: NOTFOUND,
+          errors: [{ msg: "Account doesn't exist" }],
+        });
+      // Check Password
+      const isMatch = await bcrypt.compare(password, user.password);
+      // If not match
+      if (!isMatch)
+        return res.status(403).json({
+          type: AUTHENTICATION,
+          errors: [
+            {
+              param: "password",
+              msg: "Password is incorrect",
+            },
+          ],
+        });
+      // Delete User and Profile
+      // @todo Delete all User Posts
+      await Profile.findOneAndRemove({ user: userID });
+      await user.remove();
+
+      res.send({ msg: "Account Deleted" });
+      //Handle Errors
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send(SERVER);
     }
   }
 );

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
 
-const PostSchema = new Schema({
+const FollowSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "user",
@@ -11,41 +11,33 @@ const PostSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "profile",
   },
-  content: {
-    type: String,
-    required: true,
-  },
-  likes: [
+  following: [
     {
       user: {
         type: Schema.Types.ObjectId,
         ref: "user",
       },
-      profile: {
-        type: Schema.Types.ObjectId,
-        ref: "profile",
-      },
       date: Date,
     },
   ],
-  comments: [
+  followers: [
     {
       user: {
         type: Schema.Types.ObjectId,
         ref: "user",
       },
-      profile: {
-        type: Schema.Types.ObjectId,
-        ref: "profile",
-      },
-      comment: String,
       date: Date,
     },
   ],
-  date: {
-    type: Date,
-    default: Date.now,
-  },
+  blacklist: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "user",
+      },
+      date: Date,
+    },
+  ],
 });
 
-module.exports = Post = mongoose.model("post", PostSchema, "Posts");
+module.exports = Follow = mongoose.model("follow", FollowSchema, "Follow");

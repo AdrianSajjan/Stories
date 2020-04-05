@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const { AUTHENTICATION } = require("../config/errors");
 
 const auth = (req, res, next) => {
   const token = req.header("x-auth-token");
 
   if (!token)
-    return res.status(402).json({
-      type: "Authentication",
+    return res.status(403).json({
+      type: AUTHENTICATION,
       error: {
         msg: "Not Authorized! Access Rejected.",
       },
@@ -17,8 +18,8 @@ const auth = (req, res, next) => {
     req.user = decoded.user;
     next();
   } catch (err) {
-    return res.status(402).json({
-      type: "Authentication",
+    return res.status(403).json({
+      type: AUTHENTICATION,
       error: {
         msg: "Token Invalid! Access Rejected.",
       },

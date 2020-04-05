@@ -16,7 +16,13 @@ const ProfileSchema = new Schema({
     type: Date,
     required: true,
   },
-  address: {
+  locality: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  country: {
     type: String,
   },
   bio: {

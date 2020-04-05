@@ -1,16 +1,14 @@
 const express = require("express");
 const ObjectID = require("mongoose").Types.ObjectId;
-const config = require("config");
-const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
-
+const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
 const Profile = require("../../models/Profile");
 const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
 
-//@type: POST
-//@desc: Get user profile
+//@type: GET
+//@desc: Get current user profile
 //@access: Private
 router.get("/me", auth, async (req, res) => {
   try {
@@ -20,7 +18,7 @@ router.get("/me", auth, async (req, res) => {
 
     if (!profile)
       return res.status(404).json({
-        type: "Unfound",
+        type: NOTFOUND,
         msg: "Profile doesn't exist",
       });
 
@@ -28,12 +26,12 @@ router.get("/me", auth, async (req, res) => {
     // Handle Errors
   } catch (err) {
     console.log(err.message);
-    res.status(500).send("Internal Server Error. Please Try Again.");
+    res.status(500).send(SERVER);
   }
 });
 
 //@type: POST
-//@desc:  Add user profile
+//@desc:  Add or Update user profile
 //@access: Private
 router.post(
   // Path
@@ -48,12 +46,19 @@ router.post(
         .not()
         .isEmpty()
         .withMessage("Username cannot be empty")
+        .isLength({ min: 4 })
+        .withMessage("Username should be more than 3 letters")
         .custom(async (value, { req }) => {
           const profile = await Profile.findOne({ username: value });
           if (profile && profile.user != req.user.id)
             throw new Error("Username is already taken");
           return true;
         }),
+      // Validate Country
+      check("country")
+        .not()
+        .isEmpty()
+        .withMessage("Please specify the country you reside presently"),
       // Validate DOB
       check("dob")
         .not()
@@ -74,18 +79,20 @@ router.post(
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: "Validation",
+        type: VALIDATION,
         errors: errors.array({ onlyFirstError: true }),
       });
     // Destructure req body and extract user ID
-    const { username, dob, address, bio } = req.body;
+    const { username, dob, locality, state, country, bio } = req.body;
     const userID = req.user.id;
     // Create Profile Data Object
     const profileData = {};
     profileData.username = username;
     profileData.user = userID;
     profileData.dob = new Date(`${dob}T00:00:00.000Z`);
-    if (address) profileData.address = address;
+    profileData.country = country;
+    if (locality) profileData.locality = locality;
+    if (state) profileData.state = state;
     if (bio) profileData.bio = bio;
     // Async Function
     try {
@@ -109,7 +116,7 @@ router.post(
       // Catch Errors
     } catch (err) {
       console.log(err.message);
-      return res.status(500).send("Internal Server Error. Please Try Again.");
+      return res.status(500).send(SERVER);
     }
   }
 );
@@ -117,13 +124,13 @@ router.post(
 //@type: GET
 //@desc:  View another profile by User ID
 //@access: Private
-router.get("/:user_id", auth, (req, res) => {
+router.get("/:userID", auth, async (req, res) => {
   // Fetch User ID from Params
-  const user_id = req.params.user_id;
+  const userID = req.params.userID;
   // Check if Valid User ID
-  if (!ObjectID.isValid(user_id) || new ObjectID(user_id) != user_id)
+  if (!ObjectID.isValid(userID) || new ObjectID(userID) != userID)
     return res.status(400).json({
-      type: "Validation",
+      type: NOTFOUND,
       errors: [
         {
           msg: "Profile Not Found",
@@ -131,6 +138,27 @@ router.get("/:user_id", auth, (req, res) => {
       ],
     });
   // Fetch Profile from database
+  try {
+    const profile = await Profile.findOne({
+      user: userID,
+    }).populate("user", ["name", "email"]);
+    // Profile not found
+    if (!profile)
+      return res.status(400).json({
+        type: NOTFOUND,
+        errors: [
+          {
+            msg: "Profile Not Found",
+          },
+        ],
+      });
+    // Send the profile to the user
+    res.json(profile);
+    // Handle Errors
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
 });
 
 module.exports = router;
