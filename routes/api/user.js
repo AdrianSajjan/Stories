@@ -11,6 +11,7 @@ const {
 } = require("../../config/errors");
 const User = require("../../models/User");
 const Profile = require("../../models/Profile");
+const Post = require("../../models/Post");
 const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
@@ -148,10 +149,9 @@ router.delete(
           ],
         });
       // Delete User and Profile
-      // @todo Delete all User Posts
       await Profile.findOneAndRemove({ user: userID });
       await user.remove();
-
+      await Post.deleteMany({ user: userID });
       res.send({ msg: "Account Deleted" });
       //Handle Errors
     } catch (err) {
