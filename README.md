@@ -1,6 +1,6 @@
 # STORIES!
 
-# Tired of seeing pictures, videos and memes on every social platform? Believe that words carry deeper meaning than pictures? Then this site is for you. Post texts for other people to read and share. Post whats on your mind that you can describe through words and not pictures.
+## Tired of seeing pictures, videos and memes on every social platform? Believe that words carry deeper meaning than pictures? Then this site is for you. Post texts for other people to read and share. Post whats on your mind that you can describe through words and not pictures.
 
 ### **Author :**
 
