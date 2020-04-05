@@ -1,4 +1,5 @@
 const express = require("express");
+const ObjectID = require("mongoose").Types.ObjectId;
 const config = require("config");
 const jwt = require("jsonwebtoken");
 const { check, validationResult } = require("express-validator");
@@ -33,7 +34,7 @@ router.get("/me", auth, async (req, res) => {
 
 //@type: POST
 //@desc:  Add user profile
-//@access: Public
+//@access: Private
 router.post(
   // Path
   "/",
@@ -112,5 +113,24 @@ router.post(
     }
   }
 );
+
+//@type: GET
+//@desc:  View another profile by User ID
+//@access: Private
+router.get("/:user_id", auth, (req, res) => {
+  // Fetch User ID from Params
+  const user_id = req.params.user_id;
+  // Check if Valid User ID
+  if (!ObjectID.isValid(user_id) || new ObjectID(user_id) != user_id)
+    return res.status(400).json({
+      type: "Validation",
+      errors: [
+        {
+          msg: "Profile Not Found",
+        },
+      ],
+    });
+  // Fetch Profile from database
+});
 
 module.exports = router;
