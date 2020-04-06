@@ -54,6 +54,12 @@ const ProfileSchema = new Schema({
       date: Date,
     },
   ],
+  notifications: [
+    {
+      msg: String,
+      date: Date,
+    },
+  ],
   blacklist: [
     {
       user: {

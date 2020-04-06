@@ -14,7 +14,10 @@ router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.user.id,
-    }).populate("user", ["name", "email"]);
+    })
+      .populate("user", ["name", "email"])
+      .populate("following.profile", "username")
+      .populate("followers.profile", "username");
 
     if (!profile)
       return res.status(404).json({
@@ -141,7 +144,10 @@ router.get("/:userID", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: userID,
-    }).populate("user", ["name", "email"]);
+    })
+      .populate("user", ["name", "email"])
+      .populate("following.profile", "username")
+      .populate("followers.profile", "username");
     // Profile not found
     if (!profile)
       return res.status(400).json({
@@ -215,7 +221,10 @@ router.put("/follow/:id", auth, async (req, res) => {
         (item) => item.user != id
       );
       await profile.save();
-      await profile.populate("following.profile", "username").execPopulate();
+      await profile
+        .populate("following.profile", "username")
+        .populate("followers.profile", "username")
+        .execPopulate();
       await otherProfile.save();
 
       return res.json({ profile });
@@ -228,7 +237,10 @@ router.put("/follow/:id", auth, async (req, res) => {
     };
     profile.following.push(body);
     await profile.save();
-    await profile.populate("following.profile", "username").execPopulate();
+    await profile
+      .populate("following.profile", "username")
+      .populate("followers.profile", "username")
+      .execPopulate();
 
     body = {
       user: id,
