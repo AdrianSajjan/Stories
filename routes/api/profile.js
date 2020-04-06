@@ -173,7 +173,15 @@ router.get("/:userID", auth, async (req, res) => {
 router.put("/follow/:id", auth, async (req, res) => {
   const id = req.user.id;
   const otherUser = req.params.id;
-
+  if (otherUser === id)
+    return res.status(400).json({
+      type: VALIDATION,
+      errors: [
+        {
+          msg: "You cannot follow yourself",
+        },
+      ],
+    });
   if (!ObjectID.isValid(otherUser) || new ObjectID(otherUser) != otherUser)
     return res.status(400).json({
       type: NOTFOUND,
@@ -207,13 +215,8 @@ router.put("/follow/:id", auth, async (req, res) => {
         ],
       });
 
-    const checkIfFollowing = await Profile.findOne({
-      user: id,
-      "following.user": otherUser,
-    });
-
     // If Following Unfollow User
-    if (checkIfFollowing) {
+    if (profile.following.some((item) => item.user == otherUser)) {
       profile.following = profile.following.filter(
         (item) => item.user != otherUser
       );
@@ -227,7 +230,7 @@ router.put("/follow/:id", auth, async (req, res) => {
         .execPopulate();
       await otherProfile.save();
 
-      return res.json({ profile });
+      return res.json({ msg: "unfollowed", profile });
     }
 
     let body = {
@@ -250,7 +253,7 @@ router.put("/follow/:id", auth, async (req, res) => {
     otherProfile.followers.push(body);
     await otherProfile.save();
 
-    return res.json({ profile });
+    return res.json({ msg: "followed", profile });
     // Handle Errors
   } catch (err) {
     console.log(err.message);

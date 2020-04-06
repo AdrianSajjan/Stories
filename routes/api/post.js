@@ -18,12 +18,14 @@ router.get("/", auth, async (req, res) => {
     const profile = await Profile.findOne({ user: userID });
 
     if (!profile)
-      return res.json({
-        msg: "Create your profile to see other user's posts.",
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg: "Create your profile to see what other people share.",
       });
 
     if (profile.following.length == 0)
-      return res.json({
+      return res.status(401).json({
+        type: NOTFOUND,
         msg: "Start following people to see their posts.",
       });
 
@@ -55,15 +57,18 @@ router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: id });
     if (!profile)
-      return res.json({
-        msg: "Create your profile to see other user's posts.",
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg:
+          "Create your profile in order to start posting and view your posts.",
       });
     const posts = await Post.find({ user: id })
       .populate("profile", "username")
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date");
-    if (posts.length == 0) return res.json({ msg: "No Posts Found" });
+    if (posts.length == 0)
+      return res.json({ type: NOTFOUND, msg: "No Posts Found" });
     res.json({ posts });
   } catch (err) {
     console.log(err.message);
@@ -78,7 +83,7 @@ router.get("/user/:id", auth, async (req, res) => {
   // Get Current User ID
   const id = req.params.id;
   if (!ObjectID.isValid(id) || new ObjectID(id) != id)
-    return res.json({ msg: "No Posts Found" });
+    return res.json({ type: NOTFOUND, msg: "No Posts Found" });
 
   try {
     const posts = await Post.find({ user: id })
@@ -117,20 +122,58 @@ router.post(
       if (!profile)
         return res.status(400).json({
           type: NOTFOUND,
-          msg: "Create your profile before posting!",
+          msg: "Create your profile in order to post.",
         });
       const post = new Post({
         user: req.user.id,
         profile: profile._id,
         content: req.body.content,
       });
-      const _post = await post.save();
-      res.send({ msg: "Post Created!", post: _post });
+      await post.save();
+      res.send({ msg: "Post Created!", post: post });
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);
     }
   }
 );
+
+//@type: Put
+//@desc: Like and Unlike a post :)
+//@access: Private
+router.put("/like/:post", auth, async (req, res) => {
+  const id = req.user.id;
+  const postID = req.params.post;
+  if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+    return res.status(404).json({
+      type: NOTFOUND,
+      msg: "Post not found",
+    });
+  try {
+    const profile = await Profile.findOne({ user: id });
+    if (!profile)
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg: "Create your profile before liking a post",
+      });
+    const post = await Post.findById(postID);
+    if (!post)
+      return res.status(404).json({
+        type: NOTFOUND,
+        msg: "Post not found",
+      });
+    if (post.likes.some((like) => like.user == id)) {
+      post.likes = post.likes.filter((like) => like.user != id);
+      await post.save();
+      return res.json({ msg: "unliked", likes: post.likes });
+    }
+    post.likes.push({ user: id, profile: profile.id, date: new Date() });
+    await post.save();
+    res.json({ msg: "liked", likes: post.likes });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
+});
 
 module.exports = router;

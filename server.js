@@ -17,7 +17,7 @@ app.use(cors());
 connectDB();
 
 app.get("/", (req, res) => {
-  res.send("API Running");
+  res.send("API is active...");
 });
 
 app.use("/api/user", userRouter);
