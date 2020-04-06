@@ -22,21 +22,18 @@ router.get("/", auth, async (req, res) => {
         msg: "Create your profile to see other user's posts.",
       });
 
-    const following = await profile.following;
-
-    if (following.length == 0)
+    if (profile.following.length == 0)
       return res.json({
         msg: "Start following people to see their posts.",
       });
 
-    following.forEach(async ({ user }) => {
-      const _posts = await Post.find({ user })
-        .populate("profile", "username")
-        .sort("-date");
-      if (_posts.length) posts.push(_posts);
+    profile.following.forEach(async ({ user }, index) => {
+      const _posts = await Post.find({ user }).populate("profile", "username");
+      if (_posts.length > 0) posts.push.apply(posts, _posts);
+      if (posts.length > 1)
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+      if (index == profile.following.length - 1) res.send({ posts });
     });
-
-    res.send({ posts });
     // Handle Errors
   } catch (err) {
     console.log(err.message);
@@ -75,7 +72,9 @@ router.get("/user/:id", auth, async (req, res) => {
     return res.json({ msg: "No Posts Found" });
 
   try {
-    const posts = await Post.find({ user: id }).populate("profile", "username");
+    const posts = await Post.find({ user: id })
+      .populate("profile", "username")
+      .sort("-date");
     if (!posts.length) return res.json({ msg: "No Posts Found" });
     res.json({ posts });
   } catch (err) {
