@@ -130,13 +130,41 @@ router.post(
         content: req.body.content,
       });
       await post.save();
-      res.send({ msg: "Post Created!", post: post });
+      res.send({ msg: "Post Created!", post });
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);
     }
   }
 );
+
+//@type: Delete
+//@desc: Delete a post :)
+//@access: Private
+router.delete("/:post", auth, async (req, res) => {
+  const id = req.user.id;
+  const postID = req.params.post;
+  if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+    return res.status(404).json({
+      type: NOTFOUND,
+      msg: "Post not found",
+    });
+  try {
+    const profile = await Profile.findOne({ user: id });
+    if (!profile)
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg: "Post not found",
+      });
+    const post = await Post.findByIdAndDelete(postID);
+    if (!post)
+      return res.status(404).json({ type: NOTFOUND, msg: "Post not found" });
+    res.json({ msg: "Post deleted successfully" });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
+});
 
 //@type: Put
 //@desc: Like and Unlike a post :)
@@ -165,11 +193,93 @@ router.put("/like/:post", auth, async (req, res) => {
     if (post.likes.some((like) => like.user == id)) {
       post.likes = post.likes.filter((like) => like.user != id);
       await post.save();
-      return res.json({ msg: "unliked", likes: post.likes });
+      return res.json({ msg: "Unliked", likes: post });
     }
     post.likes.push({ user: id, profile: profile.id, date: new Date() });
     await post.save();
-    res.json({ msg: "liked", likes: post.likes });
+    res.json({ msg: "Liked", post });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
+});
+
+//@type: Put
+//@desc: Comment on a post :)
+//@access: Private
+router.put(
+  "/comment/:post",
+  [
+    auth,
+    [check("comment").not().isEmpty().withMessage("Comment cannot be empty")],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ type: VALIDATION, errors: errors.array() });
+    const id = req.user.id;
+    const postID = req.params.post;
+    const comment = req.body.comment;
+    if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+      return res.status(404).json({
+        type: NOTFOUND,
+        msg: "Post not found",
+      });
+    try {
+      const profile = await Profile.findOne({ user: id });
+      if (!profile)
+        return res.status(400).json({
+          type: NOTFOUND,
+          msg: "Create your profile before commenting on a post",
+        });
+      const post = await Post.findById(postID);
+      if (!post)
+        return res.status(404).json({
+          type: NOTFOUND,
+          msg: "Post not found",
+        });
+      post.comments.push({
+        user: id,
+        profile: profile.id,
+        comment,
+        date: new Date(),
+      });
+      await post.save();
+      res.json({ msg: "Commented", post });
+    } catch (err) {
+      console.log(err.message);
+      res.status(500).send(SERVER);
+    }
+  }
+);
+
+//@type: Delete
+//@desc: Delete Comment on a post :)
+//@access: Private
+router.delete("/comment/:comment", auth, async (req, res) => {
+  const id = req.user.id;
+  const commentID = req.params.comment;
+  if (!ObjectID.isValid(commentID) || new ObjectID(commentID) != commentID)
+    return res.status(404).json({
+      type: NOTFOUND,
+      msg: "Comment not found",
+    });
+  try {
+    const profile = await Profile.findOne({ user: id });
+    if (!profile)
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg: "Comment not found",
+      });
+    const post = await Post.findOne({ "comments._id": commentID });
+    if (!post)
+      return res.status(404).json({
+        type: NOTFOUND,
+        msg: "Comment not found",
+      });
+    post.comments = post.comments.filter((comment) => comment._id != commentID);
+    await post.save();
+    res.json({ msg: "Comment deleted", post });
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);

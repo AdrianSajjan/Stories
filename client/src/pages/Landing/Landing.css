@@ -1,0 +1,17 @@
+.landing-page {
+  height: 100vh;
+}
+
+.landing-page .form-btn {
+  width: 120px;
+  text-align: center;
+  text-transform: uppercase;
+  border-radius: 100vh;
+}
+
+.landing-page .toggle-btn {
+  background: transparent;
+  outline: none;
+  border: none;
+  color: var(--jelly-bean);
+}

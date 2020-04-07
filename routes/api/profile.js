@@ -230,7 +230,7 @@ router.put("/follow/:id", auth, async (req, res) => {
         .execPopulate();
       await otherProfile.save();
 
-      return res.json({ msg: "unfollowed", profile });
+      return res.json({ msg: "Unfollowed", profile });
     }
 
     let body = {
@@ -253,7 +253,7 @@ router.put("/follow/:id", auth, async (req, res) => {
     otherProfile.followers.push(body);
     await otherProfile.save();
 
-    return res.json({ msg: "followed", profile });
+    return res.json({ msg: "Followed", profile });
     // Handle Errors
   } catch (err) {
     console.log(err.message);

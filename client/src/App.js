@@ -1,8 +1,14 @@
-import React from "react";
-import "./App";
+import React, { Fragment } from "react";
+import Landing from "./pages/Landing/Landing";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
 
 const App = () => {
-  return <div className="App">This a MERN Stack Boilerplate.</div>;
+  return (
+    <Fragment>
+      <Landing />
+    </Fragment>
+  );
 };
 
 export default App;

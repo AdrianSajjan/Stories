@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono:wght@300,600&family=Ubuntu:wght@500&display=swap");
+
+:root {
+  --heading-font: "Ubuntu", sans-serif;
+  --default-font: "Roboto", sans-serif;
+  --monospace-font: "Roboto Mono", monospace;
+
+  --eerie-black: #11151c;
+  --yankees-blue: #212d40;
+  --charcoal: #364156;
+  --tuscan-red: #7d4e57;
+  --jelly-bean: #d66853;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--default-font);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+  font-family: var(--heading-font);
+}
+
+input {
+  font-family: var(--heading-font);
+}
+
+input::placeholder {
+  font-family: var(--heading-font);
+}
+
+.brand-name,
+.brand-logo {
+  font-family: var(--monospace-font);
+  letter-spacing: 5px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.bg-yankees {
+  background-color: var(--yankees-blue);
+}
+
+.bg-charcoal {
+  background-color: var(--charcoal);
+}
+
+.bg-eerie {
+  background-color: var(--eerie-black);
+}
+
+.bg-tuscan {
+  background-color: var(--tuscan-red);
+}
+
+.bg-jellybean {
+  background-color: var(--jelly-bean);
+}
+
+.text-yankees {
+  color: var(--yankees-blue);
+}
+
+.text-charcoal {
+  color: var(--charcoal);
+}
+
+.text-eerie {
+  color: var(--eerie-black);
+}
+
+.text-tuscan {
+  color: var(--tuscan-red);
+}
+
+.text-jellybean {
+  color: var(--jelly-bean);
+}

@@ -12,6 +12,10 @@ const ProfileSchema = new Schema({
     required: true,
     unique: true,
   },
+  avatar: {
+    src: String,
+    name: String,
+  },
   dob: {
     type: Date,
     required: true,
