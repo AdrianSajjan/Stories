@@ -1,8 +1,9 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const config = require("config");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 const { check, validationResult } = require("express-validator");
+const nodemailer = require("nodemailer");
 const {
   VALIDATION,
   SERVER,
@@ -15,7 +16,13 @@ const Post = require("../../models/Post");
 const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
-
+const transporter = nodemailer.createTransport({
+  service: process.env.MAIL_SERVICE,
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASSWORD,
+  },
+});
 //@type: POST
 //@desc: Register an User
 //@access: Public
@@ -90,15 +97,41 @@ router.post(
       // Save the new model
       const data = await user.save();
       // Create JSON WEB TOKEN Payload
-      const payload = {
+      const payload_ID = {
         user: {
           id: data.id,
         },
       };
+
+      const payload_EMAIL = {
+        user: {
+          email: data.email,
+        },
+      };
       // Sign the payload synchronously
-      jwt.sign(payload, config.get("JWT_SECRET"), (err, token) => {
+      jwt.sign(
+        payload_EMAIL,
+        process.env.EMAIL_SECRET,
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) throw err;
+          const url = `http://localhost:5000/api/user/confirm/${token}`;
+          transporter.sendMail({
+            from: process.env.ADMIN_MAIL,
+            to: data.email,
+            subject: "Confirm STORIES! Account",
+            html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+          });
+        }
+      );
+
+      jwt.sign(payload_ID, process.env.ID_SECRET, (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({
+          token,
+          validated: data.validated,
+          msg: `Verification mail sent to ${data.email}. It will expire in 1 hour`,
+        });
       });
       //Catch Errors
     } catch (err) {
@@ -108,9 +141,36 @@ router.post(
   }
 );
 
+//@type: GET
+//@desc: Validate an User
+//@access: Private
+router.get("/confirm/:email_token", async (req, res) => {
+  const token = req.params.email_token;
+
+  try {
+    const decode = jwt.decode(token, process.env.EMAIL_SECRET);
+    const email = decode.user.email;
+    const user = await User.findOne({ email });
+
+    if (!user)
+      return res.status(404).json({
+        type: NOTFOUND,
+        errors: [{ msg: "Account doesn't exist " }],
+      });
+    //@todo - validate account
+    user.validated = true;
+    await user.save();
+
+    res.send("Email Validated");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(SERVER);
+  }
+});
+
 //@type: POST
-//@desc: Register an User
-//@access: Public
+//@desc: Delete an User
+//@access: Private
 router.delete(
   "/",
   [

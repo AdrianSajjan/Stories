@@ -1,7 +1,7 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const config = require("config");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 const { check, validationResult } = require("express-validator");
 const { AUTHENTICATION, VALIDATION, SERVER } = require("../../config/errors");
 const User = require("../../models/User");
@@ -80,9 +80,9 @@ router.post(
         },
       };
       // Sign the payload
-      jwt.sign(payload, config.get("JWT_SECRET"), (err, token) => {
+      jwt.sign(payload, process.env.ID_SECRET, (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, validated: user.validated });
       });
       // Catch Errors
     } catch (err) {

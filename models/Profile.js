@@ -12,6 +12,10 @@ const ProfileSchema = new Schema({
     required: true,
     unique: true,
   },
+  status: {
+    online: Boolean,
+    lastseen: Date,
+  },
   avatar: {
     src: String,
     name: String,

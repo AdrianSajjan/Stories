@@ -12,8 +12,6 @@ const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
 //@access: Private
 router.get("/", auth, async (req, res) => {
   const userID = req.user.id;
-  const posts = [];
-
   try {
     const profile = await Profile.findOne({ user: userID });
 
@@ -28,8 +26,16 @@ router.get("/", auth, async (req, res) => {
         type: NOTFOUND,
         msg: "Start following people to see their posts.",
       });
-
-    profile.following.forEach(async ({ user }, index) => {
+    // Current Post Getter
+    const posts = await Post.find({
+      user: { $in: profile.following.map(({ user }) => user) },
+    })
+      .sort("-date")
+      .limit(parseInt(req.query.limit))
+      .skip(parseInt(req.query.skip));
+    res.json({ posts });
+    // Previous Post Getter
+    /*profile.following.forEach(async ({ user }, index) => {
       const _posts = await Post.find({ user })
         .populate("profile", "username")
         .populate("comments.profile", "username")
@@ -40,7 +46,7 @@ router.get("/", auth, async (req, res) => {
           posts.sort((a, b) => new Date(b.date) - new Date(a.date));
         res.send({ posts });
       }
-    });
+    });*/
     // Handle Errors
   } catch (err) {
     console.log(err.message);

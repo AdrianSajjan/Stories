@@ -13,25 +13,23 @@ const Landing = () => {
 
   return (
     <div className="landing-page">
-      <div className="container-fluid h-100">
-        <div className="row h-100">
-          <div className="col-5 p-5 d-flex flex-column justify-content-center align-items-center bg-charcoal">
-            <h1 className="brand-name text-light text-center">stories!</h1>
-            <p className="lead text-jellybean text-center">
-              Because words are special
-            </p>
-          </div>
-          <div className="col-7 px-5 pt-5 pb-1 d-flex flex-column justify-content-center bg-light">
-            {activeForm === 0 ? <Register /> : <Login />}
-            <p className="text-muted mx-auto w-75 mt-4">
-              {activeForm === 0
-                ? "Already have an account?"
-                : "Don't have an account?"}
-              <button className="toggle-btn ml-1" onClick={ToggleForm}>
-                {activeForm === 0 ? "Sign In" : "Sign Up"}
-              </button>
-            </p>
-          </div>
+      <div className="grid-row">
+        <div className="grid-col grid-col-branding bg-charcoal">
+          <h1 className="brand-name text-light m-0">stories!</h1>
+          <p className="lead text-jellybean m-0 brand-text">
+            Because words are special
+          </p>
+        </div>
+        <div className="grid-col grid-col-form d-flex flex-column justify-content-center bg-light py-5">
+          {activeForm === 0 ? <Register /> : <Login />}
+          <p className="text-muted mx-auto w-75 mt-4">
+            {activeForm === 0
+              ? "Already have an account?"
+              : "Don't have an account?"}
+            <button className="toggle-btn ml-1" onClick={ToggleForm}>
+              {activeForm === 0 ? "Sign In" : "Sign Up"}
+            </button>
+          </p>
         </div>
       </div>
     </div>

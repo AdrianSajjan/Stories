@@ -1,4 +1,0 @@
-{
-  "DATABASE_URI": "mongodb+srv://adrian:adrian@sn-cluster-zx9qy.mongodb.net/Main?retryWrites=true&w=majority",
-  "JWT_SECRET": "WfMgYsNKbT"
-}

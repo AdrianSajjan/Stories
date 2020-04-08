@@ -1,8 +1,14 @@
 const express = require("express");
 const ObjectID = require("mongoose").Types.ObjectId;
 const { check, validationResult } = require("express-validator");
-const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
+const {
+  VALIDATION,
+  SERVER,
+  NOTFOUND,
+  AUTHENTICATION,
+} = require("../../config/errors");
 const Profile = require("../../models/Profile");
+const User = require("../../models/User");
 const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
@@ -78,6 +84,19 @@ router.post(
   ],
   // Handle Request
   async (req, res) => {
+    // Check for authentication error
+    const userID = req.user.id;
+    let user = await User.findById(userID);
+    if (!user)
+      return res.status(404).json({
+        type: NOTFOUND,
+        errors: [{ msg: "User doesn't exist" }],
+      });
+    if (!user.validated)
+      return res.status(401).json({
+        type: AUTHENTICATION,
+        errors: [{ msg: "Please verify your email before creating profile." }],
+      });
     //Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty())
@@ -87,7 +106,6 @@ router.post(
       });
     // Destructure req body and extract user ID
     const { username, dob, locality, state, country, bio } = req.body;
-    const userID = req.user.id;
     // Create Profile Data Object
     const profileData = {};
     profileData.username = username;
