@@ -1,14 +1,18 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { removeAlert } from "../../actions/alert";
 
 const Alert = ({ alert, removeAlert }) => {
-  const { type, header, msg, active } = alert;
-
+  // Alert
+  const { type, header, msg, active, redirect, callback } = alert;
+  const history = useHistory();
   const CloseModal = () => {
     removeAlert();
+    if (redirect !== "") history.push(redirect);
+    if (callback) callback();
   };
 
   return (

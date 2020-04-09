@@ -111,3 +111,7 @@ input::placeholder {
 .toggle-password-btn:hover {
   color: var(--tuscan-red);
 }
+
+.btn-rounded {
+  border-radius: 100vh !important;
+}

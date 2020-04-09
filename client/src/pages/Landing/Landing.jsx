@@ -1,15 +1,19 @@
-import React, { useState } from "react";
-import "./Landing.css";
+import React from "react";
+import PropTypes from "prop-types";
+import { Switch, Route, Redirect } from "react-router-dom";
+import LandingPromotion from "../../components/Landing-Promotion/Landing-Promotion";
 import Register from "../../components/Register/Register";
 import Login from "../../components/Login/Login";
+import { connect } from "react-redux";
+import "./Landing.css";
 
-const Landing = () => {
-  // 0 for Sign Up and 1 for Login
-  const [activeForm, toggleActiveForm] = useState(1);
+const Landing = ({ User }) => {
+  // Landing
+  const { isAuthenticated, loading } = User;
 
-  const ToggleForm = () => {
-    activeForm === 0 ? toggleActiveForm(1) : toggleActiveForm(0);
-  };
+  if (isAuthenticated) return <Redirect to="/home" />;
+
+  if (loading) return null;
 
   return (
     <div className="landing-page">
@@ -21,19 +25,23 @@ const Landing = () => {
           </p>
         </div>
         <div className="grid-col grid-col-form d-flex flex-column justify-content-center bg-light py-5">
-          {activeForm === 0 ? <Register /> : <Login />}
-          <p className="text-muted mx-auto w-75 mt-4">
-            {activeForm === 0
-              ? "Already have an account?"
-              : "Don't have an account?"}
-            <button className="toggle-btn ml-1" onClick={ToggleForm}>
-              {activeForm === 0 ? "Sign In" : "Sign Up"}
-            </button>
-          </p>
+          <Switch>
+            <Route path="/" exact component={LandingPromotion} />
+            <Route path="/login" component={Login} />
+            <Route path="/register" component={Register} />
+          </Switch>
         </div>
       </div>
     </div>
   );
 };
 
-export default Landing;
+Landing.propTypes = {
+  User: PropTypes.object.isRequired,
+};
+
+const mapStateToProps = (state) => ({
+  User: state.auth,
+});
+
+export default connect(mapStateToProps)(Landing);
