@@ -1,0 +1,133 @@
+.sidebar {
+  width: 30%;
+  background-color: var(--light);
+  min-width: 250px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border-right: 1px solid gray;
+}
+
+.sidebar-container {
+  height: 100%;
+  width: 250px;
+  padding: 1rem;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar .brand-name {
+  margin-left: 15px;
+}
+
+.sidebar .brand-name:hover,
+.sidebar .brand-name:focus {
+  color: var(--primary) !important;
+}
+
+.sidebar .toggle-sidebar-btn {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--secondary);
+  font-family: monospace;
+  font-weight: light;
+  display: none;
+  margin-left: auto;
+  font-size: 3rem;
+  height: 30px;
+}
+
+.sidebar .toggle-sidebar-btn .close-icon {
+  display: block;
+  transform: translateY(-1.1rem);
+}
+
+.sidebar-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--heading-font);
+}
+
+.sidebar-profile-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+}
+
+.sidebar-profile-name::before {
+  content: "@";
+}
+
+.sidebar-options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.1rem 0 1.2rem;
+}
+
+.sidebar-option {
+  width: 100%;
+  padding: 0.5rem 0.1rem 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  transition: 0.2s ease;
+  color: var(--dark);
+  border-radius: 100vh;
+  outline: none;
+}
+
+.sidebar-option.sidebar-option-active {
+  color: var(--primary);
+}
+
+.sidebar-option:hover,
+.sidebar-option:focus {
+  color: var(--primary);
+  background-color: #17a3b815;
+}
+
+.sidebar-option .option-icon {
+  width: 30px;
+}
+
+.sidebar-option .option-name {
+  font-size: 1.2rem;
+  font-family: var(--heading-font);
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+}
+
+@media screen and (max-width: 767px) {
+  .sidebar {
+    transform: translateX(-260px);
+    border: none;
+    box-shadow: 2px 0 4px 2px rgba(0, 0, 0, 0.25);
+    align-items: flex-start;
+  }
+
+  .sidebar .brand-name {
+    margin-left: 0;
+  }
+
+  .sidebar-header {
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+  }
+
+  .sidebar-options {
+    padding-left: 0;
+  }
+
+  .sidebar .toggle-sidebar-btn {
+    display: block;
+  }
+}

@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono:wght@300;500&family=Ubuntu:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@300;500&family=Ubuntu:wght@500&display=swap");
 
 :root {
   --heading-font: "Ubuntu", sans-serif;
@@ -20,6 +20,7 @@
 
 body {
   font-family: var(--default-font);
+  font-weight: normal;
 }
 
 h1,
@@ -27,17 +28,26 @@ h2,
 h3,
 h4,
 h5,
-h6,
+h6 {
+  font-family: var(--heading-font);
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+input,
+input::placeholder,
 label {
-  font-family: var(--heading-font);
+  font-family: var(--default-font);
 }
 
-input {
-  font-family: var(--heading-font);
-}
-
-input::placeholder {
-  font-family: var(--heading-font);
+label {
+  font-weight: bold;
 }
 
 .brand-name,

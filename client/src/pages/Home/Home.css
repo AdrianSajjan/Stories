@@ -1,0 +1,20 @@
+.main {
+  background-color: var(--light);
+  width: 70%;
+  margin-left: 30%;
+  max-width: 900px;
+}
+
+@media screen and (max-width: 830px) {
+  .main {
+    width: calc(100% - 250px);
+    margin-left: 250px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+}

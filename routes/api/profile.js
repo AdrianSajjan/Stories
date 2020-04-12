@@ -110,7 +110,7 @@ router.post(
     const profileData = {};
     profileData.username = username;
     profileData.user = userID;
-    profileData.dob = new Date(`${dob}T00:00:00.000Z`);
+    profileData.dob = dob;
     profileData.country = country;
     if (locality) profileData.locality = locality;
     if (state) profileData.state = state;
