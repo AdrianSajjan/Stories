@@ -1,11 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link, Route } from "react-router-dom";
+import { CSSTransition } from "react-transition-group";
+import { closeSidebar } from "../../actions/sidebar";
 import { connect } from "react-redux";
 import DefaultImage from "../../assets/images/sample-profile-picture.png";
 import "./Sidebar.css";
 
-const Sidebar = ({ _profile }) => {
+const Sidebar = ({ _profile, toggleState, closeSidebar }) => {
   // Sidebar
   const { profile } = _profile;
 
@@ -42,7 +44,7 @@ const Sidebar = ({ _profile }) => {
     },
     {
       id: 6,
-      path: "/home/logout",
+      path: "/logout",
       name: "Logout",
       icon: "sign-out",
     },
@@ -59,6 +61,7 @@ const Sidebar = ({ _profile }) => {
             "sidebar-option mt-2" + (match ? " sidebar-option-active" : "")
           }
           to={path}
+          onClick={closeSidebar}
         >
           <i className={`fa fa-${icon} fa-lg option-icon`}></i>
           <span className="option-name">{name}</span>
@@ -68,58 +71,67 @@ const Sidebar = ({ _profile }) => {
   );
 
   return (
-    <section className="sidebar fixed-top">
-      <div className="sidebar-container">
-        <div className="sidebar-header">
-          <h2>
-            <Link to="/home" className="heading brand-name text-primary">
-              STORIES!
-            </Link>
-          </h2>
-          <button className="toggle-sidebar-btn mb-2">
-            <span className="close-icon">&times;</span>
-          </button>
-        </div>
-        <div className="sidebar-profile mt-4">
-          <img
-            src={DefaultImage}
-            alt="profile"
-            className="sidebar-profile-img"
-          />
-          <p className="sidebar-profile-name mb-1 mt-1">
-            {profile === null ? "" : profile.username}
-          </p>
-          <div className="sidebar-profile-details d-flex">
-            <div className="sidebar-following d-flex flex-column mr-2">
-              <span className="details-text">Following</span>
-              <span className="following-amount text-center mr-1">
-                {profile === null ? "0" : profile.following.length.toString()}
-              </span>
-            </div>
-            <div className="sidebar-followers d-flex flex-column ml-2">
-              <span className="details-text">Followers</span>
-              <span className="following-amount text-center mr-1">
-                {profile === null ? "0" : profile.followers.length.toString()}
-              </span>
+    <CSSTransition in={toggleState} timeout={300} classNames="sidebar">
+      <section className="sidebar bg-light fixed-top">
+        <div className="sidebar-container">
+          <div className="sidebar-header">
+            <h2>
+              <Link to="/home" className="heading brand-name text-primary">
+                STORIES!
+              </Link>
+            </h2>
+            <button className="toggle-sidebar-btn" onClick={closeSidebar}>
+              <span className="close-icon">&times;</span>
+            </button>
+          </div>
+          <div className="sidebar-profile mt-4">
+            <img
+              src={DefaultImage}
+              alt="profile"
+              className="sidebar-profile-img"
+            />
+            <p className="sidebar-profile-name mb-1 mt-1">
+              {profile === null ? "" : profile.username}
+            </p>
+            <div className="sidebar-profile-details d-flex">
+              <div className="sidebar-following d-flex flex-column mr-2">
+                <span className="details-text">Following</span>
+                <span className="following-amount text-center mr-1">
+                  {profile === null ? "0" : profile.following.length.toString()}
+                </span>
+              </div>
+              <div className="sidebar-followers d-flex flex-column ml-2">
+                <span className="details-text">Followers</span>
+                <span className="following-amount text-center mr-1">
+                  {profile === null ? "0" : profile.followers.length.toString()}
+                </span>
+              </div>
             </div>
           </div>
+          <div className="sidebar-options mt-3">
+            {SidebarOptions.map(({ id, name, path, icon }) =>
+              SidebarOption(id, path, name, icon)
+            )}
+          </div>
         </div>
-        <div className="sidebar-options mt-3">
-          {SidebarOptions.map(({ id, name, path, icon }) =>
-            SidebarOption(id, path, name, icon)
-          )}
-        </div>
-      </div>
-    </section>
+      </section>
+    </CSSTransition>
   );
 };
 
 Sidebar.propTypes = {
   _profile: PropTypes.object.isRequired,
+  closeSidebar: PropTypes.func.isRequired,
+  toggleState: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   _profile: state.profile,
+  toggleState: state.sidebar,
 });
 
-export default connect(mapStateToProps)(Sidebar);
+const mapDispatchToProps = (dispatch) => ({
+  closeSidebar: () => dispatch(closeSidebar()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);

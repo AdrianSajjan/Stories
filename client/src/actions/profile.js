@@ -1,4 +1,5 @@
 import { GET_PROFILE, PROFILE_ERROR, SET_PROFILE } from "./types";
+import { setAlert } from "./alert";
 import axios from "axios";
 
 const config = {
@@ -26,16 +27,23 @@ export const getCurrentProfile = () => async (dispatch) => {
 export const setProfile = (data) => async (dispatch) => {
   try {
     const res = await axios.post("/api/profile", data, config);
-    console.log(res.data);
     dispatch({
       type: SET_PROFILE,
       payload: res.data,
     });
+    dispatch(setAlert("Success", "Profile Updated Successfully!", "success"));
   } catch (err) {
-    if (err.response.data.type && err.response.data.type === "VALIDATION")
-      dispatch({
-        type: PROFILE_ERROR,
-        payload: err.response.data.errors,
-      });
+    if (err.response.data.type) {
+      if (err.response.data.type === "VALIDATION") {
+        dispatch({
+          type: PROFILE_ERROR,
+          payload: err.response.data.errors,
+        });
+      } else {
+        dispatch(setAlert("Failed!", err.response.data.msg, "danger"));
+      }
+    } else {
+      dispatch(setAlert("Failed!", err.response.data, "danger"));
+    }
   }
 };

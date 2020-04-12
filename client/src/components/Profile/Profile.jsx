@@ -15,13 +15,14 @@ import {
 import DatePicker from "react-datepicker";
 import { connect } from "react-redux";
 import { setProfile } from "../../actions/profile";
+import { openSidebar } from "../../actions/sidebar";
 import DefaultImage from "../../assets/images/sample-profile-picture.png";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Profile.css";
 
-const Profile = ({ _profile, setProfile }) => {
+const Profile = ({ _profile, setProfile, openSidebar }) => {
   // Profile
-  const { loading, profile } = _profile;
+  const { loading, profile, errors } = _profile;
   // eslint-disable-next-line
   const [image, setImage] = useState(null);
   const [exists, setExists] = useState(false);
@@ -76,12 +77,21 @@ const Profile = ({ _profile, setProfile }) => {
     setProfile(formData);
   };
 
+  const ParamHasError = (param) => {
+    return errors.some((error) => error.param && error.param === param);
+  };
+
+  const GetParamError = (param) => {
+    const error = errors.find((error) => error.param && error.param === param);
+    return error ? error.msg : "";
+  };
+
   return (
     <Fragment>
       <Row>
         <Col className="main-area p-0" sm="8" md="12" lg="8">
-          <div className="main-area-header">
-            <button className="sidebar-toggler-btn">
+          <div className="main-area-header sticky-top bg-light">
+            <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
             </button>
             <h1 className="main-title text-secondary">Profile</h1>
@@ -118,13 +128,18 @@ const Profile = ({ _profile, setProfile }) => {
                   <Input
                     id="username-input"
                     name="username"
-                    invalid={false}
+                    invalid={ParamHasError("username") ? true : false}
                     placeholder="Give yourself an username"
                     value={username}
                     onChange={HandleChange}
                   />
-                  <FormText>Field is required</FormText>
-                  <FormFeedback invalid="true"></FormFeedback>
+                  {!ParamHasError("username") ? (
+                    <FormText>Field is required</FormText>
+                  ) : (
+                    <FormFeedback invalid="true">
+                      {GetParamError("username")}
+                    </FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup className="d-flex flex-column">
                   <Label htmlFor="dob-input">Date of birth</Label>
@@ -135,21 +150,35 @@ const Profile = ({ _profile, setProfile }) => {
                     selected={dob}
                     onChange={HandleDate}
                   />
-                  <FormText>Field is required</FormText>
-                  <FormFeedback invalid="true"></FormFeedback>
+                  <Input
+                    invalid={ParamHasError("dob") ? true : false}
+                    className="d-none"
+                  />
+                  {!ParamHasError("dob") ? (
+                    <FormText>Field is required</FormText>
+                  ) : (
+                    <FormFeedback invalid="true">
+                      {GetParamError("dob")}
+                    </FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Label htmlFor="country-input">Country</Label>
                   <Input
                     id="country-input"
                     name="country"
-                    invalid={false}
+                    invalid={ParamHasError("country") ? true : false}
                     placeholder="Which country are you presently living?"
                     value={country}
                     onChange={HandleChange}
                   />
-                  <FormText>Field is required</FormText>
-                  <FormFeedback invalid="true"></FormFeedback>
+                  {!ParamHasError("country") ? (
+                    <FormText>Field is required</FormText>
+                  ) : (
+                    <FormFeedback invalid="true">
+                      {GetParamError("country")}
+                    </FormFeedback>
+                  )}
                 </FormGroup>
                 <FormGroup>
                   <Label htmlFor="state-input">State</Label>
@@ -210,6 +239,8 @@ const Profile = ({ _profile, setProfile }) => {
 
 Profile.propTypes = {
   _profile: PropTypes.object.isRequired,
+  setProfile: PropTypes.func.isRequired,
+  openSidebar: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -218,6 +249,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   setProfile: (data) => dispatch(setProfile(data)),
+  openSidebar: () => dispatch(openSidebar()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -3,6 +3,7 @@ import {
   SET_PROFILE,
   PROFILE_ERROR,
   REMOVE_PROFILE_ERROR,
+  CLEAR_PROFILE,
 } from "../actions/types";
 
 const initialState = {
@@ -28,6 +29,8 @@ export default function (state = initialState, action) {
         ...state,
         errors: state.errors.filter((error) => error.param !== payload),
       };
+    case CLEAR_PROFILE:
+      return initialState;
     default:
       return state;
   }

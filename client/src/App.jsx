@@ -10,6 +10,7 @@ import Alert from "./components/Alert/Alert";
 import Home from "./pages/Home/Home";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import Logout from "./pages/Logout/Logout";
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -27,6 +28,7 @@ const App = () => {
         <Alert />
         <Switch>
           <PrivateRoute path="/home" component={Home} />
+          <Route path="/logout" component={Logout} />
           <Route path="/" component={Landing} />
         </Switch>
       </Router>

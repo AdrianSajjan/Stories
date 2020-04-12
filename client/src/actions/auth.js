@@ -9,6 +9,8 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  LOGOUT,
+  CLEAR_PROFILE,
 } from "./types";
 
 const config = {
@@ -44,7 +46,9 @@ export const register = (data) => async (dispatch) => {
       type: REGISTER_SUCCESS,
       payload: res.data,
     });
-    dispatch(setAlert("Account Created", res.data.msg, "success"));
+    dispatch(
+      setAlert("Account Created", res.data.msg, "success", "/home/profile")
+    );
     dispatch(loadUser());
   } catch (err) {
     const _data = err.response.data;
@@ -74,4 +78,13 @@ export const login = (data) => async (dispatch) => {
       type: LOGIN_FAILED,
     });
   }
+};
+
+export const logout = () => (dispatch) => {
+  dispatch({
+    type: CLEAR_PROFILE,
+  });
+  dispatch({
+    type: LOGOUT,
+  });
 };
