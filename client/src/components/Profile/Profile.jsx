@@ -112,15 +112,17 @@ const Profile = ({ _profile, setProfile, openSidebar }) => {
                   id="image-upload-input"
                   accept="image/*"
                 />
-                <label
-                  className="btn btn-primary ml-2 image-upload-label"
-                  htmlFor="image-upload-input"
-                >
-                  Select
-                </label>
-                <button type="submit" className="btn btn-primary mb-2 ml-2">
-                  Upload
-                </button>
+                <div className="image-btn-field">
+                  <label
+                    className="btn btn-primary image-upload-label"
+                    htmlFor="image-upload-input"
+                  >
+                    Select
+                  </label>
+                  <button type="submit" className="btn btn-primary mb-2 ml-2">
+                    Upload
+                  </button>
+                </div>
               </form>
               <Form className="my-5 px-4 px-md-5" onSubmit={HandleSubmit}>
                 <FormGroup>
@@ -231,7 +233,7 @@ const Profile = ({ _profile, setProfile, openSidebar }) => {
             </div>
           )}
         </Col>
-        <Col className="side-area bg-primary d-sm-block d-md-none d-lg-block"></Col>
+        <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
       </Row>
     </Fragment>
   );

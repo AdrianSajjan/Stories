@@ -16,10 +16,9 @@ export const getCurrentProfile = () => async (dispatch) => {
       payload: profile.data,
     });
   } catch (err) {
-    console.log(err);
     dispatch({
       type: PROFILE_ERROR,
-      payload: err.response.data,
+      payload: [err.response.data],
     });
   }
 };
@@ -33,6 +32,7 @@ export const setProfile = (data) => async (dispatch) => {
     });
     dispatch(setAlert("Success", "Profile Updated Successfully!", "success"));
   } catch (err) {
+    console.log(err.response.data);
     if (err.response.data.type) {
       if (err.response.data.type === "VALIDATION") {
         dispatch({
@@ -40,7 +40,9 @@ export const setProfile = (data) => async (dispatch) => {
           payload: err.response.data.errors,
         });
       } else {
-        dispatch(setAlert("Failed!", err.response.data.msg, "danger"));
+        dispatch(
+          setAlert("Failed!", err.response.data.errors[0].msg, "danger")
+        );
       }
     } else {
       dispatch(setAlert("Failed!", err.response.data, "danger"));

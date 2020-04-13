@@ -4,6 +4,10 @@
   justify-content: center;
 }
 
+.image-btn-field {
+  margin-left: 5px;
+}
+
 .image-upload-label {
   font-family: var(--default-font);
 }
@@ -19,4 +23,19 @@
 
 #image-upload-input {
   display: none;
+}
+
+@media screen and (max-width: 395px) {
+  .image-upload-form {
+    flex-direction: column;
+  }
+
+  .profile-image {
+    margin-right: 0;
+  }
+
+  .image-btn-field {
+    margin-left: 0;
+    margin-top: 20px;
+  }
 }

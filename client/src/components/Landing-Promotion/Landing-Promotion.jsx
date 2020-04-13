@@ -7,7 +7,7 @@ const LandingPromotion = () => {
       <h1>
         Welcome to <span className="brand-name text-jellybean">STORIES!</span>
       </h1>
-      <p className="text-muted lead mt-2">Login or Create an account</p>
+      <p className="text-muted lead mt-3">Login or Create an account</p>
       { /* prettier-ignore*/ }
       <div className="mt-4">
         <Link to="/login" className="text-uppercase btn btn-primary mr-2 btn-rounded px-4">
