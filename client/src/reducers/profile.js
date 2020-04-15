@@ -8,11 +8,19 @@ import {
 } from "../actions/types";
 
 const initialState = {
-  currentProfile: null,
-  profileByID: null,
-  profiles: [],
-  loading: true,
-  errors: [],
+  currentProfile: {
+    profile: null,
+    loading: true,
+    errors: [],
+  },
+  profileByID: {
+    profile: null,
+    loading: true,
+  },
+  discoverProfiles: {
+    profiles: [],
+    loading: true,
+  },
 };
 
 export default function (state = initialState, action) {
@@ -20,20 +28,35 @@ export default function (state = initialState, action) {
   switch (type) {
     case GET_PROFILE:
     case SET_PROFILE:
-      return { ...state, currentProfile: payload, loading: false, errors: [] };
+      return {
+        ...state,
+        currentProfile: { profile: payload, loading: false, errors: [] },
+      };
     case PROFILE_ERROR:
       return {
         ...state,
-        loading: false,
-        errors: [...state.errors, ...payload],
+        currentProfile: {
+          ...state.currentProfile,
+          loading: false,
+          errors: payload,
+        },
       };
     case REMOVE_PROFILE_ERROR:
       return {
         ...state,
-        errors: state.errors.filter((error) => error.param !== payload),
+        currentProfile: {
+          ...state.currentProfile,
+          loading: false,
+          errors: state.currentProfile.errors.filter(
+            (error) => error.param !== payload
+          ),
+        },
       };
     case RESET_PROFILE_ERRORS:
-      return { ...state, errors: [] };
+      return {
+        ...state,
+        currentProfile: { ...state.currentProfile, errors: [] },
+      };
     case CLEAR_PROFILES:
       return initialState;
     default:

@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { Row, Col } from "reactstrap";
+import { Row, Col, Spinner } from "reactstrap";
 import { openSidebar } from "../../actions/sidebar";
 import CreatePost from "./CreatePost/CreatePost";
 import Posts from "../Posts/Posts";
 
-const Timeline = ({ posts, openSidebar }) => {
+const Timeline = ({ postsByFollowing, openSidebar }) => {
   // Timeline
-  const { postsByFollowing } = posts;
+  const { posts, loading } = postsByFollowing;
 
   return (
     <Fragment>
@@ -19,9 +19,26 @@ const Timeline = ({ posts, openSidebar }) => {
             </button>
             <h1 className="main-title text-secondary">Home</h1>
           </div>
-          <div className="main-timeline-area pb-5">
+          <div className="main-timeline-area">
             <CreatePost />
-            <Posts posts={postsByFollowing} />
+            {postsByFollowing.length === 0 ? (
+              loading ? (
+                <Spinner color="primary" className="d-block mx-auto my-5" />
+              ) : (
+                <p className="mt-4 text-center text-muted">
+                  Start following users to see their posts.
+                </p>
+              )
+            ) : (
+              <Fragment>
+                <Posts posts={posts} />
+                {loading ? (
+                  <Spinner color="primary" className="d-block mx-auto my-5" />
+                ) : (
+                  <p className="text-muted text-center my-3">End of Posts</p>
+                )}
+              </Fragment>
+            )}
           </div>
         </Col>
         <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
@@ -31,7 +48,7 @@ const Timeline = ({ posts, openSidebar }) => {
 };
 
 const mapStateToProps = (state) => ({
-  posts: state.post,
+  postsByFollowing: state.post.postsByFollowing,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -1,0 +1,46 @@
+.image-upload-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-btn-field {
+  margin-left: 5px;
+}
+
+.image-upload-label {
+  font-family: var(--default-font);
+}
+
+.profile-image {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  margin-right: 10px;
+}
+
+#image-upload-input {
+  display: none;
+}
+
+.profile-posts {
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
+@media screen and (max-width: 395px) {
+  .image-upload-form {
+    flex-direction: column;
+  }
+
+  .profile-image {
+    margin-right: 0;
+  }
+
+  .image-btn-field {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+}

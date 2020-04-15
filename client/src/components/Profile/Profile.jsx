@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { openSidebar } from "../../actions/sidebar";
 import ProfileInfo from "./Profile-Details/Profile-Info";
 import "./Profile.css";
+import ViewProfile from "./View-Profile/View-Profile";
 
 const Profile = ({ openSidebar }) => {
   // Profile
@@ -21,7 +22,17 @@ const Profile = ({ openSidebar }) => {
           </div>
           <div className="main-profile-info mt-5">
             <Switch>
-              <Route path="/home/profile" component={ProfileInfo} exact />
+              <Route path="/home/profile/edit" component={ProfileInfo} exact />
+              <Route
+                exact
+                path="/home/profile/view/:ID"
+                render={(props) => <ViewProfile {...props} owner={false} />}
+              />
+              <Route
+                exact
+                path="/home/profile"
+                render={(props) => <ViewProfile {...props} owner={true} />}
+              />
             </Switch>
           </div>
         </Col>

@@ -3,6 +3,7 @@ import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 
 const ProfileImage = () => {
   // ProfileImage
+  // eslint-disable-next-line
   const [image, setImage] = useState(null);
 
   return (
