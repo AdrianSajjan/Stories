@@ -7,9 +7,9 @@ import { connect } from "react-redux";
 import DefaultImage from "../../assets/images/sample-profile-picture.png";
 import "./Sidebar.css";
 
-const Sidebar = ({ _profile, toggleState, closeSidebar }) => {
+const Sidebar = ({ profile, toggleState, closeSidebar }) => {
   // Sidebar
-  const { profile } = _profile;
+  const { currentProfile } = profile;
 
   const SidebarOptions = [
     {
@@ -91,19 +91,23 @@ const Sidebar = ({ _profile, toggleState, closeSidebar }) => {
               className="sidebar-profile-img"
             />
             <p className="sidebar-profile-name mb-1 mt-1">
-              {profile === null ? "" : profile.username}
+              {currentProfile === null ? "" : currentProfile.username}
             </p>
             <div className="sidebar-profile-details d-flex">
               <div className="sidebar-following d-flex flex-column mr-2">
                 <span className="details-text">Following</span>
                 <span className="following-amount text-center mr-1">
-                  {profile === null ? "0" : profile.following.length.toString()}
+                  {currentProfile === null
+                    ? "0"
+                    : currentProfile.following.length.toString()}
                 </span>
               </div>
               <div className="sidebar-followers d-flex flex-column ml-2">
                 <span className="details-text">Followers</span>
                 <span className="following-amount text-center mr-1">
-                  {profile === null ? "0" : profile.followers.length.toString()}
+                  {currentProfile === null
+                    ? "0"
+                    : currentProfile.followers.length.toString()}
                 </span>
               </div>
             </div>
@@ -120,13 +124,13 @@ const Sidebar = ({ _profile, toggleState, closeSidebar }) => {
 };
 
 Sidebar.propTypes = {
-  _profile: PropTypes.object.isRequired,
+  profile: PropTypes.object.isRequired,
   closeSidebar: PropTypes.func.isRequired,
   toggleState: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  _profile: state.profile,
+  profile: state.profile,
   toggleState: state.sidebar,
 });
 

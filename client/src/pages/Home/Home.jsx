@@ -7,13 +7,21 @@ import Timeline from "../../components/Timeline/Timeline";
 import Profile from "../../components/Profile/Profile";
 import { connect } from "react-redux";
 import { getCurrentProfile } from "../../actions/profile";
+import { getTimelinePosts, getCurrentUserPosts } from "../../actions/post";
 import "./Home.css";
 
-const Home = ({ auth, getCurrentProfile }) => {
+const Home = ({
+  auth,
+  getCurrentProfile,
+  getTimelinePosts,
+  getCurrentUserPosts,
+}) => {
   // Home
   useEffect(
     () => {
       getCurrentProfile();
+      getTimelinePosts();
+      getCurrentUserPosts();
     }, // eslint-disable-next-line
     []
   );
@@ -47,6 +55,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   getCurrentProfile: () => dispatch(getCurrentProfile()),
+  getTimelinePosts: () => dispatch(getTimelinePosts()),
+  getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

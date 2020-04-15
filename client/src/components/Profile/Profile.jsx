@@ -1,91 +1,14 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment } from "react";
+import { Switch, Route } from "react-router-dom";
 import PropTypes from "prop-types";
-import {
-  Row,
-  Col,
-  Form,
-  Input,
-  Button,
-  FormGroup,
-  Label,
-  FormFeedback,
-  FormText,
-  Spinner,
-} from "reactstrap";
-import DatePicker from "react-datepicker";
+import { Row, Col } from "reactstrap";
 import { connect } from "react-redux";
-import { setProfile } from "../../actions/profile";
 import { openSidebar } from "../../actions/sidebar";
-import DefaultImage from "../../assets/images/sample-profile-picture.png";
-import "react-datepicker/dist/react-datepicker.css";
+import ProfileInfo from "./Profile-Details/Profile-Info";
 import "./Profile.css";
 
-const Profile = ({ _profile, setProfile, openSidebar }) => {
+const Profile = ({ openSidebar }) => {
   // Profile
-  const { loading, profile, errors } = _profile;
-  // eslint-disable-next-line
-  const [image, setImage] = useState(null);
-  const [exists, setExists] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    dob: new Date(),
-    bio: "",
-    country: "",
-    state: "",
-    locality: "",
-  });
-
-  const { username, dob, bio, country, state, locality } = formData;
-
-  useEffect(
-    () => {
-      if (profile !== null) {
-        setExists(true);
-        InitFields();
-      }
-    }, // eslint-disable-next-line
-    [profile]
-  );
-
-  const InitFields = () => {
-    setFormData({
-      username: profile.username,
-      dob: new Date(profile.dob),
-      country: profile.country,
-      bio: profile.bio || "",
-      state: profile.state || "",
-      locality: profile.locality || "",
-    });
-  };
-
-  const HandleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const HandleDate = (value) => {
-    setFormData({
-      ...formData,
-      dob: value,
-    });
-  };
-
-  const HandleSubmit = (event) => {
-    event.preventDefault();
-    setProfile(formData);
-  };
-
-  const ParamHasError = (param) => {
-    return errors.some((error) => error.param && error.param === param);
-  };
-
-  const GetParamError = (param) => {
-    const error = errors.find((error) => error.param && error.param === param);
-    return error ? error.msg : "";
-  };
-
   return (
     <Fragment>
       <Row>
@@ -96,142 +19,11 @@ const Profile = ({ _profile, setProfile, openSidebar }) => {
             </button>
             <h1 className="main-title text-secondary">Profile</h1>
           </div>
-          {loading && profile === null ? (
-            <Spinner className="mx-auto d-block mt-5" color="primary" />
-          ) : (
-            <div className="main-profile-info mt-5">
-              <form className="image-upload-form">
-                <img
-                  src={image ? image : DefaultImage}
-                  alt="profile"
-                  className="profile-image"
-                />
-                <input
-                  type="file"
-                  name="upload-profile-image"
-                  id="image-upload-input"
-                  accept="image/*"
-                />
-                <div className="image-btn-field">
-                  <label
-                    className="btn btn-primary image-upload-label"
-                    htmlFor="image-upload-input"
-                  >
-                    Select
-                  </label>
-                  <button type="submit" className="btn btn-primary mb-2 ml-2">
-                    Upload
-                  </button>
-                </div>
-              </form>
-              <Form className="my-5 px-4 px-md-5" onSubmit={HandleSubmit}>
-                <FormGroup>
-                  <Label htmlFor="username-input">Username</Label>
-                  <Input
-                    id="username-input"
-                    name="username"
-                    invalid={ParamHasError("username") ? true : false}
-                    placeholder="Give yourself an username"
-                    value={username}
-                    onChange={HandleChange}
-                  />
-                  {!ParamHasError("username") ? (
-                    <FormText>Field is required</FormText>
-                  ) : (
-                    <FormFeedback invalid="true">
-                      {GetParamError("username")}
-                    </FormFeedback>
-                  )}
-                </FormGroup>
-                <FormGroup className="d-flex flex-column">
-                  <Label htmlFor="dob-input">Date of birth</Label>
-                  <DatePicker
-                    name="dob"
-                    id="dob-input"
-                    className="form-control"
-                    selected={dob}
-                    onChange={HandleDate}
-                  />
-                  <Input
-                    invalid={ParamHasError("dob") ? true : false}
-                    className="d-none"
-                  />
-                  {!ParamHasError("dob") ? (
-                    <FormText>Field is required</FormText>
-                  ) : (
-                    <FormFeedback invalid="true">
-                      {GetParamError("dob")}
-                    </FormFeedback>
-                  )}
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="country-input">Country</Label>
-                  <Input
-                    id="country-input"
-                    name="country"
-                    invalid={ParamHasError("country") ? true : false}
-                    placeholder="Which country are you presently living?"
-                    value={country}
-                    onChange={HandleChange}
-                  />
-                  {!ParamHasError("country") ? (
-                    <FormText>Field is required</FormText>
-                  ) : (
-                    <FormFeedback invalid="true">
-                      {GetParamError("country")}
-                    </FormFeedback>
-                  )}
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="state-input">State</Label>
-                  <Input
-                    id="state-input"
-                    name="state"
-                    invalid={false}
-                    placeholder="The state you are present at?"
-                    value={state}
-                    onChange={HandleChange}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="locality-input">Locality</Label>
-                  <Input
-                    id="locality-input"
-                    name="locality"
-                    invalid={false}
-                    placeholder="The locality you are present at?"
-                    value={locality}
-                    onChange={HandleChange}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label htmlFor="bio-input">Bio</Label>
-                  <Input
-                    type="textarea"
-                    id="bio-input"
-                    name="bio"
-                    maxLength="250"
-                    rows="5"
-                    placeholder="Enter a short bio for yourself"
-                    value={bio}
-                    onChange={HandleChange}
-                  />
-                  <FormText>{250 - bio.length}/250</FormText>
-                </FormGroup>
-                <Button type="submit" className="mt-2" color="primary">
-                  {exists ? "Update Profile" : "Create Profile"}
-                </Button>
-                <Button
-                  type="button"
-                  className="mt-2 ml-2"
-                  color="secondary"
-                  onClick={InitFields}
-                >
-                  Cancel
-                </Button>
-              </Form>
-            </div>
-          )}
+          <div className="main-profile-info mt-5">
+            <Switch>
+              <Route path="/home/profile" component={ProfileInfo} exact />
+            </Switch>
+          </div>
         </Col>
         <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
       </Row>
@@ -240,18 +32,11 @@ const Profile = ({ _profile, setProfile, openSidebar }) => {
 };
 
 Profile.propTypes = {
-  _profile: PropTypes.object.isRequired,
-  setProfile: PropTypes.func.isRequired,
   openSidebar: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-  _profile: state.profile,
-});
-
 const mapDispatchToProps = (dispatch) => ({
-  setProfile: (data) => dispatch(setProfile(data)),
   openSidebar: () => dispatch(openSidebar()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default connect(null, mapDispatchToProps)(Profile);

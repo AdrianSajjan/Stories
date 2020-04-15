@@ -3,12 +3,14 @@ import {
   SET_PROFILE,
   PROFILE_ERROR,
   REMOVE_PROFILE_ERROR,
-  CLEAR_PROFILE,
+  CLEAR_PROFILES,
   RESET_PROFILE_ERRORS,
 } from "../actions/types";
 
 const initialState = {
-  profile: null,
+  currentProfile: null,
+  profileByID: null,
+  profiles: [],
   loading: true,
   errors: [],
 };
@@ -18,7 +20,7 @@ export default function (state = initialState, action) {
   switch (type) {
     case GET_PROFILE:
     case SET_PROFILE:
-      return { ...state, profile: payload, loading: false, errors: [] };
+      return { ...state, currentProfile: payload, loading: false, errors: [] };
     case PROFILE_ERROR:
       return {
         ...state,
@@ -32,7 +34,7 @@ export default function (state = initialState, action) {
       };
     case RESET_PROFILE_ERRORS:
       return { ...state, errors: [] };
-    case CLEAR_PROFILE:
+    case CLEAR_PROFILES:
       return initialState;
     default:
       return state;

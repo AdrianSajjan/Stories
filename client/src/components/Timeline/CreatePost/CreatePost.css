@@ -1,0 +1,24 @@
+.timeline-profile-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+}
+
+.post-form {
+  border-bottom: 5px solid white;
+}
+
+.post-input {
+  margin-top: 12px;
+  resize: none;
+  color: var(--dark) !important;
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 1.1rem !important;
+  overflow: hidden !important;
+  line-height: 20px !important;
+}

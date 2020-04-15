@@ -30,6 +30,9 @@ router.get("/", auth, async (req, res) => {
     const posts = await Post.find({
       user: { $in: profile.following.map(({ user }) => user) },
     })
+      .populate("profile", "username")
+      .populate("comments.profile", "username")
+      .populate("likes.profile", "username")
       .sort("-date")
       .limit(parseInt(req.query.limit))
       .skip(parseInt(req.query.skip));
@@ -61,20 +64,11 @@ router.get("/me", auth, async (req, res) => {
   // Get Current User ID
   const id = req.user.id;
   try {
-    const profile = await Profile.findOne({ user: id });
-    if (!profile)
-      return res.status(400).json({
-        type: NOTFOUND,
-        msg:
-          "Create your profile in order to start posting and view your posts.",
-      });
     const posts = await Post.find({ user: id })
       .populate("profile", "username")
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date");
-    if (posts.length == 0)
-      return res.json({ type: NOTFOUND, msg: "No Posts Found" });
     res.json({ posts });
   } catch (err) {
     console.log(err.message);
@@ -89,7 +83,7 @@ router.get("/user/:id", auth, async (req, res) => {
   // Get Current User ID
   const id = req.params.id;
   if (!ObjectID.isValid(id) || new ObjectID(id) != id)
-    return res.json({ type: NOTFOUND, msg: "No Posts Found" });
+    return res.json({ posts: [] });
 
   try {
     const posts = await Post.find({ user: id })
@@ -97,7 +91,6 @@ router.get("/user/:id", auth, async (req, res) => {
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date");
-    if (!posts.length) return res.json({ msg: "No Posts Found" });
     res.json({ posts });
   } catch (err) {
     console.log(err.message);

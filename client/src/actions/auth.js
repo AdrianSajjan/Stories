@@ -10,7 +10,7 @@ import {
   LOGIN_SUCCESS,
   LOGIN_FAILED,
   LOGOUT,
-  CLEAR_PROFILE,
+  CLEAR_PROFILES,
 } from "./types";
 
 const config = {
@@ -82,7 +82,7 @@ export const login = (data) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
   dispatch({
-    type: CLEAR_PROFILE,
+    type: CLEAR_PROFILES,
   });
   dispatch({
     type: LOGOUT,
