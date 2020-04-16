@@ -17,9 +17,9 @@ import ProfileImage from "./Profile-Image";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Profile-Details.css";
 
-const ProfileInfo = ({ currentProfile, setProfile }) => {
+const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
   // Profile Info
-  const { errors, profile, loading: profileLoading } = currentProfile;
+  const { profile, loading: profileLoading } = currentProfile;
 
   const [formData, setFormData] = useState({
     username: "",
@@ -198,10 +198,12 @@ const ProfileInfo = ({ currentProfile, setProfile }) => {
 ProfileInfo.propTypes = {
   currentProfile: PropTypes.object.isRequired,
   setProfile: PropTypes.func.isRequired,
+  errors: PropTypes.array.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   currentProfile: state.profile.currentProfile,
+  errors: state.profile.errors,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -209,23 +211,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileInfo);
-
-/*<div className="w-100 pt-2 pb-1 profile-posts">
-        <h3 className="text-center text-secondary">Posts</h3>
-      </div>
-      {posts.length === 0 ? (
-        postsLoading ? (
-          <Spinner color="primary" className="my-5 d-block mx-auto" />
-        ) : (
-          <p className="mt-4 text-muted text-center">
-            No Posts Found.
-            <br />
-            Publish a post to see and edit them.
-          </p>
-        )
-      ) : (
-        <div>
-          <Posts posts={posts} />
-          <p className="text-center text-muted my-2">End of Posts.</p>
-        </div>
-      )}*/

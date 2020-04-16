@@ -5,9 +5,9 @@ import DefaultImage from "../../assets/images/sample-profile-picture.png";
 import { connect } from "react-redux";
 import "./Post.css";
 
-const Post = ({ post, profile }) => {
+const Post = ({ post, currentProfile }) => {
   // Single-Post
-  const { currentProfile } = profile;
+  const { profile } = currentProfile;
 
   const [time, setTime] = useState("");
   useEffect(
@@ -26,13 +26,11 @@ const Post = ({ post, profile }) => {
   };
 
   const PostHasUserLike = () => {
-    return post.likes.some((like) => like.profile._id === currentProfile._id);
+    return post.likes.some((like) => like.profile._id === profile._id);
   };
 
   const PostHasUserComment = () => {
-    return post.comments.some(
-      (comment) => comment.profile._id === currentProfile._id
-    );
+    return post.comments.some((comment) => comment.profile._id === profile._id);
   };
 
   return (
@@ -85,11 +83,11 @@ const Post = ({ post, profile }) => {
 
 Post.propTypes = {
   post: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
+  currentProfile: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  profile: state.profile,
+  currentProfile: state.profile.currentProfile,
 });
 
 export default connect(mapStateToProps)(Post);

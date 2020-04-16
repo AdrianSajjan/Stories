@@ -37,19 +37,6 @@ router.get("/", auth, async (req, res) => {
       .limit(parseInt(req.query.limit))
       .skip(parseInt(req.query.skip));
     res.json({ posts });
-    // Previous Post Getter
-    /*profile.following.forEach(async ({ user }, index) => {
-      const _posts = await Post.find({ user })
-        .populate("profile", "username")
-        .populate("comments.profile", "username")
-        .populate("likes.profile", "username");
-      if (_posts.length > 0) posts.push.apply(posts, _posts);
-      if (index == profile.following.length - 1) {
-        if (posts.length > 1)
-          posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-        res.send({ posts });
-      }
-    });*/
     // Handle Errors
   } catch (err) {
     console.log(err.message);
@@ -82,8 +69,7 @@ router.get("/me", auth, async (req, res) => {
 router.get("/user/:id", auth, async (req, res) => {
   // Get Current User ID
   const id = req.params.id;
-  if (!ObjectID.isValid(id) || new ObjectID(id) != id)
-    return res.json({ posts: [] });
+  if (!ObjectID.isValid(id) || new ObjectID(id) != id) return res.json([]);
 
   try {
     const posts = await Post.find({ user: id })
@@ -91,7 +77,7 @@ router.get("/user/:id", auth, async (req, res) => {
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date");
-    res.json({ posts });
+    res.json(posts);
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);
@@ -129,7 +115,12 @@ router.post(
         content: req.body.content,
       });
       await post.save();
-      res.send({ msg: "Post Created!", post });
+      await post
+        .populate("profile", "username")
+        .populate("comments.profile", "username")
+        .populate("likes.profile", "username")
+        .execPopulate();
+      res.send(post);
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);
@@ -196,7 +187,7 @@ router.put("/like/:post", auth, async (req, res) => {
     }
     post.likes.push({ user: id, profile: profile.id, date: new Date() });
     await post.save();
-    res.json({ msg: "Liked", post });
+    res.json(post);
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);
@@ -244,7 +235,7 @@ router.put(
         date: new Date(),
       });
       await post.save();
-      res.json({ msg: "Commented", post });
+      res.json(post);
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);
@@ -278,7 +269,7 @@ router.delete("/comment/:comment", auth, async (req, res) => {
       });
     post.comments = post.comments.filter((comment) => comment._id != commentID);
     await post.save();
-    res.json({ msg: "Comment deleted", post });
+    res.json(post);
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);

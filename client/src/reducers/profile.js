@@ -5,13 +5,14 @@ import {
   REMOVE_PROFILE_ERROR,
   CLEAR_PROFILES,
   RESET_PROFILE_ERRORS,
+  GET_PROFILE_BY_ID,
+  REMOVE_PROFILE_BY_ID,
 } from "../actions/types";
 
 const initialState = {
   currentProfile: {
     profile: null,
     loading: true,
-    errors: [],
   },
   profileByID: {
     profile: null,
@@ -21,6 +22,7 @@ const initialState = {
     profiles: [],
     loading: true,
   },
+  errors: [],
 };
 
 export default function (state = initialState, action) {
@@ -30,33 +32,21 @@ export default function (state = initialState, action) {
     case SET_PROFILE:
       return {
         ...state,
-        currentProfile: { profile: payload, loading: false, errors: [] },
+        currentProfile: { profile: payload, loading: false },
       };
     case PROFILE_ERROR:
-      return {
-        ...state,
-        currentProfile: {
-          ...state.currentProfile,
-          loading: false,
-          errors: payload,
-        },
-      };
+      return { ...state, errors: payload };
     case REMOVE_PROFILE_ERROR:
       return {
         ...state,
-        currentProfile: {
-          ...state.currentProfile,
-          loading: false,
-          errors: state.currentProfile.errors.filter(
-            (error) => error.param !== payload
-          ),
-        },
+        errors: state.errors.filter((error) => error.param !== payload),
       };
     case RESET_PROFILE_ERRORS:
-      return {
-        ...state,
-        currentProfile: { ...state.currentProfile, errors: [] },
-      };
+      return { ...state, errors: [] };
+    case GET_PROFILE_BY_ID:
+      return { ...state, profileByID: { profile: payload, loading: false } };
+    case REMOVE_PROFILE_BY_ID:
+      return { ...state, profileByID: { profile: null, loading: true } };
     case CLEAR_PROFILES:
       return initialState;
     default:

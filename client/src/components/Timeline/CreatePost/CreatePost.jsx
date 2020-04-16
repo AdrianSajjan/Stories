@@ -9,8 +9,10 @@ import {
 } from "reactstrap";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 import "./CreatePost.css";
+import { createPost } from "../../../actions/post";
+import { connect } from "react-redux";
 
-const CreatePost = () => {
+const CreatePost = ({ createPost, errors }) => {
   // Create-Post
   const minRows = 2;
   const [post, setPost] = useState("");
@@ -33,6 +35,18 @@ const CreatePost = () => {
 
   const HandleSubmit = (event) => {
     event.preventDefault();
+    createPost(post);
+  };
+
+  const PostHasError = () => {
+    return errors.some((error) => error.param && error.param === "content");
+  };
+
+  const GetPostError = () => {
+    const error = errors.find(
+      (error) => error.param && error.param === "content"
+    );
+    return error ? error.msg : "";
   };
 
   return (
@@ -47,19 +61,21 @@ const CreatePost = () => {
           <FormGroup className="w-100 ml-3">
             <Input
               type="textarea"
-              name="post"
+              name="content"
               placeholder="Write something..."
               rows={row.toString()}
               className="post-input p-0"
               maxLength="450"
               value={post}
               onChange={HandleChange}
-              invalid={false}
+              invalid={PostHasError()}
             />
             <FormText className="text-right">{`${
               450 - post.length
             }/450`}</FormText>
-            <FormFeedback invalid="true"></FormFeedback>
+            <FormFeedback invalid="true" className="text-right">
+              {GetPostError()}
+            </FormFeedback>
           </FormGroup>
         </div>
         <Button
@@ -73,4 +89,12 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+const mapStateToProps = (state) => ({
+  errors: state.post.errors,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  createPost: (data) => dispatch(createPost(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePost);

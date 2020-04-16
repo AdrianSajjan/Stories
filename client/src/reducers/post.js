@@ -1,20 +1,17 @@
 import {
   CREATE_POST,
+  POST_ERROR,
   GET_CURRENT_USER_POSTS,
+  REMOVE_POSTS_BY_USER,
   GET_POST_BY_ID,
+  REMOVE_POST_BY_ID,
   GET_POSTS_BY_USER,
   GET_POSTS_FROM_FOLLOWING,
   SET_POSTS_FROM_FOLLOWING,
   REMOVE_ALL_POSTS,
-  REMOVE_POSTS_BY_USER,
-  REMOVE_POST_BY_ID,
 } from "../actions/types";
 
 const initialState = {
-  postByID: {
-    post: null,
-    loading: true,
-  },
   postsByUser: {
     posts: [],
     loading: true,
@@ -27,6 +24,7 @@ const initialState = {
     posts: [],
     loading: true,
   },
+  errors: [],
 };
 
 export default function (state = initialState, action) {
@@ -35,8 +33,14 @@ export default function (state = initialState, action) {
     case CREATE_POST:
       return {
         ...state,
-        userPosts: { ...state.userPosts, posts: [...state.userPosts, payload] },
+        userPosts: {
+          ...state.userPosts,
+          posts: [payload, ...state.userPosts.posts],
+        },
+        errors: [],
       };
+    case POST_ERROR:
+      return { ...state, errors: payload };
     case GET_CURRENT_USER_POSTS:
       return { ...state, userPosts: { posts: payload, loading: false } };
     case GET_POSTS_BY_USER:

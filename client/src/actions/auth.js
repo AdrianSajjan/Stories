@@ -11,6 +11,7 @@ import {
   LOGIN_FAILED,
   LOGOUT,
   CLEAR_PROFILES,
+  REMOVE_ALL_POSTS,
 } from "./types";
 
 const config = {
@@ -81,6 +82,9 @@ export const login = (data) => async (dispatch) => {
 };
 
 export const logout = () => (dispatch) => {
+  dispatch({
+    type: REMOVE_ALL_POSTS,
+  });
   dispatch({
     type: CLEAR_PROFILES,
   });

@@ -17,44 +17,50 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
       path: "/home",
       name: "Home",
       icon: "home",
+      exact: true,
     },
     {
       id: 2,
       path: "/home/chats",
       name: "Chats",
       icon: "envelope",
+      exact: false,
     },
     {
       id: 3,
       path: "/home/notification",
       name: "Notification",
       icon: "bell",
+      exact: false,
     },
     {
       id: 4,
       path: "/home/profile",
       name: "Profile",
       icon: "user",
+      exact: false,
     },
     {
       id: 5,
       path: "/home/account",
       name: "Account",
       icon: "wrench",
+      exact: false,
     },
     {
       id: 6,
       path: "/logout",
       name: "Logout",
       icon: "sign-out",
+      exact: false,
     },
   ];
 
-  const SidebarOption = (id, path, name, icon) => (
+  const SidebarOption = (id, path, name, icon, exact) => (
     <Route
+      exact={exact}
       key={id}
       path={path}
-      exact
       children={({ match }) => (
         <Link
           className={
@@ -109,8 +115,8 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
             </div>
           </div>
           <div className="sidebar-options mt-3">
-            {SidebarOptions.map(({ id, name, path, icon }) =>
-              SidebarOption(id, path, name, icon)
+            {SidebarOptions.map(({ id, name, path, icon, exact }) =>
+              SidebarOption(id, path, name, icon, exact)
             )}
           </div>
         </div>

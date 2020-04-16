@@ -25,11 +25,6 @@
   display: none;
 }
 
-.profile-posts {
-  border-top: 1px solid gray;
-  border-bottom: 1px solid gray;
-}
-
 @media screen and (max-width: 395px) {
   .image-upload-form {
     flex-direction: column;

@@ -5,9 +5,10 @@ import { openSidebar } from "../../actions/sidebar";
 import CreatePost from "./CreatePost/CreatePost";
 import Posts from "../Posts/Posts";
 
-const Timeline = ({ postsByFollowing, openSidebar }) => {
+const Timeline = ({ postsByFollowing, openSidebar, currentProfile }) => {
   // Timeline
-  const { posts, loading } = postsByFollowing;
+  const { posts, loading: postsLoading } = postsByFollowing;
+  const { profile, loading: userLoading } = currentProfile;
 
   return (
     <Fragment>
@@ -20,22 +21,39 @@ const Timeline = ({ postsByFollowing, openSidebar }) => {
             <h1 className="main-title text-secondary">Home</h1>
           </div>
           <div className="main-timeline-area">
-            <CreatePost />
-            {postsByFollowing.length === 0 ? (
-              loading ? (
+            {profile === null ? (
+              userLoading ? (
                 <Spinner color="primary" className="d-block mx-auto my-5" />
               ) : (
                 <p className="mt-4 text-center text-muted">
-                  Start following users to see their posts.
+                  Create your profile to see what others post.
                 </p>
               )
             ) : (
               <Fragment>
-                <Posts posts={posts} />
-                {loading ? (
-                  <Spinner color="primary" className="d-block mx-auto my-5" />
+                <CreatePost />
+                {postsByFollowing.length === 0 ? (
+                  postsLoading ? (
+                    <Spinner color="primary" className="d-block mx-auto my-5" />
+                  ) : (
+                    <p className="mt-4 text-center text-muted">
+                      Start following users to see their posts.
+                    </p>
+                  )
                 ) : (
-                  <p className="text-muted text-center my-3">End of Posts</p>
+                  <Fragment>
+                    <Posts posts={posts} />
+                    {postsLoading ? (
+                      <Spinner
+                        color="primary"
+                        className="d-block mx-auto my-5"
+                      />
+                    ) : (
+                      <p className="text-muted text-center my-3">
+                        End of Posts
+                      </p>
+                    )}
+                  </Fragment>
                 )}
               </Fragment>
             )}
@@ -49,6 +67,7 @@ const Timeline = ({ postsByFollowing, openSidebar }) => {
 
 const mapStateToProps = (state) => ({
   postsByFollowing: state.post.postsByFollowing,
+  currentProfile: state.profile.currentProfile,
 });
 
 const mapDispatchToProps = (dispatch) => ({

@@ -1,4 +1,11 @@
-import { GET_PROFILE, PROFILE_ERROR, SET_PROFILE } from "./types";
+import {
+  GET_PROFILE,
+  PROFILE_ERROR,
+  SET_PROFILE,
+  RESET_PROFILE_ERRORS,
+  GET_PROFILE_BY_ID,
+  REMOVE_PROFILE_BY_ID,
+} from "./types";
 import { setAlert } from "./alert";
 import axios from "axios";
 
@@ -17,8 +24,8 @@ export const getCurrentProfile = () => async (dispatch) => {
     });
   } catch (err) {
     dispatch({
-      type: PROFILE_ERROR,
-      payload: [err.response.data],
+      type: GET_PROFILE,
+      payload: null,
     });
   }
 };
@@ -30,9 +37,11 @@ export const setProfile = (data) => async (dispatch) => {
       type: SET_PROFILE,
       payload: res.data,
     });
+    dispatch({
+      type: RESET_PROFILE_ERRORS,
+    });
     dispatch(setAlert("Success", "Profile Updated Successfully!", "success"));
   } catch (err) {
-    console.log(err.response.data);
     if (err.response.data.type) {
       if (err.response.data.type === "VALIDATION") {
         dispatch({
@@ -45,7 +54,25 @@ export const setProfile = (data) => async (dispatch) => {
         );
       }
     } else {
-      dispatch(setAlert("Failed!", err.response.data, "danger"));
+      dispatch(setAlert("Failed!", err.response, "danger"));
     }
+  }
+};
+
+export const getProfileByID = (userID) => async (dispatch) => {
+  dispatch({
+    type: REMOVE_PROFILE_BY_ID,
+  });
+  try {
+    const res = await axios.get(`/api/profile/${userID}`, config);
+    dispatch({
+      type: GET_PROFILE_BY_ID,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: GET_PROFILE_BY_ID,
+      payload: null,
+    });
   }
 };
