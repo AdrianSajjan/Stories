@@ -48,7 +48,7 @@ export const getCurrentUserPosts = () => async (dispatch) => {
     const res = await axios.get("/api/post/me", config);
     dispatch({
       type: GET_CURRENT_USER_POSTS,
-      payload: res.data.posts,
+      payload: res.data,
     });
   } catch (err) {
     dispatch({
@@ -64,7 +64,7 @@ export const getTimelinePosts = () => async (dispatch) => {
     const res = await axios.get("/api/post", config);
     dispatch({
       type: SET_POSTS_FROM_FOLLOWING,
-      payload: res.data.posts,
+      payload: res.data,
     });
   } catch (err) {
     dispatch({

@@ -112,9 +112,9 @@ router.post(
     profileData.user = userID;
     profileData.dob = dob;
     profileData.country = country;
-    if (locality) profileData.locality = locality;
-    if (state) profileData.state = state;
-    if (bio) profileData.bio = bio;
+    profileData.locality = locality ? locality : "";
+    profileData.state = state ? state : "";
+    profileData.bio = bio ? bio : "";
     // Async Function
     try {
       // Check for profile

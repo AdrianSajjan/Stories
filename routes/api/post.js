@@ -21,11 +21,7 @@ router.get("/", auth, async (req, res) => {
         msg: "Create your profile to see what other people share.",
       });
 
-    if (profile.following.length == 0)
-      return res.status(401).json({
-        type: NOTFOUND,
-        msg: "Start following people to see their posts.",
-      });
+    if (profile.following.length == 0) return res.json([]);
     // Current Post Getter
     const posts = await Post.find({
       user: { $in: profile.following.map(({ user }) => user) },
@@ -36,7 +32,7 @@ router.get("/", auth, async (req, res) => {
       .sort("-date")
       .limit(parseInt(req.query.limit))
       .skip(parseInt(req.query.skip));
-    res.json({ posts });
+    res.json(posts);
     // Handle Errors
   } catch (err) {
     console.log(err.message);
@@ -56,7 +52,7 @@ router.get("/me", auth, async (req, res) => {
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date");
-    res.json({ posts });
+    res.json(posts);
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);

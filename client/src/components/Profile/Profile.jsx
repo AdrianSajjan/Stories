@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 import { openSidebar } from "../../actions/sidebar";
 import ProfileInfo from "./Profile-Details/Profile-Info";
 import "./Profile.css";
-import ViewProfile from "./View-Profile/View-Profile";
+import ViewCurrentProfile from "./View-Current-Profile/View-Current-Profile";
+import ViewOtherProfile from "./View-Other-Profile/View-Other-Profile";
 
 const Profile = ({ openSidebar }) => {
   // Profile
@@ -24,14 +25,14 @@ const Profile = ({ openSidebar }) => {
             <Switch>
               <Route path="/home/profile/edit" component={ProfileInfo} exact />
               <Route
+                path="/home/profile/"
+                component={ViewCurrentProfile}
                 exact
-                path="/home/profile/view/:ID"
-                render={(props) => <ViewProfile {...props} owner={false} />}
               />
               <Route
+                path="/home/profile/view/:id"
+                component={ViewOtherProfile}
                 exact
-                path="/home/profile"
-                render={(props) => <ViewProfile {...props} owner={true} />}
               />
             </Switch>
           </div>
