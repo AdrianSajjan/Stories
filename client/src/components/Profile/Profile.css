@@ -24,6 +24,11 @@
   color: black;
 }
 
+.posts-heading {
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+
 @media screen and (max-width: 567px) {
   .profile-picture {
     width: 180px;

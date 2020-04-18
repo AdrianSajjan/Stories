@@ -12,6 +12,8 @@ const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
 //@access: Private
 router.get("/", auth, async (req, res) => {
   const userID = req.user.id;
+  const limit = 5;
+  const page = parseInt(req.query.page) || 0;
   try {
     const profile = await Profile.findOne({ user: userID });
 
@@ -30,8 +32,8 @@ router.get("/", auth, async (req, res) => {
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
       .sort("-date")
-      .limit(parseInt(req.query.limit))
-      .skip(parseInt(req.query.skip));
+      .limit(limit)
+      .skip(page * limit);
     res.json(posts);
     // Handle Errors
   } catch (err) {

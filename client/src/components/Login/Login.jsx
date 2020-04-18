@@ -10,13 +10,17 @@ import {
   InputGroup,
   InputGroupAddon,
   Input,
+  FormText,
   FormFeedback,
   Label,
   Button,
+  Spinner,
 } from "reactstrap";
 
-const Login = ({ errors, removeFormError, removeFormErrors, login }) => {
+const Login = ({ auth, errors, removeFormError, removeFormErrors, login }) => {
   // Login Form
+  const { request, isAuthenticated } = auth;
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -37,7 +41,7 @@ const Login = ({ errors, removeFormError, removeFormErrors, login }) => {
   const HandleSubmit = (e) => {
     e.preventDefault();
     ResetFormError();
-    login({ email, password });
+    !request && login({ email, password });
   };
 
   const TogglePasswordVisible = (e) => {
@@ -75,7 +79,11 @@ const Login = ({ errors, removeFormError, removeFormErrors, login }) => {
             onChange={HandleChange}
             invalid={ParamHasError("email") ? true : false}
           />
-          <FormFeedback invalid="true">{GetParamError("email")}</FormFeedback>
+          {!ParamHasError("email") ? (
+            <FormText>Enter registered email</FormText>
+          ) : (
+            <FormFeedback invalid="true">{GetParamError("email")}</FormFeedback>
+          )}
         </FormGroup>
         <FormGroup>
           <Label htmlFor="name-input" className="mb-1">
@@ -100,13 +108,23 @@ const Login = ({ errors, removeFormError, removeFormErrors, login }) => {
               </button>
             </InputGroupAddon>
           </InputGroup>
-          <FormFeedback className="d-block">
-            {GetParamError("password")}
-          </FormFeedback>
+          {!ParamHasError("password") ? (
+            <FormText>Password associated with your account</FormText>
+          ) : (
+            <FormFeedback className="d-block">
+              {GetParamError("password")}
+            </FormFeedback>
+          )}
         </FormGroup>
-        <Button color="primary" type="submit" className="form-btn mt-2">
-          Sign in
-        </Button>
+        {!isAuthenticated && request ? (
+          <Button color="primary" type="submit" className="form-btn mt-2">
+            <Spinner size="sm" color="light" />
+          </Button>
+        ) : (
+          <Button color="primary" type="submit" className="form-btn mt-2">
+            Sign in
+          </Button>
+        )}
         <p className="text-muted mx-auto w-100 mt-4">
           {"Don't have an acount? "}
           { /* prettier-ignore*/ }
@@ -120,6 +138,7 @@ const Login = ({ errors, removeFormError, removeFormErrors, login }) => {
 };
 
 Login.propTypes = {
+  auth: PropTypes.object.isRequired,
   errors: PropTypes.array.isRequired,
   login: PropTypes.func.isRequired,
   removeFormError: PropTypes.func.isRequired,
@@ -128,6 +147,7 @@ Login.propTypes = {
 
 const mapStateToProps = (state) => ({
   errors: state.error,
+  auth: state.auth,
 });
 
 const mapDispatchToProps = (dispatch) => ({

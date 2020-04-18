@@ -14,10 +14,18 @@ import {
   FormFeedback,
   FormText,
   Button,
+  Spinner,
 } from "reactstrap";
 
-const Register = ({ errors, register, removeFormErrors, removeFormError }) => {
+const Register = ({
+  auth,
+  errors,
+  register,
+  removeFormErrors,
+  removeFormError,
+}) => {
   // Register Component
+  const { request, isAuthenticated } = auth;
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -45,7 +53,7 @@ const Register = ({ errors, register, removeFormErrors, removeFormError }) => {
   const HandleSubmit = (e) => {
     e.preventDefault();
     ResetFormError();
-    register({ name, email, password, confirmPassword });
+    !request && register({ name, email, password, confirmPassword });
   };
 
   const ParamHasError = (param) => {
@@ -155,9 +163,15 @@ const Register = ({ errors, register, removeFormErrors, removeFormError }) => {
             </FormFeedback>
           )}
         </FormGroup>
-        <Button color="primary" type="submit" className="form-btn mt-2">
-          Sign up
-        </Button>
+        {request && !isAuthenticated ? (
+          <Button color="primary" type="submit" className="form-btn mt-2">
+            <Spinner size="sm" color="light" />
+          </Button>
+        ) : (
+          <Button color="primary" type="submit" className="form-btn mt-2">
+            Sign up
+          </Button>
+        )}
         <p className="text-muted mx-auto w-100 mt-4">
           {"Already have an acount? "}
           { /* prettier-ignore*/ }
@@ -171,6 +185,7 @@ const Register = ({ errors, register, removeFormErrors, removeFormError }) => {
 };
 
 Register.propTypes = {
+  auth: PropTypes.object.isRequired,
   errors: PropTypes.array.isRequired,
   register: PropTypes.func.isRequired,
   removeFormError: PropTypes.func.isRequired,
@@ -178,6 +193,7 @@ Register.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+  auth: state.auth,
   errors: state.error,
 });
 

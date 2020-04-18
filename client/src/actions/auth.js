@@ -6,6 +6,7 @@ import {
   REGISTER_SUCCESS,
   REGISTER_FAILED,
   USER_LOADED,
+  USER_LOADING,
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
@@ -41,6 +42,9 @@ export const loadUser = () => async (dispatch) => {
 };
 
 export const register = (data) => async (dispatch) => {
+  dispatch({
+    type: USER_LOADING,
+  });
   try {
     const res = await axios.post("/api/user", data, config);
     dispatch({
@@ -61,6 +65,9 @@ export const register = (data) => async (dispatch) => {
 };
 
 export const login = (data) => async (dispatch) => {
+  dispatch({
+    type: USER_LOADING,
+  });
   try {
     const res = await axios.post("/api/auth", data, config);
     dispatch({
