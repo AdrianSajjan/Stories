@@ -50,12 +50,13 @@ const Timeline = ({
     );
 
     if (timelineLoader && timelineLoader.current) {
-      timelineObserver.observe(timelineLoader.current);
+      var currentTimelineLoader = timelineLoader.current;
+      timelineObserver.observe(currentTimelineLoader);
     }
 
     return () => {
-      //eslint-disable-next-line
-      timelineObserver.unobserve(timelineLoader.current);
+      currentTimelineLoader &&
+        timelineObserver.unobserve(currentTimelineLoader);
     };
   }, [timelineLoader, loadTimelinePosts]);
 

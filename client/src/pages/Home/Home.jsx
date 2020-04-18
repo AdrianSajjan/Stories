@@ -5,25 +5,19 @@ import { Container } from "reactstrap";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Timeline from "../../components/Timeline/Timeline";
 import Profile from "../../components/Profile/Profile";
-import { connect } from "react-redux";
+import Disccover from "../../components/Discover/Discover";
 import { getCurrentProfile } from "../../actions/profile";
 import { getCurrentUserPosts } from "../../actions/post";
+import { connect } from "react-redux";
 import "./Home.css";
 
-const Home = ({
-  auth,
-  getCurrentProfile,
-  getTimelinePosts,
-  getCurrentUserPosts,
-}) => {
+const Home = ({ getCurrentProfile, getCurrentUserPosts }) => {
   // Home
-  useEffect(
-    () => {
-      getCurrentProfile();
-      getCurrentUserPosts();
-    }, // eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    getCurrentProfile();
+    getCurrentUserPosts();
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <section className="w-100 bg-light">
@@ -33,6 +27,7 @@ const Home = ({
           <Switch>
             <Route path="/home" component={Timeline} exact />
             <Route path="/home/profile" component={Profile} />
+            <Route path="/home/discover" component={Disccover} />
             <Route>
               <h1>Page Not Found</h1>
             </Route>
@@ -46,16 +41,11 @@ const Home = ({
 Home.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
   getCurrentUserPosts: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
 };
-
-const mapStateToProps = (state) => ({
-  auth: state.auth,
-});
 
 const mapDispatchToProps = (dispatch) => ({
   getCurrentProfile: () => dispatch(getCurrentProfile()),
   getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(null, mapDispatchToProps)(Home);
