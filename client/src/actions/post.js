@@ -7,6 +7,7 @@ import {
   GET_POSTS_FROM_FOLLOWING,
   SET_POSTS_FROM_FOLLOWING,
   REMOVE_ALL_POSTS,
+  POSTS_FROM_FOLLOWING_END,
 } from "./types";
 
 import axios from "axios";
@@ -58,18 +59,23 @@ export const getCurrentUserPosts = () => async (dispatch) => {
   }
 };
 
-export const getTimelinePosts = () => async (dispatch) => {
+export const getTimelinePosts = (page) => async (dispatch) => {
   try {
     dispatch({ type: GET_POSTS_FROM_FOLLOWING });
-    const res = await axios.get("/api/post", config);
-    dispatch({
-      type: SET_POSTS_FROM_FOLLOWING,
-      payload: res.data,
-    });
+    const res = await axios.get(`/api/post?page=${page}`, config);
+
+    if (res.data.length > 0)
+      dispatch({
+        type: SET_POSTS_FROM_FOLLOWING,
+        payload: res.data,
+      });
+    else
+      dispatch({
+        type: POSTS_FROM_FOLLOWING_END,
+      });
   } catch (err) {
     dispatch({
-      type: SET_POSTS_FROM_FOLLOWING,
-      payload: [],
+      type: POSTS_FROM_FOLLOWING_END,
     });
   }
 };

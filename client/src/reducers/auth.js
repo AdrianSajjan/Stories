@@ -3,7 +3,8 @@ import {
   REGISTER_FAILED,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
-  USER_LOADING,
+  LOGIN_REQUEST,
+  REGISTRATION_REQUEST,
   USER_LOADED,
   AUTH_ERROR,
   LOGOUT,
@@ -14,16 +15,30 @@ const initialState = {
   isAuthenticated: null,
   loading: true,
   user: null,
-  request: false,
+  request: {
+    loginRequest: false,
+    registrationRequest: false,
+  },
 };
 
 export default function (state = initialState, action) {
   const { type, payload } = action;
   switch (type) {
-    case USER_LOADING:
+    case LOGIN_REQUEST:
       return {
         ...state,
-        request: true,
+        request: {
+          ...state.request,
+          loginRequest: true,
+        },
+      };
+    case REGISTRATION_REQUEST:
+      return {
+        ...state,
+        request: {
+          ...state.request,
+          registrationRequest: true,
+        },
       };
     case USER_LOADED:
       return {
@@ -31,7 +46,10 @@ export default function (state = initialState, action) {
         user: payload,
         isAuthenticated: true,
         loading: false,
-        request: false,
+        request: {
+          loginRequest: false,
+          registrationRequest: false,
+        },
       };
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
@@ -41,7 +59,10 @@ export default function (state = initialState, action) {
         ...payload,
         isAuthenticated: true,
         loading: false,
-        request: false,
+        request: {
+          loginRequest: false,
+          registrationRequest: false,
+        },
       };
     case REGISTER_FAILED:
     case AUTH_ERROR:
@@ -53,7 +74,10 @@ export default function (state = initialState, action) {
         token: null,
         isAuthenticated: false,
         loading: false,
-        request: false,
+        request: {
+          loginRequest: false,
+          registrationRequest: false,
+        },
       };
     default:
       return state;

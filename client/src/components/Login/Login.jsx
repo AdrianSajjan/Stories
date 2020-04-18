@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { login } from "../../actions/auth";
-import { removeFormError, removeFormErrors } from "../../actions/error";
+import { removeLoginError, resetFormErrors } from "../../actions/error";
 import {
   Form,
   FormGroup,
@@ -17,9 +17,12 @@ import {
   Spinner,
 } from "reactstrap";
 
-const Login = ({ auth, errors, removeFormError, removeFormErrors, login }) => {
+const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
   // Login Form
-  const { request, isAuthenticated } = auth;
+  const {
+    request: { loginRequest: request },
+    isAuthenticated,
+  } = auth;
 
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,12 +33,12 @@ const Login = ({ auth, errors, removeFormError, removeFormErrors, login }) => {
   const { email, password } = formData;
 
   const ResetFormError = () => {
-    if (errors && errors.length > 0) removeFormErrors();
+    if (errors && errors.length > 0) resetFormErrors();
   };
 
   const HandleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (ParamHasError(e.target.name)) removeFormError(e.target.name);
+    if (ParamHasError(e.target.name)) removeLoginError(e.target.name);
   };
 
   const HandleSubmit = (e) => {
@@ -141,19 +144,19 @@ Login.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.array.isRequired,
   login: PropTypes.func.isRequired,
-  removeFormError: PropTypes.func.isRequired,
-  removeFormErrors: PropTypes.func.isRequired,
+  removeLoginError: PropTypes.func.isRequired,
+  resetFormErrors: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-  errors: state.error,
+  errors: state.error.loginErrors,
   auth: state.auth,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   login: (data) => dispatch(login(data)),
-  removeFormError: (param) => dispatch(removeFormError(param)),
-  removeFormErrors: () => dispatch(removeFormErrors()),
+  removeLoginError: (param) => dispatch(removeLoginError(param)),
+  resetFormErrors: () => dispatch(resetFormErrors()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

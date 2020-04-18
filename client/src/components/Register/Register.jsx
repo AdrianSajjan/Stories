@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { register } from "../../actions/auth";
-import { removeFormErrors, removeFormError } from "../../actions/error";
+import { resetFormErrors, removeRegistrationError } from "../../actions/error";
 import {
   Form,
   FormGroup,
@@ -21,11 +21,15 @@ const Register = ({
   auth,
   errors,
   register,
-  removeFormErrors,
-  removeFormError,
+  resetFormErrors,
+  removeRegistrationError,
 }) => {
   // Register Component
-  const { request, isAuthenticated } = auth;
+  const {
+    request: { registrationRequest: request },
+    isAuthenticated,
+  } = auth;
+
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -37,12 +41,12 @@ const Register = ({
   const { name, email, password, confirmPassword } = formData;
 
   const ResetFormError = () => {
-    if (errors && errors.length > 0) removeFormErrors();
+    if (errors && errors.length > 0) resetFormErrors();
   };
 
   const HandleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (ParamHasError(e.target.name)) removeFormError(e.target.name);
+    if (ParamHasError(e.target.name)) removeRegistrationError(e.target.name);
   };
 
   const TogglePasswordVisible = (e) => {
@@ -188,19 +192,19 @@ Register.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.array.isRequired,
   register: PropTypes.func.isRequired,
-  removeFormError: PropTypes.func.isRequired,
-  removeFormErrors: PropTypes.func.isRequired,
+  removeRegistrationError: PropTypes.func.isRequired,
+  resetFormErrors: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.error,
+  errors: state.error.registrationErrors,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   register: (data) => dispatch(register(data)),
-  removeFormError: (param) => dispatch(removeFormError(param)),
-  removeFormErrors: () => dispatch(removeFormErrors()),
+  removeRegistrationError: (param) => dispatch(removeRegistrationError(param)),
+  resetFormErrors: () => dispatch(resetFormErrors()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

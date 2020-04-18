@@ -8,6 +8,7 @@ import {
   GET_POSTS_BY_USER,
   GET_POSTS_FROM_FOLLOWING,
   SET_POSTS_FROM_FOLLOWING,
+  POSTS_FROM_FOLLOWING_END,
   REMOVE_ALL_POSTS,
 } from "../actions/types";
 
@@ -19,6 +20,8 @@ const initialState = {
   postsByFollowing: {
     posts: [],
     loading: true,
+    currentPage: 0,
+    endOfPosts: false,
   },
   userPosts: {
     posts: [],
@@ -60,8 +63,19 @@ export default function (state = initialState, action) {
       return {
         ...state,
         postsByFollowing: {
+          ...state.postsByFollowing,
           loading: false,
           posts: [...state.postsByFollowing.posts, ...payload],
+          currentPage: state.postsByFollowing.currentPage + 1,
+        },
+      };
+    case POSTS_FROM_FOLLOWING_END:
+      return {
+        ...state,
+        postsByFollowing: {
+          ...state.postsByFollowing,
+          loading: false,
+          endOfPosts: true,
         },
       };
     case REMOVE_ALL_POSTS:

@@ -1,12 +1,13 @@
 import axios from "axios";
 import { setAlert } from "./alert";
-import { setFormErrors } from "./error";
+import { setLoginErrors, setRegistrationErrors } from "./error";
 import setAuthToken from "../utils/set-auth-token";
 import {
   REGISTER_SUCCESS,
   REGISTER_FAILED,
   USER_LOADED,
-  USER_LOADING,
+  LOGIN_REQUEST,
+  REGISTRATION_REQUEST,
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
@@ -28,11 +29,11 @@ export const loadUser = () => async (dispatch) => {
 
   try {
     const res = await axios.get("/api/auth");
-
     dispatch({
       type: USER_LOADED,
       payload: res.data,
     });
+
     // Handle Errors
   } catch (err) {
     dispatch({
@@ -43,7 +44,7 @@ export const loadUser = () => async (dispatch) => {
 
 export const register = (data) => async (dispatch) => {
   dispatch({
-    type: USER_LOADING,
+    type: REGISTRATION_REQUEST,
   });
   try {
     const res = await axios.post("/api/user", data, config);
@@ -57,7 +58,8 @@ export const register = (data) => async (dispatch) => {
     dispatch(loadUser());
   } catch (err) {
     const _data = err.response.data;
-    if (_data.type === "VALIDATION") dispatch(setFormErrors(_data.errors));
+    if (_data.type === "VALIDATION")
+      dispatch(setRegistrationErrors(_data.errors));
     dispatch({
       type: REGISTER_FAILED,
     });
@@ -66,7 +68,7 @@ export const register = (data) => async (dispatch) => {
 
 export const login = (data) => async (dispatch) => {
   dispatch({
-    type: USER_LOADING,
+    type: LOGIN_REQUEST,
   });
   try {
     const res = await axios.post("/api/auth", data, config);
@@ -79,7 +81,7 @@ export const login = (data) => async (dispatch) => {
     const _data = err.response.data;
     if (_data && _data.type) {
       if (_data.type === "VALIDATION" || _data.type === "AUTHENTICATION")
-        dispatch(setFormErrors(_data.errors));
+        dispatch(setLoginErrors(_data.errors));
       else dispatch(setAlert(`Error: ${err.response.status}`, _data, "danger"));
     }
     dispatch({

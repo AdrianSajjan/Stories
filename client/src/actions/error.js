@@ -1,25 +1,41 @@
 import {
-  SET_FORM_ERRORS,
-  REMOVE_FORM_ERROR,
-  REMOVE_FORM_ERRORS,
+  SET_LOGIN_ERRORS,
+  REMOVE_LOGIN_ERROR,
+  SET_REGISTRATION_ERRORS,
+  REMOVE_REGISTRATION_ERROR,
+  RESET_FORM_ERRORS,
 } from "./types";
 
-export const setFormErrors = (errors) => (dispatch) => {
+export const setLoginErrors = (errors) => (dispatch) => {
   dispatch({
-    type: SET_FORM_ERRORS,
+    type: SET_LOGIN_ERRORS,
     payload: errors,
   });
 };
 
-export const removeFormError = (param) => (dispatch) => {
+export const removeLoginError = (param) => (dispatch) => {
   dispatch({
-    type: REMOVE_FORM_ERROR,
+    type: REMOVE_LOGIN_ERROR,
     payload: param,
   });
 };
 
-export const removeFormErrors = () => (dispatch) => {
+export const setRegistrationErrors = (errors) => (dispatch) => {
   dispatch({
-    type: REMOVE_FORM_ERRORS,
+    type: SET_REGISTRATION_ERRORS,
+    payload: errors,
+  });
+};
+
+export const removeRegistrationError = (param) => (dispatch) => {
+  dispatch({
+    type: REMOVE_REGISTRATION_ERROR,
+    payload: param,
+  });
+};
+
+export const resetFormErrors = () => (dispatch) => {
+  dispatch({
+    type: RESET_FORM_ERRORS,
   });
 };

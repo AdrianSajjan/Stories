@@ -1,14 +1,63 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useRef, useCallback } from "react";
 import { connect } from "react-redux";
 import { Row, Col, Spinner } from "reactstrap";
 import { openSidebar } from "../../actions/sidebar";
+import { getTimelinePosts } from "../../actions/post";
 import CreatePost from "./CreatePost/CreatePost";
 import Posts from "../Posts/Posts";
 
-const Timeline = ({ postsByFollowing, openSidebar, currentProfile }) => {
+const Timeline = ({
+  getTimelinePosts,
+  postsByFollowing,
+  openSidebar,
+  currentProfile,
+}) => {
   // Timeline
-  const { posts, loading: postsLoading } = postsByFollowing;
+  const {
+    posts,
+    loading: postsLoading,
+    currentPage: page,
+    endOfPosts,
+  } = postsByFollowing;
   const { profile, loading: userLoading } = currentProfile;
+
+  const timelineLoader = useRef(null);
+
+  const loadTimelinePosts = useCallback(
+    (entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && !postsLoading && !endOfPosts)
+        getTimelinePosts(page);
+    },
+    [postsLoading, getTimelinePosts, page, endOfPosts]
+  );
+
+  useEffect(() => {
+    getTimelinePosts(page);
+    //eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.25,
+    };
+
+    const timelineObserver = new IntersectionObserver(
+      loadTimelinePosts,
+      observerOptions
+    );
+
+    if (timelineLoader && timelineLoader.current) {
+      timelineObserver.observe(timelineLoader.current);
+    }
+
+    return () => {
+      //eslint-disable-next-line
+      timelineObserver.unobserve(timelineLoader.current);
+    };
+  }, [timelineLoader, loadTimelinePosts]);
 
   return (
     <Fragment>
@@ -43,16 +92,18 @@ const Timeline = ({ postsByFollowing, openSidebar, currentProfile }) => {
                 ) : (
                   <Fragment>
                     <Posts posts={posts} />
-                    {postsLoading ? (
-                      <Spinner
-                        color="primary"
-                        className="d-block mx-auto my-5"
-                      />
-                    ) : (
-                      <p className="text-muted text-center my-3">
-                        End of Posts
-                      </p>
-                    )}
+                    <div className="timeline-loader" ref={timelineLoader}>
+                      {postsLoading ? (
+                        <Spinner
+                          color="primary"
+                          className="d-block mx-auto my-5"
+                        />
+                      ) : (
+                        <p className="text-muted text-center my-3">
+                          End of Posts
+                        </p>
+                      )}
+                    </div>
                   </Fragment>
                 )}
               </Fragment>
@@ -72,6 +123,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   openSidebar: () => dispatch(openSidebar()),
+  getTimelinePosts: (page) => dispatch(getTimelinePosts(page)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Timeline);
