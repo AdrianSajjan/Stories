@@ -1,19 +1,20 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-require("dotenv").config();
 const { check, validationResult } = require("express-validator");
 const nodemailer = require("nodemailer");
+const User = require("../../models/User");
+const Profile = require("../../models/Profile");
+const Post = require("../../models/Post");
+const auth = require("../../middleware/token-auth");
 const {
   VALIDATION,
   SERVER,
   NOTFOUND,
   AUTHENTICATION,
 } = require("../../config/errors");
-const User = require("../../models/User");
-const Profile = require("../../models/Profile");
-const Post = require("../../models/Post");
-const auth = require("../../middleware/token-auth");
+
+require("dotenv").config();
 
 const router = express.Router();
 const transporter = nodemailer.createTransport({
@@ -23,15 +24,15 @@ const transporter = nodemailer.createTransport({
     pass: process.env.MAIL_PASSWORD,
   },
 });
-//@type: POST
-//@desc: Register an User
-//@access: Public
+
+/**
+ * @route : POST api/user
+ * @desc : Register an User
+ * @access : Public
+ */
 router.post(
-  //Path
   "/",
-  // Express Validator Check
   [
-    // Validate Name
     check("name")
       .not()
       .isEmpty()
@@ -39,7 +40,6 @@ router.post(
       .isLength({ min: 3 })
       .withMessage("Enter your full name"),
 
-    // Validate Email
     check("email")
       .not()
       .isEmpty()
@@ -53,7 +53,6 @@ router.post(
         return true;
       }),
 
-    // Validate Password
     check("password")
       .not()
       .isEmpty()
@@ -61,7 +60,6 @@ router.post(
       .isLength({ min: 6 })
       .withMessage("Password cannot be less than 6 letters"),
 
-    // Validate Confirm Password
     check("confirmPassword")
       .not()
       .isEmpty()
@@ -72,31 +70,28 @@ router.post(
         return true;
       }),
   ],
-  // Handle Request
   async (req, res) => {
-    // Check if validation errors
     const errors = validationResult(req);
+
     if (!errors.isEmpty())
       return res.status(400).json({
         type: VALIDATION,
         errors: errors.array({ onlyFirstError: true }),
       });
-    // Continue to store in database
+
     try {
-      // Destructure the req
       const { name, email, password } = req.body;
-      // Hash the password
       const salt = await bcrypt.genSalt(10);
       const hash = await bcrypt.hash(password, salt);
-      // Create a new model
+
       const user = new User({
         name,
         email,
         password: hash,
       });
-      // Save the new model
+
       const data = await user.save();
-      // Create JSON WEB TOKEN Payload
+
       const payload_ID = {
         user: {
           id: data.id,
@@ -108,7 +103,7 @@ router.post(
           email: data.email,
         },
       };
-      // Sign the payload synchronously
+
       jwt.sign(
         payload_EMAIL,
         process.env.EMAIL_SECRET,
@@ -133,7 +128,6 @@ router.post(
           msg: `Verification mail sent to ${data.email}. It will expire in 1 hour`,
         });
       });
-      //Catch Errors
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);
@@ -141,9 +135,11 @@ router.post(
   }
 );
 
-//@type: GET
-//@desc: Validate an User
-//@access: Private
+/**
+ * @route : GET api/user/confirm/:email_token
+ * @desc : Validate an User
+ * @access : Private
+ */
 router.get("/confirm/:email_token", async (req, res) => {
   const token = req.params.email_token;
 
@@ -157,7 +153,7 @@ router.get("/confirm/:email_token", async (req, res) => {
         type: NOTFOUND,
         errors: [{ msg: "Account doesn't exist " }],
       });
-    //@todo - validate account
+
     user.validated = true;
     await user.save();
 
@@ -168,9 +164,11 @@ router.get("/confirm/:email_token", async (req, res) => {
   }
 });
 
-//@type: POST
-//@desc: Delete an User
-//@access: Private
+/**
+ * @route : POST api/user/delete
+ * @desc : Delete an User
+ * @access : Private
+ */
 router.delete(
   "/",
   [
@@ -189,15 +187,15 @@ router.delete(
     const { password } = req.body;
     try {
       const user = await User.findById(userID);
-      //Check if User Exists
+
       if (!user)
         return res.status(404).json({
           type: NOTFOUND,
           errors: [{ msg: "Account doesn't exist" }],
         });
-      // Check Password
+
       const isMatch = await bcrypt.compare(password, user.password);
-      // If not match
+
       if (!isMatch)
         return res.status(403).json({
           type: AUTHENTICATION,
@@ -208,12 +206,11 @@ router.delete(
             },
           ],
         });
-      // Delete User and Profile
+
       await Profile.findOneAndRemove({ user: userID });
       await user.remove();
       await Post.deleteMany({ user: userID });
       res.send({ msg: "Account Deleted" });
-      //Handle Errors
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);

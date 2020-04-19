@@ -1,21 +1,23 @@
 const express = require("express");
 const ObjectID = require("mongoose").Types.ObjectId;
 const { check, validationResult } = require("express-validator");
+const Profile = require("../../models/Profile");
+const User = require("../../models/User");
+const auth = require("../../middleware/token-auth");
 const {
   VALIDATION,
   SERVER,
   NOTFOUND,
   AUTHENTICATION,
 } = require("../../config/errors");
-const Profile = require("../../models/Profile");
-const User = require("../../models/User");
-const auth = require("../../middleware/token-auth");
 
 const router = express.Router();
 
-//@type: GET
-//@desc: Get current user profile
-//@access: Private
+/**
+ * @route : GET /api/profile/me
+ * @desc : Get current user profile
+ * @access : Private
+ */
 router.get("/me", auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({
@@ -32,25 +34,22 @@ router.get("/me", auth, async (req, res) => {
       });
 
     res.json(profile);
-    // Handle Errors
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);
   }
 });
 
-//@type: POST
-//@desc:  Add or Update user profile
-//@access: Private
+/**
+ * @route : POST api/profile
+ * @desc :  Add or Update user profile
+ * @access : Private
+ */
 router.post(
-  // Path
   "/",
   [
-    // Validate Token
     auth,
-    // Express Validator
     [
-      // Validate Username
       check("username")
         .not()
         .isEmpty()
@@ -63,12 +62,10 @@ router.post(
             throw new Error("Username is already taken");
           return true;
         }),
-      // Validate Country
       check("country")
         .not()
         .isEmpty()
         .withMessage("Please specify the country you reside presently"),
-      // Validate DOB
       check("dob")
         .not()
         .isEmpty()
@@ -82,31 +79,31 @@ router.post(
         }),
     ],
   ],
-  // Handle Request
   async (req, res) => {
-    // Check for authentication error
     const userID = req.user.id;
     let user = await User.findById(userID);
+
     if (!user)
       return res.status(404).json({
         type: NOTFOUND,
         errors: [{ msg: "User doesn't exist" }],
       });
+
     if (!user.validated)
       return res.status(401).json({
         type: AUTHENTICATION,
         errors: [{ msg: "Please verify your email before creating profile." }],
       });
-    //Check for validation errors
+
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({
         type: VALIDATION,
         errors: errors.array({ onlyFirstError: true }),
       });
-    // Destructure req body and extract user ID
+
     const { username, dob, locality, state, country, bio } = req.body;
-    // Create Profile Data Object
+
     const profileData = {};
     profileData.username = username;
     profileData.user = userID;
@@ -115,11 +112,10 @@ router.post(
     profileData.locality = locality ? locality : "";
     profileData.state = state ? state : "";
     profileData.bio = bio ? bio : "";
-    // Async Function
+
     try {
-      // Check for profile
       let profile = await Profile.findOne({ user: userID });
-      // Update Profile
+
       if (profile) {
         profile = await Profile.findOneAndUpdate(
           { user: userID },
@@ -128,13 +124,12 @@ router.post(
         );
         return res.send(profile);
       }
-      // Create Profile
+
       profile = new Profile(profileData);
-      // Save Profile
+
       await profile.save();
-      // Return Profile
+
       res.json(profile);
-      // Catch Errors
     } catch (err) {
       console.log(err.message);
       return res.status(500).send(SERVER);
@@ -142,13 +137,20 @@ router.post(
   }
 );
 
-//@type: GET
-//@desc:  View another profile by User ID
-//@access: Private
+/**
+ * @route : GET /api/profile/discover
+ * @desc : Get Profile based on location
+ * @access : Private
+ */
+
+/**
+ * @route : GET api/profile/:userID
+ * @desc :  View another profile by User ID
+ * @access : Private
+ */
 router.get("/:userID", auth, async (req, res) => {
-  // Fetch User ID from Params
   const userID = req.params.userID;
-  // Check if Valid User ID
+
   if (!ObjectID.isValid(userID) || new ObjectID(userID) != userID)
     return res.status(400).json({
       type: NOTFOUND,
@@ -158,7 +160,7 @@ router.get("/:userID", auth, async (req, res) => {
         },
       ],
     });
-  // Fetch Profile from database
+
   try {
     const profile = await Profile.findOne({
       user: userID,
@@ -166,7 +168,7 @@ router.get("/:userID", auth, async (req, res) => {
       .populate("user", ["name", "email"])
       .populate("following.profile", "username")
       .populate("followers.profile", "username");
-    // Profile not found
+
     if (!profile)
       return res.status(400).json({
         type: NOTFOUND,
@@ -176,21 +178,23 @@ router.get("/:userID", auth, async (req, res) => {
           },
         ],
       });
-    // Send the profile to the user
+
     res.json(profile);
-    // Handle Errors
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);
   }
 });
 
-//@type: PUT
-//@desc:  Update following and followers
-//@access: Private
+/**
+ * @route : PUT api/profile/follow/:id
+ * @desc :  Update following and followers
+ * @access : Private
+ */
 router.put("/follow/:id", auth, async (req, res) => {
   const id = req.user.id;
   const otherUser = req.params.id;
+
   if (otherUser === id)
     return res.status(400).json({
       type: VALIDATION,
@@ -200,6 +204,7 @@ router.put("/follow/:id", auth, async (req, res) => {
         },
       ],
     });
+
   if (!ObjectID.isValid(otherUser) || new ObjectID(otherUser) != otherUser)
     return res.status(400).json({
       type: NOTFOUND,
@@ -233,7 +238,6 @@ router.put("/follow/:id", auth, async (req, res) => {
         ],
       });
 
-    // If Following Unfollow User
     if (profile.following.some((item) => item.user == otherUser)) {
       profile.following = profile.following.filter(
         (item) => item.user != otherUser
@@ -272,7 +276,6 @@ router.put("/follow/:id", auth, async (req, res) => {
     await otherProfile.save();
 
     return res.json({ msg: "Followed", profile });
-    // Handle Errors
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);

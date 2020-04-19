@@ -7,9 +7,11 @@ const Profile = require("../../models/Profile");
 const auth = require("../../middleware/token-auth");
 const { VALIDATION, SERVER, NOTFOUND } = require("../../config/errors");
 
-//@type: GET
-//@desc: Get all posts from following sorted by date
-//@access: Private
+/**
+ * @route : GET api/post/
+ * @desc : Get all posts from following sorted by date
+ * @access : Private
+ */
 router.get("/", auth, async (req, res) => {
   const userID = req.user.id;
   const limit = 5;
@@ -24,7 +26,7 @@ router.get("/", auth, async (req, res) => {
       });
 
     if (profile.following.length == 0) return res.json([]);
-    // Current Post Getter
+
     const posts = await Post.find({
       user: { $in: profile.following.map(({ user }) => user) },
     })
@@ -35,18 +37,18 @@ router.get("/", auth, async (req, res) => {
       .limit(limit)
       .skip(page * limit);
     res.json(posts);
-    // Handle Errors
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);
   }
 });
 
-//@type: GET
-//@desc: Get current user post
-//@access: Private
+/**
+ * @route : GET api/post/me
+ * @desc : Get current user post
+ * @access : Private
+ */
 router.get("/me", auth, async (req, res) => {
-  // Get Current User ID
   const id = req.user.id;
   try {
     const posts = await Post.find({ user: id })
@@ -61,12 +63,14 @@ router.get("/me", auth, async (req, res) => {
   }
 });
 
-//@type: GET
-//@desc: Get All Posts from another User
-//@access: Private
+/**
+ * @route : GET api/post/user/:id
+ * @desc : Get All Posts from another User
+ * @access : Private
+ */
 router.get("/user/:id", auth, async (req, res) => {
-  // Get Current User ID
   const id = req.params.id;
+
   if (!ObjectID.isValid(id) || new ObjectID(id) != id) return res.json([]);
 
   try {
@@ -82,9 +86,11 @@ router.get("/user/:id", auth, async (req, res) => {
   }
 });
 
-//@type: Post
-//@desc: Post a post :)
-//@access: Private
+/**
+ * @route : POST api/post
+ * @desc : Create a post
+ * @access : Private
+ */
 router.post(
   "/",
   [
@@ -92,14 +98,13 @@ router.post(
     [check("content").not().isEmpty().withMessage("Content cannot be empty")],
   ],
   async (req, res) => {
-    // Check for errors
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({
         type: VALIDATION,
         errors: errors.array({ onlyFirstError: true }),
       });
-    // Save a Post to database
+
     try {
       const profile = await Profile.findOne({ user: req.user.id });
       if (!profile)
@@ -126,9 +131,11 @@ router.post(
   }
 );
 
-//@type: Delete
-//@desc: Delete a post :)
-//@access: Private
+/**
+ * @route : DELETE api/post/:post
+ * @desc : Delete a post
+ * @access : Private
+ */
 router.delete("/:post", auth, async (req, res) => {
   const id = req.user.id;
   const postID = req.params.post;
@@ -154,35 +161,44 @@ router.delete("/:post", auth, async (req, res) => {
   }
 });
 
-//@type: Put
-//@desc: Like and Unlike a post :)
-//@access: Private
+/**
+ * @route : PUT /api/post/like/:post
+ * @desc : Like and Unlike a post
+ * @access : Private
+ */
 router.put("/like/:post", auth, async (req, res) => {
   const id = req.user.id;
   const postID = req.params.post;
+
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
     return res.status(404).json({
       type: NOTFOUND,
       msg: "Post not found",
     });
+
   try {
     const profile = await Profile.findOne({ user: id });
+
     if (!profile)
       return res.status(400).json({
         type: NOTFOUND,
         msg: "Create your profile before liking a post",
       });
+
     const post = await Post.findById(postID);
+
     if (!post)
       return res.status(404).json({
         type: NOTFOUND,
         msg: "Post not found",
       });
+
     if (post.likes.some((like) => like.user == id)) {
       post.likes = post.likes.filter((like) => like.user != id);
       await post.save();
       return res.json({ msg: "Unliked", likes: post });
     }
+
     post.likes.push({ user: id, profile: profile.id, date: new Date() });
     await post.save();
     res.json(post);
@@ -192,9 +208,11 @@ router.put("/like/:post", auth, async (req, res) => {
   }
 });
 
-//@type: Put
-//@desc: Comment on a post :)
-//@access: Private
+/**
+ * @route : PUT api/post/comment/:post
+ * @desc: Comment on a post
+ * @access: Private
+ */
 router.put(
   "/comment/:post",
   [
@@ -203,35 +221,44 @@ router.put(
   ],
   async (req, res) => {
     const errors = validationResult(req);
+
     if (!errors.isEmpty())
       return res.status(400).json({ type: VALIDATION, errors: errors.array() });
+
     const id = req.user.id;
     const postID = req.params.post;
     const comment = req.body.comment;
+
     if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
       return res.status(404).json({
         type: NOTFOUND,
         msg: "Post not found",
       });
+
     try {
       const profile = await Profile.findOne({ user: id });
+
       if (!profile)
         return res.status(400).json({
           type: NOTFOUND,
           msg: "Create your profile before commenting on a post",
         });
+
       const post = await Post.findById(postID);
+
       if (!post)
         return res.status(404).json({
           type: NOTFOUND,
           msg: "Post not found",
         });
+
       post.comments.push({
         user: id,
         profile: profile.id,
         comment,
         date: new Date(),
       });
+
       await post.save();
       res.json(post);
     } catch (err) {
@@ -241,9 +268,11 @@ router.put(
   }
 );
 
-//@type: Delete
-//@desc: Delete Comment on a post :)
-//@access: Private
+/**
+ * @route : DELETE api/post/comment/:comment
+ * @desc : Delete Comment on a post
+ * @access : Private
+ */
 router.delete("/comment/:comment", auth, async (req, res) => {
   const id = req.user.id;
   const commentID = req.params.comment;
