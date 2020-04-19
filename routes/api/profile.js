@@ -1,9 +1,9 @@
 const express = require("express");
 const ObjectID = require("mongoose").Types.ObjectId;
-const { check, validationResult } = require("express-validator");
 const Profile = require("../../models/Profile");
 const User = require("../../models/User");
 const auth = require("../../middleware/token-auth");
+const { check, validationResult } = require("express-validator");
 const {
   VALIDATION,
   SERVER,
@@ -81,6 +81,7 @@ router.post(
   ],
   async (req, res) => {
     const userID = req.user.id;
+
     let user = await User.findById(userID);
 
     if (!user)
@@ -142,6 +143,58 @@ router.post(
  * @desc : Get Profile based on location
  * @access : Private
  */
+router.get("/discover", auth, async (req, res) => {
+  const userID = req.user.id;
+  const maxProfiles = 20;
+  let otherProfiles = [];
+
+  const profile = await Profile.findOne({ user: userID });
+
+  if (!profile)
+    res.status(404).json({
+      type: NOTFOUND,
+      msg: "Please create your profile",
+    });
+
+  const locality = profile.locality || "";
+  const state = profile.state || "";
+  const country = profile.country;
+
+  try {
+    let profiles = await Profile.find({
+      $and: [
+        { _id: { $ne: profile.id } },
+        { $or: [{ locality }, { state }, { country }] },
+      ],
+    })
+      .limit(maxProfiles)
+      .populate("user", ["name", "email"])
+      .populate("following.profile", "username")
+      .populate("followers.profile", "username");
+    otherProfiles = [...otherProfiles, ...profiles];
+
+    const profilesDiff = maxProfiles - otherProfiles.length;
+
+    if (profilesDiff > 0) {
+      profiles = await Profile.find({
+        $and: [
+          { _id: { $ne: profile.id } },
+          { _id: { $nin: otherProfiles.map((profile) => profile._id) } },
+        ],
+      })
+        .limit(profilesDiff)
+        .populate("user", ["name", "email"])
+        .populate("following.profile", "username")
+        .populate("followers.profile", "username");
+      otherProfiles = [...otherProfiles, ...profiles];
+    }
+
+    res.json(otherProfiles);
+  } catch (err) {
+    res.status(500).send(SERVER);
+    console.log(err.message);
+  }
+});
 
 /**
  * @route : GET api/profile/:userID
