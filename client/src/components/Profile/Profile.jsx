@@ -19,7 +19,7 @@ const Profile = ({ openSidebar }) => {
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
             </button>
-            <h1 className="main-title text-secondary">Profile</h1>
+            <h1 className="main-title text-primary">Profile</h1>
           </div>
           <div className="main-profile-info mt-5">
             <Switch>

@@ -128,6 +128,7 @@ label {
 
 .main-area {
   min-height: 100vh;
+  padding: 0 20px !important;
 }
 
 .main-area-header {
@@ -135,7 +136,9 @@ label {
   align-items: center;
   justify-content: flex-start;
   padding: 0.7rem 0.5rem;
-  border-bottom: 1px solid gray;
+  background-color: white !important;
+  border-radius: 5px;
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-toggler-btn {
@@ -153,10 +156,29 @@ label {
 
 .main-title {
   margin: 0 auto;
+  font-family: var(--monospace-font);
 }
 
-.side-area {
-  border-left: 1px solid gray;
+.side-area-container {
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px !important;
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.side-area-container.sticky {
+  position: sticky !important;
+  top: 0 !important;
+}
+
+.side-area-card {
+  padding: 10px;
+  background-color: var(--light);
+  border-radius: 5px;
+}
+
+.side-area-card-title {
+  font-family: var(--monospace-font);
 }
 
 @media screen and (max-width: 767px) {

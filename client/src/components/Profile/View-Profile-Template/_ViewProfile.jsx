@@ -2,6 +2,7 @@ import React from "react";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { Button } from "reactstrap";
 
 const ViewProfile = ({ image, profile, owner }) => {
   const GetLocation = ({ locality, state, country }) => {
@@ -37,13 +38,17 @@ const ViewProfile = ({ image, profile, owner }) => {
           <p className="font-weight-bold text-muted">{profile.bio}</p>
         </div>
       )}
-      {owner && (
+      {owner ? (
         <Link
           to="/home/profile/edit"
           className={"btn btn-primary " + (profile.bio ? "mt-2" : "mt-4")}
         >
           Edit Profile
         </Link>
+      ) : (
+        <Button color="primary" className="mt-4">
+          Follow User
+        </Button>
       )}
     </div>
   );

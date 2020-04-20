@@ -4,6 +4,7 @@ import { Row, Col, Spinner } from "reactstrap";
 import { openSidebar } from "../../actions/sidebar";
 import { getTimelinePosts } from "../../actions/post";
 import CreatePost from "./CreatePost/CreatePost";
+import Discover from "../Discover/Discover";
 import Posts from "../Posts/Posts";
 
 const Timeline = ({
@@ -63,12 +64,17 @@ const Timeline = ({
   return (
     <Fragment>
       <Row>
-        <Col className="main-area p-0" sm="8" md="12" lg="8">
-          <div className="main-area-header sticky-top bg-light">
+        <Col
+          className="main-area"
+          sm={{ size: 10, offset: 1 }}
+          md={{ size: 12, offset: 0 }}
+          lg="8"
+        >
+          <div className="main-area-header sticky-top">
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
             </button>
-            <h1 className="main-title text-secondary">Home</h1>
+            <h1 className="main-title text-primary">Home</h1>
           </div>
           <div className="main-timeline-area">
             {profile === null ? (
@@ -97,7 +103,7 @@ const Timeline = ({
                       {postsLoading ? (
                         <Spinner
                           color="primary"
-                          className="d-block mx-auto my-5"
+                          className="d-block mx-auto my-3"
                         />
                       ) : (
                         <p className="text-muted text-center my-3">
@@ -111,7 +117,19 @@ const Timeline = ({
             )}
           </div>
         </Col>
-        <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
+        <Col lg="4" className="side-area d-none d-lg-block">
+          {profile === null ? (
+            userLoading ? (
+              <Spinner color="primary" className="d-block mx-auto my-5" />
+            ) : (
+              <p className="mt-4 text-center text-muted">
+                Create your profile to see other profiles.
+              </p>
+            )
+          ) : (
+            <Discover />
+          )}
+        </Col>
       </Row>
     </Fragment>
   );

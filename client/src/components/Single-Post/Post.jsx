@@ -6,20 +6,16 @@ import { connect } from "react-redux";
 import "./Post.css";
 
 const Post = ({ post, currentProfile }) => {
-  // Single-Post
   const { profile } = currentProfile;
 
   const [time, setTime] = useState("");
-  useEffect(
-    () => {
-      UpdateTime();
-      const timeHandler = setInterval(UpdateTime, 1000);
-      return () => {
-        clearInterval(timeHandler);
-      };
-    }, // eslint-disable-next-line
-    []
-  );
+  useEffect(() => {
+    UpdateTime();
+    const timeHandler = setInterval(UpdateTime, 1000);
+    return () => {
+      clearInterval(timeHandler);
+    }; // eslint-disable-next-line
+  }, []);
 
   const UpdateTime = () => {
     setTime(moment(post.date).fromNow());
@@ -34,7 +30,7 @@ const Post = ({ post, currentProfile }) => {
   };
 
   return (
-    <div className="post">
+    <div className="post mt-3">
       <div className="post-header px-3 pt-4">
         <img src={DefaultImage} alt="profile" className="post-image" />
         <p className="post-username m-0 ml-2">@{post.profile.username}</p>

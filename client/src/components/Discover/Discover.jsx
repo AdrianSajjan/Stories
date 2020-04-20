@@ -1,33 +1,57 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import { Col, Row } from "reactstrap";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+//import PropTypes from "prop-types";
+import { Button } from "reactstrap";
 import { connect } from "react-redux";
-import { openSidebar } from "../../actions/sidebar";
+import ProfileCard from "../Profile/Profile-Card/Profile-Card";
 
-const Discover = ({ openSidebar }) => {
+const Discover = () => {
+  const sideAreaRef = useRef(null);
+  const [sticky, setSticky] = useState(false);
+
+  useEffect(() => {
+    window.addEventListener("scroll", ToggleSticky);
+
+    return () => {
+      window.removeEventListener("scroll", ToggleSticky);
+    };
+  }, []);
+
+  const ToggleSticky = (event) => {
+    if (!sideAreaRef || !sideAreaRef.current) return;
+
+    console.log(`client : ${sideAreaRef.current.clientHeight}`);
+    console.log(`window : ${window.innerHeight}`);
+  };
+
   return (
     <Fragment>
-      <Row>
-        <Col className="main-area p-0" sm="8" md="12" lg="8">
-          <div className="main-area-header sticky-top bg-light">
-            <button className="sidebar-toggler-btn" onClick={openSidebar}>
-              <i className="fa fa-bars fa-lg"></i>
-            </button>
-            <h1 className="main-title text-secondary">Discover</h1>
-          </div>
-        </Col>
-        <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
-      </Row>
+      <div
+        ref={sideAreaRef}
+        className={`side-area-container ${sticky && "sticky"}`}
+      >
+        <div className="side-area-card">
+          <p className="side-area-card-title text-center text-secondary">
+            Discover Profiles
+          </p>
+          <hr />
+          <ProfileCard />
+          <ProfileCard />
+          <ProfileCard />
+          <ProfileCard />
+          <ProfileCard />
+          <Button color="info" className="mx-auto d-block mb-1">
+            Load More
+          </Button>
+        </div>
+      </div>
     </Fragment>
   );
 };
 
-Discover.propTypes = {
-  openSidebar: PropTypes.func.isRequired,
-};
+Discover.propTypes = {};
 
-const mapDispatchToProps = (dispatch) => ({
-  openSidebar: () => dispatch(openSidebar()),
-});
+const mapStateToProps = (state) => ({});
 
-export default connect(null, mapDispatchToProps)(Discover);
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Discover);

@@ -1,3 +1,9 @@
+.post {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
 .post-header {
   display: flex;
   justify-content: flex-start;
@@ -20,15 +26,18 @@
 .post-footer {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .post-like,
 .post-comment {
   display: flex;
+  flex: 1;
   justify-content: center;
   align-items: center;
   outline: none !important;
-  border: 1px solid gray;
+  border: none !important;
+  border-radius: 5px;
   background-color: transparent;
   transition: 0.2s ease-out;
 }
@@ -40,16 +49,5 @@
 
 .post-like:hover,
 .post-comment:hover {
-  background-color: rgb(242, 242, 242);
-}
-
-.post-like {
-  width: 49%;
-  border-right: none;
-  border-left: none;
-}
-
-.post-comment {
-  width: 51%;
-  border-right: none;
+  background-color: var(--light);
 }
