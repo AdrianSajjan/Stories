@@ -1,3 +1,5 @@
+import { setAlert } from "./alert";
+import axios from "axios";
 import {
   GET_PROFILE,
   PROFILE_ERROR,
@@ -5,9 +7,10 @@ import {
   RESET_PROFILE_ERRORS,
   GET_PROFILE_BY_ID,
   REMOVE_PROFILE_BY_ID,
+  GET_DISCOVER_PROFILES,
+  SET_DISCOVER_PROFILES,
+  DISCOVER_PROFILES_END,
 } from "./types";
-import { setAlert } from "./alert";
-import axios from "axios";
 
 const config = {
   header: {
@@ -73,6 +76,29 @@ export const getProfileByID = (userID) => async (dispatch) => {
     dispatch({
       type: GET_PROFILE_BY_ID,
       payload: null,
+    });
+  }
+};
+
+export const loadDiscoverProfiles = () => async (dispatch) => {
+  dispatch({
+    type: GET_DISCOVER_PROFILES,
+  });
+  try {
+    const res = await axios.get("/api/profile/discover");
+
+    if (res.data.length > 0)
+      dispatch({
+        type: SET_DISCOVER_PROFILES,
+        payload: res.data,
+      });
+    else
+      dispatch({
+        type: DISCOVER_PROFILES_END,
+      });
+  } catch (err) {
+    dispatch({
+      type: DISCOVER_PROFILES_END,
     });
   }
 };

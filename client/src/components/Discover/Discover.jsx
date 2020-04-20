@@ -17,6 +17,8 @@ const Discover = () => {
     if (relativeMargin > 0) setTop(relativeMargin + 10);
   }, [rootRef]);
 
+  useEffect(() => {}, []);
+
   return (
     <Fragment>
       <div ref={rootRef} className="side-area-container" style={{ top: -top }}>

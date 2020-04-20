@@ -7,6 +7,9 @@ import {
   RESET_PROFILE_ERRORS,
   GET_PROFILE_BY_ID,
   REMOVE_PROFILE_BY_ID,
+  GET_DISCOVER_PROFILES,
+  SET_DISCOVER_PROFILES,
+  DISCOVER_PROFILES_END,
 } from "../actions/types";
 
 const initialState = {
@@ -21,6 +24,7 @@ const initialState = {
   discoverProfiles: {
     profiles: [],
     loading: true,
+    endOfProfiles: false,
   },
   errors: [],
 };
@@ -34,6 +38,7 @@ export default function (state = initialState, action) {
         ...state,
         currentProfile: { profile: payload, loading: false },
       };
+
     case PROFILE_ERROR:
       return { ...state, errors: payload };
     case REMOVE_PROFILE_ERROR:
@@ -43,10 +48,36 @@ export default function (state = initialState, action) {
       };
     case RESET_PROFILE_ERRORS:
       return { ...state, errors: [] };
+
+    case GET_DISCOVER_PROFILES:
+      return {
+        ...state,
+        discoverProfiles: { ...state.discoverProfiles, loading: true },
+      };
+    case SET_DISCOVER_PROFILES:
+      return {
+        ...state,
+        discoverProfiles: {
+          ...state.discoverProfiles,
+          loading: false,
+          profiles: [...state.discoverProfiles.profiles, ...payload],
+        },
+      };
+    case DISCOVER_PROFILES_END:
+      return {
+        ...state,
+        discoverProfiles: {
+          ...state.discoverProfiles,
+          loading: false,
+          endOfProfiles: true,
+        },
+      };
+
     case GET_PROFILE_BY_ID:
       return { ...state, profileByID: { profile: payload, loading: false } };
     case REMOVE_PROFILE_BY_ID:
       return { ...state, profileByID: { profile: null, loading: true } };
+
     case CLEAR_PROFILES:
       return initialState;
     default:
