@@ -10,6 +10,7 @@ import {
   GET_DISCOVER_PROFILES,
   SET_DISCOVER_PROFILES,
   DISCOVER_PROFILES_END,
+  REMOVE_DISCOVER_PROFILE,
 } from "./types";
 
 const config = {
@@ -80,12 +81,12 @@ export const getProfileByID = (userID) => async (dispatch) => {
   }
 };
 
-export const loadDiscoverProfiles = () => async (dispatch) => {
+export const loadDiscoverProfiles = (page) => async (dispatch) => {
   dispatch({
     type: GET_DISCOVER_PROFILES,
   });
   try {
-    const res = await axios.get("/api/profile/discover");
+    const res = await axios.get(`/api/profile/discover?page=${page}`);
 
     if (res.data.length > 0)
       dispatch({
@@ -101,4 +102,11 @@ export const loadDiscoverProfiles = () => async (dispatch) => {
       type: DISCOVER_PROFILES_END,
     });
   }
+};
+
+export const dismissProfileCard = (profile) => (dispatch) => {
+  dispatch({
+    type: REMOVE_DISCOVER_PROFILE,
+    payload: profile,
+  });
 };

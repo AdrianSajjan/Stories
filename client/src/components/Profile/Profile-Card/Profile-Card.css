@@ -5,3 +5,27 @@
   object-fit: cover;
   object-position: center;
 }
+
+.profile-card-container {
+  position: relative;
+}
+
+.dismiss-profile-card {
+  background-color: transparent;
+  border: none;
+  outline: none !important;
+  color: var(--secondary);
+  font-family: monospace;
+  font-weight: light;
+  margin-left: auto;
+  font-size: 2.5rem;
+  height: 30px;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.dismiss-profile-card .close-icon {
+  display: block;
+  transform: translateY(-1.1rem);
+}

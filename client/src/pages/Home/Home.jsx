@@ -5,7 +5,7 @@ import { Container } from "reactstrap";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Timeline from "../../components/Timeline/Timeline";
 import Profile from "../../components/Profile/Profile";
-import Discover from "../../components/Discover/Discover";
+import Search from "../../components/Discover/Search";
 import Account from "../../components/Account/Account";
 import Chats from "../../components/Chats/Chats";
 import Notification from "../../components/Notification/Notification";
@@ -30,7 +30,7 @@ const Home = ({ getCurrentProfile, getCurrentUserPosts }) => {
           <Switch>
             <Route path="/home" component={Timeline} exact />
             <Route path="/home/profile" component={Profile} />
-            <Route path="/home/discover" component={Discover} />
+            <Route path="/home/discover" component={Search} />
             <Route path="/home/chats" component={Chats} />
             <Route path="/home/account" component={Account} />
             <Route path="/home/notification" component={Notification} />

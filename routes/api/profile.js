@@ -140,12 +140,13 @@ router.post(
 
 /**
  * @route : GET /api/profile/discover
- * @desc : Get Profile based on location
+ * @desc : Get Profiles based on location
  * @access : Private
  */
 router.get("/discover", auth, async (req, res) => {
   const userID = req.user.id;
-  const maxProfiles = 20;
+  const limit = 20;
+  const skip = (req.query.page || 0) * limit;
   let otherProfiles = [];
 
   const profile = await Profile.findOne({ user: userID });
@@ -167,13 +168,13 @@ router.get("/discover", auth, async (req, res) => {
         { $or: [{ locality }, { state }, { country }] },
       ],
     })
-      .limit(maxProfiles)
-      .populate("user", ["name", "email"])
+      .skip(skip)
+      .limit(limit)
       .populate("following.profile", "username")
       .populate("followers.profile", "username");
     otherProfiles = [...otherProfiles, ...profiles];
 
-    const profilesDiff = maxProfiles - otherProfiles.length;
+    const profilesDiff = limit - otherProfiles.length;
 
     if (profilesDiff > 0) {
       profiles = await Profile.find({
@@ -182,8 +183,9 @@ router.get("/discover", auth, async (req, res) => {
           { _id: { $nin: otherProfiles.map((profile) => profile._id) } },
         ],
       })
+        .skip(skip)
+        .limit(limit)
         .limit(profilesDiff)
-        .populate("user", ["name", "email"])
         .populate("following.profile", "username")
         .populate("followers.profile", "username");
       otherProfiles = [...otherProfiles, ...profiles];
@@ -218,7 +220,6 @@ router.get("/:userID", auth, async (req, res) => {
     const profile = await Profile.findOne({
       user: userID,
     })
-      .populate("user", ["name", "email"])
       .populate("following.profile", "username")
       .populate("followers.profile", "username");
 

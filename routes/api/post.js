@@ -30,12 +30,12 @@ router.get("/", auth, async (req, res) => {
     const posts = await Post.find({
       user: { $in: profile.following.map(({ user }) => user) },
     })
+      .skip(page * limit)
+      .limit(limit)
       .populate("profile", "username")
       .populate("comments.profile", "username")
       .populate("likes.profile", "username")
-      .sort("-date")
-      .limit(limit)
-      .skip(page * limit);
+      .sort("-date");
     res.json(posts);
   } catch (err) {
     console.log(err.message);

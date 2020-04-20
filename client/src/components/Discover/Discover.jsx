@@ -1,12 +1,19 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-//import PropTypes from "prop-types";
-import { Button } from "reactstrap";
+import PropTypes from "prop-types";
+import { Button, Spinner } from "reactstrap";
 import { connect } from "react-redux";
+import { loadDiscoverProfiles } from "../../actions/profile";
 import ProfileCard from "../Profile/Profile-Card/Profile-Card";
 
-const Discover = () => {
+const Discover = ({ discoverProfiles, loadDiscoverProfiles }) => {
   const rootRef = useRef(null);
   const [top, setTop] = useState(0);
+  const {
+    profiles,
+    loading: profilesLoading,
+    endOfProfiles,
+    currentPage: page,
+  } = discoverProfiles;
 
   useEffect(() => {
     if (!rootRef || !rootRef.current) return;
@@ -17,7 +24,44 @@ const Discover = () => {
     if (relativeMargin > 0) setTop(relativeMargin + 10);
   }, [rootRef]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    profiles.length === 0 && loadProfiles();
+    //eslint-disable-next-line
+  }, []);
+
+  const loadProfiles = () => {
+    loadDiscoverProfiles(page);
+  };
+
+  const DiscoverBtn = () => {
+    return (
+      <Fragment>
+        {endOfProfiles ? (
+          <p className="text-center text-muted">No More Profiles.</p>
+        ) : profilesLoading ? (
+          <Spinner color="info" className="d-block mx-auto" />
+        ) : (
+          <Button
+            color="info"
+            className="mx-auto d-block mb-1"
+            onClick={loadProfiles}
+          >
+            Load More
+          </Button>
+        )}
+      </Fragment>
+    );
+  };
+
+  const ProfileCards = () => {
+    return (
+      <Fragment>
+        {profiles.map((profile) => (
+          <ProfileCard profile={profile} />
+        ))}
+      </Fragment>
+    );
+  };
 
   return (
     <Fragment>
@@ -27,21 +71,24 @@ const Discover = () => {
             Discover Profiles
           </p>
           <hr />
-          <ProfileCard />
-
-          <Button color="info" className="mx-auto d-block mb-1">
-            Load More
-          </Button>
+          <ProfileCards />
+          <DiscoverBtn />
         </div>
       </div>
     </Fragment>
   );
 };
 
-Discover.propTypes = {};
+Discover.propTypes = {
+  discoverProfiles: PropTypes.object.isRequired,
+};
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  discoverProfiles: state.profile.discoverProfiles,
+});
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  loadDiscoverProfiles: (page) => dispatch(loadDiscoverProfiles(page)),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Discover);

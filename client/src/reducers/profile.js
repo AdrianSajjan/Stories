@@ -10,6 +10,7 @@ import {
   GET_DISCOVER_PROFILES,
   SET_DISCOVER_PROFILES,
   DISCOVER_PROFILES_END,
+  REMOVE_DISCOVER_PROFILE,
 } from "../actions/types";
 
 const initialState = {
@@ -25,6 +26,7 @@ const initialState = {
     profiles: [],
     loading: true,
     endOfProfiles: false,
+    currentPage: 0,
   },
   errors: [],
 };
@@ -61,6 +63,17 @@ export default function (state = initialState, action) {
           ...state.discoverProfiles,
           loading: false,
           profiles: [...state.discoverProfiles.profiles, ...payload],
+          currentPage: state.discoverProfiles.currentPage + 1,
+        },
+      };
+    case REMOVE_DISCOVER_PROFILE:
+      return {
+        ...state,
+        discoverProfiles: {
+          ...state.discoverProfiles,
+          profiles: state.discoverProfiles.profiles.filter(
+            (profile) => profile._id !== payload
+          ),
         },
       };
     case DISCOVER_PROFILES_END:
