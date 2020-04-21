@@ -119,12 +119,8 @@ const Timeline = ({
         </Col>
         <Col lg="4" className="side-area d-none d-lg-block">
           {profile === null ? (
-            userLoading ? (
+            userLoading && (
               <Spinner color="primary" className="d-block mx-auto my-5" />
-            ) : (
-              <p className="mt-4 text-center text-muted">
-                Create your profile to see other profiles.
-              </p>
             )
           ) : (
             <Discover />

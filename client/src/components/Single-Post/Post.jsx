@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import DefaultImage from "../../assets/images/sample-profile-picture.png";
@@ -9,6 +9,8 @@ const Post = ({ post, currentProfile }) => {
   const { profile } = currentProfile;
 
   const [time, setTime] = useState("");
+  const [options, setOptions] = useState(false);
+
   useEffect(() => {
     UpdateTime();
     const timeHandler = setInterval(UpdateTime, 1000);
@@ -27,6 +29,35 @@ const Post = ({ post, currentProfile }) => {
 
   const PostHasUserComment = () => {
     return post.comments.some((comment) => comment.profile._id === profile._id);
+  };
+
+  const PostOptionClick = (event) => {
+    setOptions((prevState) => !prevState);
+  };
+
+  const PostOptions = () => {
+    if (!options) return null;
+    return (
+      <Fragment>
+        <div className="post-options-menu">
+          {post.user === profile.user._id ? (
+            <Fragment>
+              <button className="post-option py-2 px-4 text-success">
+                Edit Post
+              </button>
+              <hr className="m-0" />
+              <button className="post-option py-2 px-4 text-danger">
+                Delete Post
+              </button>
+            </Fragment>
+          ) : (
+            <button className="post-option py-2 px-4 text-danger">
+              Report Post
+            </button>
+          )}
+        </div>
+      </Fragment>
+    );
   };
 
   return (
@@ -72,10 +103,14 @@ const Post = ({ post, currentProfile }) => {
           ></i>
           <span className="ml-2">{post.comments.length}</span>
         </button>
-        <button className="post-options m-0 pb-2 pt-3">
+        <button
+          className={`post-options m-0 pb-2 pt-3 ${options && "active"}`}
+          onClick={PostOptionClick}
+        >
           <i className="fa fa-ellipsis-h fa-lg"></i>
         </button>
       </div>
+      <PostOptions />
     </div>
   );
 };

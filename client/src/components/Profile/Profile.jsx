@@ -1,16 +1,17 @@
 import React, { Fragment } from "react";
 import { Switch, Route } from "react-router-dom";
 import PropTypes from "prop-types";
-import { Row, Col } from "reactstrap";
+import { Row, Col, Spinner } from "reactstrap";
 import { connect } from "react-redux";
 import { openSidebar } from "../../actions/sidebar";
 import ProfileInfo from "./Profile-Details/Profile-Info";
-import "./Profile.css";
 import ViewCurrentProfile from "./View-Current-Profile/View-Current-Profile";
 import ViewOtherProfile from "./View-Other-Profile/View-Other-Profile";
+import Discover from "../Discover/Discover";
+import "./Profile.css";
 
-const Profile = ({ openSidebar }) => {
-  // Profile
+const Profile = ({ openSidebar, currentProfile }) => {
+  const { profile, loading } = currentProfile;
   return (
     <Fragment>
       <Row>
@@ -42,7 +43,15 @@ const Profile = ({ openSidebar }) => {
             </Switch>
           </div>
         </Col>
-        <Col lg="4" className="side-area d-none d-lg-block"></Col>
+        <Col lg="4" className="side-area d-none d-lg-block">
+          {profile === null ? (
+            loading && (
+              <Spinner color="primary" className="d-block mx-auto my-5" />
+            )
+          ) : (
+            <Discover />
+          )}
+        </Col>
       </Row>
     </Fragment>
   );
@@ -52,8 +61,12 @@ Profile.propTypes = {
   openSidebar: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = (state) => ({
+  currentProfile: state.profile.currentProfile,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   openSidebar: () => dispatch(openSidebar()),
 });
 
-export default connect(null, mapDispatchToProps)(Profile);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

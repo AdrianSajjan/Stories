@@ -57,7 +57,7 @@ const Discover = ({ discoverProfiles, loadDiscoverProfiles }) => {
     return (
       <Fragment>
         {profiles.map((profile) => (
-          <ProfileCard profile={profile} />
+          <ProfileCard key={profile._id} profile={profile} />
         ))}
       </Fragment>
     );
