@@ -11,6 +11,10 @@ import {
   SET_DISCOVER_PROFILES,
   DISCOVER_PROFILES_END,
   REMOVE_DISCOVER_PROFILE,
+  GET_SEARCH_PROFILES,
+  SET_SEARCH_PROFILES,
+  END_OF_SEARCH_PROFILES,
+  CLEAR_SEARCH_PROFILES,
 } from "../actions/types";
 
 const initialState = {
@@ -27,6 +31,12 @@ const initialState = {
     loading: true,
     endOfProfiles: false,
     currentPage: 0,
+  },
+  searchResults: {
+    profiles: [],
+    loading: false,
+    currentPage: 0,
+    endOfProfiles: false,
   },
   errors: [],
 };
@@ -89,7 +99,33 @@ export default function (state = initialState, action) {
     case GET_PROFILE_BY_ID:
       return { ...state, profileByID: { profile: payload, loading: false } };
     case REMOVE_PROFILE_BY_ID:
-      return { ...state, profileByID: { profile: null, loading: true } };
+      return { ...state, profileByID: initialState.profileByID };
+
+    case GET_SEARCH_PROFILES:
+      return {
+        ...state,
+        searchResults: { ...state.searchResults, loading: true },
+      };
+    case SET_SEARCH_PROFILES:
+      return {
+        ...state,
+        searchResults: {
+          ...state.searchResults,
+          loading: false,
+          profiles: [...state.searchResults.profiles, ...payload],
+        },
+        currentPage: state.searchResults.currentPage + 1,
+      };
+    case END_OF_SEARCH_PROFILES:
+      return {
+        ...state.searchResults,
+        endOfProfiles: true,
+      };
+    case CLEAR_SEARCH_PROFILES:
+      return {
+        ...state,
+        searchResults: initialState.searchResults,
+      };
 
     case CLEAR_PROFILES:
       return initialState;

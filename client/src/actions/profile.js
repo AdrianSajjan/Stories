@@ -110,3 +110,7 @@ export const dismissProfileCard = (profile) => (dispatch) => {
     payload: profile,
   });
 };
+
+export const loadSearchProfileResult = (query) => (dispatch) => {};
+
+export const clearSearchProfileResult = () => (dispatch) => {};

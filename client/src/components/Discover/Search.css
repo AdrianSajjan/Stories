@@ -24,3 +24,16 @@
   outline: none !important;
   color: var(--secondary);
 }
+
+.search-result {
+  background-color: white;
+  padding: 10px;
+}
+
+.search-result-container {
+  background-color: var(--light);
+}
+
+.search-result-title {
+  font-family: var(--monospace-font);
+}
