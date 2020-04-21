@@ -165,6 +165,7 @@ router.get("/discover", auth, async (req, res) => {
     let profiles = await Profile.find({
       $and: [
         { _id: { $ne: profile.id } },
+        { _id: { $nin: profile.following.map((user) => user.profile) } },
         { $or: [{ locality }, { state }, { country }] },
       ],
     })
@@ -180,6 +181,7 @@ router.get("/discover", auth, async (req, res) => {
       profiles = await Profile.find({
         $and: [
           { _id: { $ne: profile.id } },
+          { _id: { $nin: profile.following.map((user) => user.profile) } },
           { _id: { $nin: otherProfiles.map((profile) => profile._id) } },
         ],
       })
