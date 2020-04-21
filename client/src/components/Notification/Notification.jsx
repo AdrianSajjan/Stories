@@ -8,7 +8,12 @@ const Notification = ({ openSidebar }) => {
   return (
     <Fragment>
       <Row>
-        <Col className="main-area p-0" sm="8" md="12" lg="8">
+        <Col
+          className="main-area"
+          sm={{ size: 10, offset: 1 }}
+          md={{ size: 12, offset: 0 }}
+          lg="8"
+        >
           <div className="main-area-header sticky-top bg-light">
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
@@ -16,7 +21,7 @@ const Notification = ({ openSidebar }) => {
             <h1 className="main-title text-secondary">Notification</h1>
           </div>
         </Col>
-        <Col className="side-area bg-light d-sm-block d-md-none d-lg-block"></Col>
+        <Col lg="4" className="side-area d-none d-lg-block"></Col>
       </Row>
     </Fragment>
   );

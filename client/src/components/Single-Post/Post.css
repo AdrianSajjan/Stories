@@ -30,7 +30,8 @@
 }
 
 .post-like,
-.post-comment {
+.post-comment,
+.post-options {
   display: flex;
   flex: 1;
   justify-content: center;
@@ -43,11 +44,13 @@
 }
 
 .post-like.active,
-.post-comment.active {
+.post-comment.active,
+.post-options.active {
   color: var(--primary);
 }
 
 .post-like:hover,
-.post-comment:hover {
+.post-comment:hover,
+.post-options:hover {
   background-color: var(--light);
 }

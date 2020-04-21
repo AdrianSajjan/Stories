@@ -1,0 +1,26 @@
+.search-form {
+  position: relative;
+}
+
+.search-bar-input {
+  width: 100%;
+  border-radius: 100vh;
+  outline: none !important;
+  border: none !important;
+  background-color: var(--light);
+  padding: 5px 15px;
+}
+
+.search-bar-input::placeholder {
+  font-family: var(--monospace-font);
+}
+
+.search-btn {
+  position: absolute;
+  top: 4px;
+  right: 15px;
+  background-color: transparent;
+  border: none !important;
+  outline: none !important;
+  color: var(--secondary);
+}

@@ -32,6 +32,7 @@
 }
 
 .sidebar .toggle-sidebar-btn {
+  background-color: transparent;
   border: none;
   outline: none;
   color: var(--secondary);

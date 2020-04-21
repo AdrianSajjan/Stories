@@ -43,8 +43,8 @@ const Post = ({ post, currentProfile }) => {
         <button
           className={
             PostHasUserLike()
-              ? "post-like active m-0 py-1"
-              : "post-like m-0 py-1"
+              ? "post-like active m-0 py-2"
+              : "post-like m-0 py-2"
           }
         >
           <i
@@ -59,8 +59,8 @@ const Post = ({ post, currentProfile }) => {
         <button
           className={
             PostHasUserComment()
-              ? "post-comment active m-0 py-1"
-              : "post-comment m-0 py-1"
+              ? "post-comment active m-0 py-2"
+              : "post-comment m-0 py-2"
           }
         >
           <i
@@ -71,6 +71,9 @@ const Post = ({ post, currentProfile }) => {
             }
           ></i>
           <span className="ml-2">{post.comments.length}</span>
+        </button>
+        <button className="post-options m-0 pb-2 pt-3">
+          <i className="fa fa-ellipsis-h fa-lg"></i>
         </button>
       </div>
     </div>
