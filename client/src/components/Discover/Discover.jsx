@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { loadDiscoverProfiles } from "../../actions/profile";
 import ProfileCard from "../Profile/Profile-Card/Profile-Card";
 
-const Discover = ({ discoverProfiles, loadDiscoverProfiles }) => {
+const Discover = ({ isSticky, discoverProfiles, loadDiscoverProfiles }) => {
   const rootRef = useRef(null);
   const [top, setTop] = useState(0);
   const {
@@ -57,7 +57,11 @@ const Discover = ({ discoverProfiles, loadDiscoverProfiles }) => {
     return (
       <Fragment>
         {profiles.map((profile) => (
-          <ProfileCard key={profile._id} profile={profile} />
+          <ProfileCard
+            key={profile._id}
+            profile={profile}
+            isDismissable={true}
+          />
         ))}
       </Fragment>
     );

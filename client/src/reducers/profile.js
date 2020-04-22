@@ -33,9 +33,9 @@ const initialState = {
     currentPage: 0,
   },
   searchResults: {
+    queryString: "",
     profiles: [],
     loading: false,
-    currentPage: 0,
     endOfProfiles: false,
   },
   errors: [],
@@ -104,7 +104,12 @@ export default function (state = initialState, action) {
     case GET_SEARCH_PROFILES:
       return {
         ...state,
-        searchResults: { ...state.searchResults, loading: true },
+        searchResults: {
+          ...state.searchResults,
+          queryString: payload,
+          loading: true,
+          endOfProfiles: false,
+        },
       };
     case SET_SEARCH_PROFILES:
       return {
@@ -112,14 +117,18 @@ export default function (state = initialState, action) {
         searchResults: {
           ...state.searchResults,
           loading: false,
-          profiles: [...state.searchResults.profiles, ...payload],
+          profiles: payload,
+          endOfProfiles: false,
         },
-        currentPage: state.searchResults.currentPage + 1,
       };
     case END_OF_SEARCH_PROFILES:
       return {
-        ...state.searchResults,
-        endOfProfiles: true,
+        ...state,
+        searchResults: {
+          ...initialState.searchResults,
+          queryString: state.searchResults.queryString,
+          endOfProfiles: true,
+        },
       };
     case CLEAR_SEARCH_PROFILES:
       return {

@@ -10,6 +10,10 @@ import {
   GET_DISCOVER_PROFILES,
   SET_DISCOVER_PROFILES,
   DISCOVER_PROFILES_END,
+  GET_SEARCH_PROFILES,
+  SET_SEARCH_PROFILES,
+  END_OF_SEARCH_PROFILES,
+  CLEAR_SEARCH_PROFILES,
   REMOVE_DISCOVER_PROFILE,
 } from "./types";
 
@@ -111,6 +115,36 @@ export const dismissProfileCard = (profile) => (dispatch) => {
   });
 };
 
-export const loadSearchProfileResult = (query) => (dispatch) => {};
+export const loadSearchProfileResult = (match) => async (dispatch) => {
+  dispatch(clearSearchProfileResult());
 
-export const clearSearchProfileResult = () => (dispatch) => {};
+  dispatch({
+    type: GET_SEARCH_PROFILES,
+    payload: match,
+  });
+
+  try {
+    const res = await axios.get(`/api/profile/search?match=${match}`);
+
+    if (res.data.length > 0)
+      dispatch({
+        type: SET_SEARCH_PROFILES,
+        payload: res.data,
+      });
+    else
+      dispatch({
+        type: END_OF_SEARCH_PROFILES,
+      });
+  } catch (err) {
+    dispatch({
+      type: SET_SEARCH_PROFILES,
+      payload: [],
+    });
+  }
+};
+
+export const clearSearchProfileResult = () => (dispatch) => {
+  dispatch({
+    type: CLEAR_SEARCH_PROFILES,
+  });
+};

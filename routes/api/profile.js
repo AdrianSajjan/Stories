@@ -146,8 +146,9 @@ router.post(
 router.get("/search", auth, async (req, res) => {
   const userID = req.user.id;
   const match = req.query.match;
-  const limit = 5;
-  const skip = (req.query.page || 0) * limit;
+  const limit = 100;
+
+  if (!match || match.length < 3) return res.json([]);
 
   try {
     const profile = await Profile.findOne({ user: userID });
@@ -159,9 +160,11 @@ router.get("/search", auth, async (req, res) => {
       });
 
     const profiles = await Profile.find({
-      username: { $regex: match, $options: "i" },
+      $and: [
+        { username: { $regex: match, $options: "i" } },
+        { _id: { $ne: profile._id } },
+      ],
     })
-      .skip(skip)
       .limit(limit)
       .populate("following.profile", "username")
       .populate("followers.profile", "username");
