@@ -4,9 +4,9 @@
   "description": "STORIES! A social media platform",
   "main": "server.js",
   "scripts": {
-    "server": "nodemon server.js",
+    "server": "node server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"yarn server\" \"yarn client\""
   },
   "author": "Adrian Sajjan",
   "license": "ISC",

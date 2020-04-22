@@ -16,7 +16,12 @@ const Search = ({ openSidebar, searchProfiles, currentProfile }) => {
   return (
     <Fragment>
       <Row>
-        <Col className="main-area p-0" sm="8" md="12" lg="8">
+        <Col
+          className="main-area"
+          sm={{ size: 10, offset: 1 }}
+          md={{ size: 12, offset: 0 }}
+          lg="8"
+        >
           <div className="main-area-header sticky-top bg-light py-3">
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
@@ -26,30 +31,38 @@ const Search = ({ openSidebar, searchProfiles, currentProfile }) => {
                 type="text"
                 name="search"
                 className="search-bar-input"
-                placeholder="Search an user..."
+                placeholder="Search by username..."
               />
               <button type="submit" className="search-btn">
                 <i className="fa fa-search"></i>
               </button>
             </form>
           </div>
-          {profiles.length === 0 ? (
-            searchLoading && (
+          {!profile ? (
+            profileLoading && (
               <Spinner color="primary" className="d-block mx-auto mt-4" />
             )
           ) : (
-            <div className="search-result mt-4">
-              <div className="search-result-container py-2">
-                <p className="search-result-title text-center text-secondary">
-                  Search Results
-                </p>
-                <hr />
+            <Fragment>
+              {profiles.length === 0 ? (
+                searchLoading && (
+                  <Spinner color="primary" className="d-block mx-auto mt-4" />
+                )
+              ) : (
+                <div className="search-result mt-4">
+                  <div className="search-result-container py-2">
+                    <p className="search-result-title text-center text-secondary">
+                      Search Results
+                    </p>
+                    <hr />
+                  </div>
+                </div>
+              )}
+              <div className="discover-results mt-4">
+                <Discover />
               </div>
-            </div>
+            </Fragment>
           )}
-          <div className="discover-results mt-4">
-            <Discover />
-          </div>
         </Col>
       </Row>
     </Fragment>

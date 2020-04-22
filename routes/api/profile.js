@@ -139,6 +139,41 @@ router.post(
 );
 
 /**
+ * @route : GET /api/profile/search
+ * @desc : Search profile by username
+ * @access : Private
+ */
+router.get("/search", auth, async (req, res) => {
+  const userID = req.user.id;
+  const match = req.query.match;
+  const limit = 5;
+  const skip = (req.query.page || 0) * limit;
+
+  try {
+    const profile = await Profile.findOne({ user: userID });
+
+    if (!profile)
+      res.status(404).json({
+        type: NOTFOUND,
+        msg: "Please create your profile",
+      });
+
+    const profiles = await Profile.find({
+      username: { $regex: match, $options: "i" },
+    })
+      .skip(skip)
+      .limit(limit)
+      .populate("following.profile", "username")
+      .populate("followers.profile", "username");
+
+    res.json(profiles);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send(SERVER);
+  }
+});
+
+/**
  * @route : GET /api/profile/discover
  * @desc : Get Profiles based on location
  * @access : Private
@@ -149,19 +184,19 @@ router.get("/discover", auth, async (req, res) => {
   const skip = (req.query.page || 0) * limit;
   let otherProfiles = [];
 
-  const profile = await Profile.findOne({ user: userID });
-
-  if (!profile)
-    res.status(404).json({
-      type: NOTFOUND,
-      msg: "Please create your profile",
-    });
-
-  const locality = profile.locality || "";
-  const state = profile.state || "";
-  const country = profile.country;
-
   try {
+    const profile = await Profile.findOne({ user: userID });
+
+    if (!profile)
+      res.status(404).json({
+        type: NOTFOUND,
+        msg: "Please create your profile",
+      });
+
+    const locality = profile.locality || "";
+    const state = profile.state || "";
+    const country = profile.country;
+
     let profiles = await Profile.find({
       $and: [
         { _id: { $ne: profile.id } },
