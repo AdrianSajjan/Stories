@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { loadDiscoverProfiles } from "../../actions/profile";
 import ProfileCard from "../Profile/Profile-Card/Profile-Card";
 
-const Discover = ({ isSticky, discoverProfiles, loadDiscoverProfiles }) => {
+const Discover = ({ discoverProfiles, loadDiscoverProfiles }) => {
   const rootRef = useRef(null);
   const [top, setTop] = useState(0);
   const {

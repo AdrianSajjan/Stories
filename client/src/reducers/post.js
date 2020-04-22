@@ -60,12 +60,14 @@ export default function (state = initialState, action) {
         postsByFollowing: { ...state.postsByFollowing, loading: true },
       };
     case SET_POSTS_FROM_FOLLOWING:
+      let _posts = [...state.postsByFollowing.posts, ...payload];
+      let posts = _posts.filter((a, b) => a._id !== b._id);
       return {
         ...state,
         postsByFollowing: {
           ...state.postsByFollowing,
           loading: false,
-          posts: [...state.postsByFollowing.posts, ...payload],
+          posts,
           currentPage: state.postsByFollowing.currentPage + 1,
         },
       };

@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import { connect } from "react-redux";
-import { dismissProfileCard } from "../../../actions/profile";
+import { dismissProfileCard, updateFollowing } from "../../../actions/profile";
 import PropTypes from "prop-types";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 import "./Profile-Card.css";
@@ -11,6 +11,7 @@ const ProfileCard = ({
   currentProfile,
   profile,
   dismissProfileCard,
+  updateFollowing,
   isDismissable,
 }) => {
   const DismissCard = () => {
@@ -24,13 +25,23 @@ const ProfileCard = ({
 
     if (isFollowing)
       return (
-        <Button outline color="info" className="py-1 mr-2">
+        <Button
+          outline
+          color="info"
+          className="py-1 mr-2"
+          onClick={() => updateFollowing(profile.user)}
+        >
           Unfollow
         </Button>
       );
 
     return (
-      <Button outline color="primary" className="py-1 mr-2">
+      <Button
+        outline
+        color="primary"
+        className="py-1 mr-2"
+        onClick={() => updateFollowing(profile.user)}
+      >
         Follow
       </Button>
     );
@@ -76,6 +87,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   dismissProfileCard: (id) => dispatch(dismissProfileCard(id)),
+  updateFollowing: (id) => dispatch(updateFollowing(id)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileCard);

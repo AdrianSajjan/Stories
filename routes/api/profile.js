@@ -123,12 +123,23 @@ router.post(
           { $set: profileData },
           { new: true }
         );
+
+        await profile
+          .populate("user", ["name", "email"])
+          .populate("following.profile", "username")
+          .populate("followers.profile", "username")
+          .execPopulate();
         return res.send(profile);
       }
 
       profile = new Profile(profileData);
 
       await profile.save();
+      await profile
+        .populate("user", ["name", "email"])
+        .populate("following.profile", "username")
+        .populate("followers.profile", "username")
+        .execPopulate();
 
       res.json(profile);
     } catch (err) {
@@ -341,12 +352,13 @@ router.put("/follow/:id", auth, async (req, res) => {
       );
       await profile.save();
       await profile
+        .populate("user", ["name", "email"])
         .populate("following.profile", "username")
         .populate("followers.profile", "username")
         .execPopulate();
       await otherProfile.save();
 
-      return res.json({ msg: "Unfollowed", profile });
+      return res.json(profile);
     }
 
     let body = {
@@ -357,6 +369,7 @@ router.put("/follow/:id", auth, async (req, res) => {
     profile.following.push(body);
     await profile.save();
     await profile
+      .populate("user", ["name", "email"])
       .populate("following.profile", "username")
       .populate("followers.profile", "username")
       .execPopulate();
@@ -369,7 +382,7 @@ router.put("/follow/:id", auth, async (req, res) => {
     otherProfile.followers.push(body);
     await otherProfile.save();
 
-    return res.json({ msg: "Followed", profile });
+    return res.json(profile);
   } catch (err) {
     console.log(err.message);
     res.status(500).send(SERVER);

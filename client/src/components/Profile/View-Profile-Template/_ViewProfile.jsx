@@ -3,13 +3,51 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Button } from "reactstrap";
+import { connect } from "react-redux";
+import { updateFollowing } from "../../../actions/profile";
 
-const ViewProfile = ({ image, profile, owner }) => {
+const ViewProfile = ({
+  currentProfile,
+  image,
+  profile,
+  owner,
+  updateFollowing,
+}) => {
   const GetLocation = ({ locality, state, country }) => {
     let location = "";
     if (locality) location = location.concat(`${locality}, `);
     if (state) location = location.concat(`${state}, `);
     return location.concat(country);
+  };
+
+  const FollowBtn = () => {
+    if (owner) return null;
+
+    const isFollowing = currentProfile.following.some(
+      (follow) => follow.profile._id === profile._id
+    );
+
+    if (isFollowing)
+      return (
+        <Button
+          outline
+          color="primary"
+          className="mt-4"
+          onClick={() => updateFollowing(profile.user)}
+        >
+          Unfollow User
+        </Button>
+      );
+
+    return (
+      <Button
+        color="primary"
+        className="mt-4"
+        onClick={() => updateFollowing(profile.user)}
+      >
+        Follow User
+      </Button>
+    );
   };
 
   return (
@@ -46,9 +84,7 @@ const ViewProfile = ({ image, profile, owner }) => {
           Edit Profile
         </Link>
       ) : (
-        <Button color="primary" className="mt-4">
-          Follow User
-        </Button>
+        <FollowBtn />
       )}
     </div>
   );
@@ -60,4 +96,8 @@ ViewProfile.propTypes = {
   owner: PropTypes.bool.isRequired,
 };
 
-export default ViewProfile;
+const mapDispatchToProps = (dispatch) => ({
+  updateFollowing: (id) => dispatch(updateFollowing(id)),
+});
+
+export default connect(null, mapDispatchToProps)(ViewProfile);

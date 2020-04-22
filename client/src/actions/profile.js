@@ -148,3 +148,16 @@ export const clearSearchProfileResult = () => (dispatch) => {
     type: CLEAR_SEARCH_PROFILES,
   });
 };
+
+export const updateFollowing = (id) => async (dispatch) => {
+  try {
+    const res = await axios.put(`/api/profile/follow/${id}`);
+
+    dispatch({
+      type: SET_PROFILE,
+      payload: res.data,
+    });
+  } catch (err) {
+    setAlert(`Error: ${err.response.status}`, err.response.data, "danger");
+  }
+};

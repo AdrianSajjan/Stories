@@ -88,7 +88,7 @@ const Timeline = ({
             ) : (
               <Fragment>
                 <CreatePost />
-                {postsByFollowing.length === 0 ? (
+                {posts.length === 0 ? (
                   postsLoading ? (
                     <Spinner color="primary" className="d-block mx-auto my-5" />
                   ) : (

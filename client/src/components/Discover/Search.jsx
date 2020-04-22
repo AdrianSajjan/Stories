@@ -69,7 +69,7 @@ const Search = ({
     e.preventDefault();
     if (match.length === 0) {
       clearSearchProfileResult();
-      setError("Search cannot be empty");
+      setError("");
     } else if (match.length < 3) {
       clearSearchProfileResult();
       setError("Please provide atleast 3 letters.");
@@ -99,7 +99,10 @@ const Search = ({
                 className="search-bar-input"
                 placeholder="Search by username..."
                 value={match}
-                onChange={(e) => setMatch(e.target.value)}
+                onChange={(e) => {
+                  setError("");
+                  setMatch(e.target.value);
+                }}
               />
               <button type="submit" className="search-btn">
                 <i className="fa fa-search"></i>

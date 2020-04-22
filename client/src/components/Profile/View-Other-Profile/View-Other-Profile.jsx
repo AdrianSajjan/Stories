@@ -65,7 +65,12 @@ const ViewOtherProfile = ({
 
   return (
     <Fragment>
-      <ViewProfile profile={profile} image={DefaultImage} owner={false} />
+      <ViewProfile
+        currentProfile={currentProfile.profile}
+        profile={profile}
+        image={DefaultImage}
+        owner={false}
+      />
       <div className="view-posts mt-5">
         <h2 className="text-center py-2 text-secondary posts-heading">Posts</h2>
         <ViewPosts />
