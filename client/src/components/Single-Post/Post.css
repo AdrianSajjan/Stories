@@ -2,7 +2,6 @@
   background-color: white;
   border-radius: 5px;
   box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.1);
-  position: relative;
 }
 
 .post-header {
@@ -22,6 +21,10 @@
   object-fit: cover;
   object-position: center;
   border-radius: 50%;
+}
+
+.post-body {
+  position: relative;
 }
 
 .post-footer {
@@ -64,7 +67,7 @@
   flex-direction: column;
   border-radius: 5px;
   box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.1);
-  top: 78px;
+  bottom: 0;
   right: 10px;
 }
 
@@ -86,9 +89,13 @@
   object-fit: cover;
 }
 
-.comment-options-menu {
-  border: none !important;
+.comment-option {
   outline: none !important;
   background-color: transparent;
-  width: 20px;
+  border: none !important;
+}
+
+.comment-option-danger {
+  padding: 0 6px;
+  color: var(--danger);
 }

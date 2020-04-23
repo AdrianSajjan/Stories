@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { Form, InputGroup, Input, InputGroupAddon, Button } from "reactstrap";
-import { commentPost } from "../../../actions/post";
+import { commentPost, deleteCommentPost } from "../../../actions/post";
 import { connect } from "react-redux";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 
@@ -12,6 +12,7 @@ const PostComment = ({
   postID,
   postComments,
   commentPost,
+  deleteCommentPost,
 }) => {
   const [comment, setComment] = useState("");
 
@@ -24,12 +25,25 @@ const PostComment = ({
     setComment("");
   };
 
-  const CommentOptions = ({ commentOwner }) => {
+  const CommentOptions = ({ commentOwner, commentID }) => {
+    const [deleteHover, setDeleteHover] = useState(false);
+
     if (currentProfile === postOwner || currentProfile === commentOwner)
       return (
-        <button className="comment-options-menu text-dark ml-4">
-          <i className="fa fa-ellipsis-v"></i>
-        </button>
+        <Fragment>
+          <button
+            className="comment-option comment-option-danger ml-3"
+            onMouseOver={() => setDeleteHover(true)}
+            onMouseLeave={() => setDeleteHover(false)}
+            onClick={() => deleteCommentPost(commentID)}
+          >
+            {deleteHover ? (
+              <i className="fa fa-trash fa-lg"></i>
+            ) : (
+              <i className="fa fa-trash-o fa-lg"></i>
+            )}
+          </button>
+        </Fragment>
       );
     else return null;
   };
@@ -37,8 +51,8 @@ const PostComment = ({
   const RecentComments = () => {
     return (
       <Fragment>
-        {postComments.map((comment, index) => (
-          <div key={index} className="recent-comment">
+        {postComments.map((comment) => (
+          <div key={comment._id} className="recent-comment">
             <hr className="my-2" />
             <div className="d-flex align-items-center">
               <img
@@ -49,11 +63,14 @@ const PostComment = ({
               <p className="comment-username ml-2 my-0 font-weight-bold">
                 @{comment.profile.username}
               </p>
-              <div className="ml-auto d-flex">
+              <div className="ml-auto d-flex align-items-center">
                 <small className="comment-time text-muted">
                   {moment(comment.date).fromNow()}
                 </small>
-                <CommentOptions commentOwner={comment.user} />
+                <CommentOptions
+                  commentOwner={comment.user}
+                  commentID={comment._id}
+                />
               </div>
             </div>
             <p className="text-dark ml-5 mr-3 mb-2">{comment.comment}</p>
@@ -110,6 +127,7 @@ PostComment.propTypes = {
 
 const mapDispatchToProps = (dispatch) => ({
   commentPost: (id, comment) => dispatch(commentPost(id, comment)),
+  deleteCommentPost: (comment) => dispatch(deleteCommentPost(comment)),
 });
 
 export default connect(null, mapDispatchToProps)(PostComment);

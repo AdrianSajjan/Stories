@@ -72,6 +72,7 @@ const Post = ({ post, currentProfile, likePost }) => {
       </div>
       <div className="post-body px-4 py-3">
         <p className="post-content m-0">{post.content}</p>
+        <PostOptions />
       </div>
       <div className="post-footer m-0 mt-2">
         <button
@@ -115,7 +116,6 @@ const Post = ({ post, currentProfile, likePost }) => {
           <i className="fa fa-ellipsis-h fa-lg"></i>
         </button>
       </div>
-      <PostOptions />
       {comment && (
         <PostComment
           postID={post._id}

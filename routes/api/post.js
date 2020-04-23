@@ -294,26 +294,39 @@ router.put(
 router.delete("/comment/:comment", auth, async (req, res) => {
   const id = req.user.id;
   const commentID = req.params.comment;
+
   if (!ObjectID.isValid(commentID) || new ObjectID(commentID) != commentID)
     return res.status(404).json({
       type: NOTFOUND,
       msg: "Comment not found",
     });
+
   try {
     const profile = await Profile.findOne({ user: id });
+
     if (!profile)
       return res.status(400).json({
         type: NOTFOUND,
         msg: "Comment not found",
       });
+
     const post = await Post.findOne({ "comments._id": commentID });
+
     if (!post)
       return res.status(404).json({
         type: NOTFOUND,
         msg: "Comment not found",
       });
+
     post.comments = post.comments.filter((comment) => comment._id != commentID);
+
     await post.save();
+    await post
+      .populate("profile", "username")
+      .populate("comments.profile", "username")
+      .populate("likes.profile", "username")
+      .execPopulate();
+
     res.json(post);
   } catch (err) {
     console.log(err.message);

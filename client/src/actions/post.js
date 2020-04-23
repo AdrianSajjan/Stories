@@ -124,6 +124,18 @@ export const commentPost = (post, comment) => async (dispatch) => {
   }
 };
 
+export const deleteCommentPost = (comment) => async (dispatch) => {
+  try {
+    const res = await axios.delete(`/api/post/comment/${comment}`);
+    dispatch({
+      type: POST_COMMENT,
+      payload: res.data,
+    });
+  } catch (err) {
+    console.err(err.response);
+  }
+};
+
 export const removeAllPosts = () => (dispatch) => {
   dispatch({
     type: REMOVE_ALL_POSTS,
