@@ -1,12 +1,5 @@
 import React, { Fragment, useState } from "react";
-import {
-  Form,
-  Input,
-  Button,
-  FormGroup,
-  FormText,
-  FormFeedback,
-} from "reactstrap";
+import { Form, Input, Button, FormGroup, FormText } from "reactstrap";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 import "./CreatePost.css";
 import { createPost } from "../../../actions/post";
@@ -36,8 +29,10 @@ const CreatePost = ({ createPost, errors }) => {
   const HandleSubmit = (event) => {
     event.preventDefault();
     createPost(post);
+    setPost("");
   };
 
+  /* Sever side error checking
   const PostHasError = () => {
     return errors.some((error) => error.param && error.param === "content");
   };
@@ -48,6 +43,7 @@ const CreatePost = ({ createPost, errors }) => {
     );
     return error ? error.msg : "";
   };
+  */
 
   return (
     <Fragment>
@@ -68,19 +64,16 @@ const CreatePost = ({ createPost, errors }) => {
               maxLength="450"
               value={post}
               onChange={HandleChange}
-              invalid={PostHasError()}
             />
             <FormText className="text-right">{`${
               450 - post.length
             }/450`}</FormText>
-            <FormFeedback invalid="true" className="text-right">
-              {GetPostError()}
-            </FormFeedback>
           </FormGroup>
         </div>
         <Button
           className="ml-auto mt-2 d-block btn-rounded px-3 text-uppercase"
           color="primary"
+          disabled={post.length > 0 ? false : true}
         >
           Post
         </Button>

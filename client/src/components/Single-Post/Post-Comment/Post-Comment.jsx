@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { Form, InputGroup, Input, InputGroupAddon, Button } from "reactstrap";
@@ -52,30 +52,49 @@ const PostComment = ({
     return (
       <Fragment>
         {postComments.map((comment) => (
-          <div key={comment._id} className="recent-comment">
-            <hr className="my-2" />
-            <div className="d-flex align-items-center">
-              <img
-                src={DefaultImage}
-                alt="profile"
-                className="comment-profile-img my-0"
-              />
-              <p className="comment-username ml-2 my-0 font-weight-bold">
-                @{comment.profile.username}
-              </p>
-              <div className="ml-auto d-flex align-items-center">
-                <small className="comment-time text-muted">
-                  {moment(comment.date).fromNow()}
-                </small>
-                <CommentOptions
-                  commentOwner={comment.user}
-                  commentID={comment._id}
-                />
-              </div>
-            </div>
-            <p className="text-dark ml-5 mr-3 mb-2">{comment.comment}</p>
-          </div>
+          <RecentComment comment={comment} />
         ))}
+      </Fragment>
+    );
+  };
+
+  const RecentComment = ({ comment }) => {
+    const [time, setTime] = useState("");
+
+    useEffect(() => {
+      UpdateTime();
+      const timeHandler = setInterval(UpdateTime, 60000);
+      return () => {
+        clearInterval(timeHandler);
+      }; // eslint-disable-next-line
+    }, []);
+
+    const UpdateTime = () => {
+      setTime(moment(comment.date).fromNow());
+    };
+    return (
+      <Fragment>
+        <div key={comment._id} className="recent-comment">
+          <hr className="my-2" />
+          <div className="d-flex align-items-center">
+            <img
+              src={DefaultImage}
+              alt="profile"
+              className="comment-profile-img my-0"
+            />
+            <p className="comment-username ml-2 my-0 font-weight-bold">
+              @{comment.profile.username}
+            </p>
+            <div className="ml-auto d-flex align-items-center">
+              <small className="comment-time text-muted">{time}</small>
+              <CommentOptions
+                commentOwner={comment.user}
+                commentID={comment._id}
+              />
+            </div>
+          </div>
+          <p className="text-dark ml-5 mr-3 mb-2">{comment.comment}</p>
+        </div>
       </Fragment>
     );
   };

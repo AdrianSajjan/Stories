@@ -16,7 +16,7 @@ const Post = ({ post, currentProfile, likePost }) => {
 
   useEffect(() => {
     UpdateTime();
-    const timeHandler = setInterval(UpdateTime, 36000);
+    const timeHandler = setInterval(UpdateTime, 300000);
     return () => {
       clearInterval(timeHandler);
     }; // eslint-disable-next-line

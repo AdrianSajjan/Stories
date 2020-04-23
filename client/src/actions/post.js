@@ -28,6 +28,7 @@ export const createPost = (post) => async (dispatch) => {
       type: CREATE_POST,
       payload: res.data,
     });
+    dispatch(setAlert("Success", "Your post has been published!", "success"));
   } catch (err) {
     if (err.response.data.type) {
       if (err.response.data.type === "VALIDATION") {
