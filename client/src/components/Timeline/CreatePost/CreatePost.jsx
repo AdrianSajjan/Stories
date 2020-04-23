@@ -1,11 +1,11 @@
 import React, { Fragment, useState } from "react";
 import { Form, Input, Button, FormGroup, FormText } from "reactstrap";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
-import "./CreatePost.css";
 import { createPost } from "../../../actions/post";
 import { connect } from "react-redux";
+import "./CreatePost.css";
 
-const CreatePost = ({ createPost, errors }) => {
+const CreatePost = ({ createPost }) => {
   // Create-Post
   const minRows = 2;
   const [post, setPost] = useState("");
@@ -31,19 +31,6 @@ const CreatePost = ({ createPost, errors }) => {
     createPost(post);
     setPost("");
   };
-
-  /* Sever side error checking
-  const PostHasError = () => {
-    return errors.some((error) => error.param && error.param === "content");
-  };
-
-  const GetPostError = () => {
-    const error = errors.find(
-      (error) => error.param && error.param === "content"
-    );
-    return error ? error.msg : "";
-  };
-  */
 
   return (
     <Fragment>
@@ -82,12 +69,8 @@ const CreatePost = ({ createPost, errors }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  errors: state.post.errors,
-});
-
 const mapDispatchToProps = (dispatch) => ({
   createPost: (data) => dispatch(createPost(data)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(CreatePost);
+export default connect(null, mapDispatchToProps)(CreatePost);

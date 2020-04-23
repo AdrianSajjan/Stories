@@ -165,7 +165,7 @@ router.get("/confirm/:email_token", async (req, res) => {
 });
 
 /**
- * @route : POST api/user/delete
+ * @route : DELETE api/user/
  * @desc : Delete an User
  * @access : Private
  */
@@ -207,10 +207,103 @@ router.delete(
           ],
         });
 
+      res.json({
+        msg: "Account deletion process has begun. It may take some time.",
+      });
+
+      // Delete User Likes
+      const likedPost = await Post.find({ "likes.user": userID });
+
+      if (likedPost.length > 0) {
+        let arrLength = likedPost.length;
+
+        const DeleteAllLikesFromPosts = async () => {
+          const post = likedPost.pop();
+
+          console.log(
+            `Deleting associated likes of user: ${userID} from post: ${post._id}`
+          );
+
+          post.likes = post.likes.filter((like) => like.user != userID);
+          await post.save();
+          if (--arrLength) DeleteAllLikesFromPosts();
+        };
+        DeleteAllLikesFromPosts();
+      }
+
+      // Delete User Comments
+      const commentedPost = await Post.find({ "comments.user": userID });
+
+      if (commentedPost.length > 0) {
+        let arrLength = commentedPost.length;
+
+        const DeleteAllCommentsFromPosts = async () => {
+          const post = likedPost.pop();
+
+          console.log(
+            `Deleting associated comments of user: ${userID} from post: ${post._id}`
+          );
+
+          post.comments = post.comments.filter(
+            (comment) => comment.user != userID
+          );
+          await post.save();
+          if (--arrLength) DeleteAllCommentsFromPosts();
+        };
+        DeleteAllCommentsFromPosts();
+      }
+
+      // Delete User Following and Followers
+      const followingProfile = await Profile.find({ "following.user": userID });
+
+      if (followingProfile.length > 0) {
+        let arrLength = followingProfile.length;
+
+        const DeleteAllFollowing = async () => {
+          const profile = followingProfile.pop();
+
+          console.log(
+            `Deleting associated following of user: ${userID} from post: ${post._id}`
+          );
+
+          profile.following = profile.following.filter(
+            (follow) => follow.user != userID
+          );
+          await profile.save();
+          if (--arrLength) DeleteAllFollowing();
+        };
+        DeleteAllFollowing();
+      }
+
+      const followerProfile = await Profile.find({ "followers.user": userID });
+
+      if (followerProfile.length > 0) {
+        let arrLength = followerProfile.length;
+
+        const DeleteAllfollower = async () => {
+          const profile = followerProfile.pop();
+
+          console.log(
+            `Deleting associated followers of user: ${userID} from post: ${post._id}`
+          );
+
+          profile.followers = profile.followers.filter(
+            (follow) => follow.user != userID
+          );
+          await profile.save();
+          if (--arrLength) DeleteAllfollower();
+        };
+        DeleteAllfollower();
+      }
+
       await Profile.findOneAndRemove({ user: userID });
-      await user.remove();
+      console.log(`Deleted profile of user ${userID}`);
+
       await Post.deleteMany({ user: userID });
-      res.send({ msg: "Account Deleted" });
+      console.log(`Deleted posts of user ${userID}`);
+
+      await user.remove();
+      console.log(`Completely deleted user: ${userID}`);
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);

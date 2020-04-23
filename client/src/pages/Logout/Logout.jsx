@@ -8,6 +8,7 @@ const Logout = ({ logout }) => {
   useEffect(
     () => {
       logout();
+      window.location.reload();
     }, //eslint-disable-next-line
     []
   );
