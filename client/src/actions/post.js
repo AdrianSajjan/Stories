@@ -8,6 +8,8 @@ import {
   SET_POSTS_FROM_FOLLOWING,
   REMOVE_ALL_POSTS,
   POSTS_FROM_FOLLOWING_END,
+  POST_LIKE,
+  POST_COMMENT,
 } from "./types";
 
 import axios from "axios";
@@ -95,6 +97,30 @@ export const getPostsByUser = (userID) => async (dispatch) => {
       type: GET_POSTS_BY_USER,
       payload: [],
     });
+  }
+};
+
+export const likePost = (post) => async (dispatch) => {
+  try {
+    const res = await axios.put(`/api/post/like/${post}`);
+    dispatch({
+      type: POST_LIKE,
+      payload: res.data,
+    });
+  } catch (err) {
+    console.error(err.response);
+  }
+};
+
+export const commentPost = (post, comment) => async (dispatch) => {
+  try {
+    const res = await axios.put(`/api/post/comment/${post}`, { comment });
+    dispatch({
+      type: POST_COMMENT,
+      payload: res.data,
+    });
+  } catch (err) {
+    console.error(err.response);
   }
 };
 

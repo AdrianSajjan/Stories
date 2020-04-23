@@ -8,16 +8,15 @@ import PrivateRoute from "./components/Private-Route/Private-Route";
 import Landing from "./pages/Landing/Landing";
 import Alert from "./components/Alert/Alert";
 import Home from "./pages/Home/Home";
+import Logout from "./pages/Logout/Logout";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import Logout from "./pages/Logout/Logout";
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
 
 const App = () => {
-  // App
   useEffect(() => {
     store.dispatch(loadUser());
   }, []);

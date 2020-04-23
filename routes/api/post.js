@@ -196,11 +196,23 @@ router.put("/like/:post", auth, async (req, res) => {
     if (post.likes.some((like) => like.user == id)) {
       post.likes = post.likes.filter((like) => like.user != id);
       await post.save();
-      return res.json({ msg: "Unliked", likes: post });
+      await post
+        .populate("profile", "username")
+        .populate("comments.profile", "username")
+        .populate("likes.profile", "username")
+        .execPopulate();
+
+      return res.json(post);
     }
 
     post.likes.push({ user: id, profile: profile.id, date: new Date() });
     await post.save();
+    await post
+      .populate("profile", "username")
+      .populate("comments.profile", "username")
+      .populate("likes.profile", "username")
+      .execPopulate();
+
     res.json(post);
   } catch (err) {
     console.log(err.message);
@@ -260,6 +272,12 @@ router.put(
       });
 
       await post.save();
+      await post
+        .populate("profile", "username")
+        .populate("comments.profile", "username")
+        .populate("likes.profile", "username")
+        .execPopulate();
+
       res.json(post);
     } catch (err) {
       console.log(err.message);

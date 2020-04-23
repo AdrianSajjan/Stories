@@ -10,6 +10,8 @@ import {
   SET_POSTS_FROM_FOLLOWING,
   POSTS_FROM_FOLLOWING_END,
   REMOVE_ALL_POSTS,
+  POST_LIKE,
+  POST_COMMENT,
 } from "../actions/types";
 
 const initialState = {
@@ -42,8 +44,88 @@ export default function (state = initialState, action) {
         },
         errors: [],
       };
+
+    case POST_LIKE:
+      if (state.postsByFollowing.posts.some((post) => post._id === payload._id))
+        if (state.postsByUser.posts.some((post) => post._id === payload._id))
+          return {
+            ...state,
+            postsByFollowing: {
+              ...state.postsByFollowing,
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+            postsByUser: {
+              ...state.postsByUser,
+              posts: state.postsByUser.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+          };
+        else
+          return {
+            ...state,
+            postsByFollowing: {
+              ...state.postsByFollowing,
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+          };
+      else
+        return {
+          ...state,
+          userPosts: {
+            ...state.userPosts,
+            posts: state.userPosts.posts.map((post) =>
+              post._id === payload._id ? payload : post
+            ),
+          },
+        };
+
+    case POST_COMMENT:
+      if (state.postsByFollowing.posts.some((post) => post._id === payload._id))
+        if (state.postsByUser.posts.some((post) => post._id === payload._id))
+          return {
+            ...state,
+            postsByFollowing: {
+              ...state.postsByFollowing,
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+            postsByUser: {
+              ...state.postsByUser,
+              posts: state.postsByUser.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+          };
+        else
+          return {
+            ...state,
+            postsByFollowing: {
+              ...state.postsByFollowing,
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              ),
+            },
+          };
+      else
+        return {
+          ...state,
+          userPosts: {
+            ...state.userPosts,
+            posts: state.userPosts.posts.map((post) =>
+              post._id === payload._id ? payload : post
+            ),
+          },
+        };
+
     case POST_ERROR:
       return { ...state, errors: payload };
+
     case GET_CURRENT_USER_POSTS:
       return { ...state, userPosts: { posts: payload, loading: false } };
     case GET_POSTS_BY_USER:
@@ -54,6 +136,7 @@ export default function (state = initialState, action) {
       return { ...state, postByID: { post: payload, loading: false } };
     case REMOVE_POST_BY_ID:
       return { ...state, postByID: { post: null, loading: true } };
+
     case GET_POSTS_FROM_FOLLOWING:
       return {
         ...state,
@@ -80,6 +163,7 @@ export default function (state = initialState, action) {
           endOfPosts: true,
         },
       };
+
     case REMOVE_ALL_POSTS:
       return initialState;
     default:

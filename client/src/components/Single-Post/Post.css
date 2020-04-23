@@ -64,7 +64,7 @@
   flex-direction: column;
   border-radius: 5px;
   box-shadow: 0 0 4px 1px rgba(0, 0, 0, 0.1);
-  bottom: 50px;
+  top: 78px;
   right: 10px;
 }
 
@@ -77,4 +77,18 @@
   outline: none !important;
   background-color: transparent;
   text-align: left;
+}
+
+.comment-profile-img {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comment-options-menu {
+  border: none !important;
+  outline: none !important;
+  background-color: transparent;
+  width: 20px;
 }

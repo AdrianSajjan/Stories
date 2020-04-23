@@ -1,19 +1,22 @@
 import React, { useState, useEffect, Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
+import PostComment from "./Post-Comment/Post-Comment";
 import DefaultImage from "../../assets/images/sample-profile-picture.png";
 import { connect } from "react-redux";
+import { likePost } from "../../actions/post";
 import "./Post.css";
 
-const Post = ({ post, currentProfile }) => {
+const Post = ({ post, currentProfile, likePost }) => {
   const { profile } = currentProfile;
 
   const [time, setTime] = useState("");
   const [options, setOptions] = useState(false);
+  const [comment, setComment] = useState(false);
 
   useEffect(() => {
     UpdateTime();
-    const timeHandler = setInterval(UpdateTime, 1000);
+    const timeHandler = setInterval(UpdateTime, 36000);
     return () => {
       clearInterval(timeHandler);
     }; // eslint-disable-next-line
@@ -77,6 +80,7 @@ const Post = ({ post, currentProfile }) => {
               ? "post-like active m-0 py-2"
               : "post-like m-0 py-2"
           }
+          onClick={() => likePost(post._id)}
         >
           <i
             className={
@@ -93,6 +97,7 @@ const Post = ({ post, currentProfile }) => {
               ? "post-comment active m-0 py-2"
               : "post-comment m-0 py-2"
           }
+          onClick={() => setComment((prevState) => !prevState)}
         >
           <i
             className={
@@ -111,6 +116,14 @@ const Post = ({ post, currentProfile }) => {
         </button>
       </div>
       <PostOptions />
+      {comment && (
+        <PostComment
+          postID={post._id}
+          postComments={post.comments}
+          postOwner={post.user}
+          currentProfile={profile.user._id}
+        />
+      )}
     </div>
   );
 };
@@ -124,4 +137,8 @@ const mapStateToProps = (state) => ({
   currentProfile: state.profile.currentProfile,
 });
 
-export default connect(mapStateToProps)(Post);
+const mapDispatchToProps = (dispatch) => ({
+  likePost: (post) => dispatch(likePost(post)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Post);
