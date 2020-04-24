@@ -181,7 +181,7 @@ router.post(
       user.name = name;
       await user.save();
 
-      res.json({ user, msg: "Name updated successfully!" });
+      res.json({ name: user.name, msg: "Name updated successfully!" });
     } catch (err) {
       res.status(500).send(SERVER);
       console.error(err.message);
@@ -251,7 +251,7 @@ router.post(
       encryptAndSendMail(payload_EMAIL, user.email);
 
       res.json({
-        user,
+        email: user.email,
         msg: `New verification mail sent to ${user.email}. It will expire in 1 day`,
       });
     } catch (err) {
@@ -262,19 +262,38 @@ router.post(
 );
 
 /**
- * @Todo : ADD password update route
+ * @route : POST api/user/update/password
+ * @desc : Update User Password
+ * @access : Private
  */
 router.post(
   "/update/password",
   [
     auth,
     [
+      check("oldPassword")
+        .not()
+        .isEmpty()
+        .withMessage("Password cannot be empty")
+        .custom(async (value, { req }) => {
+          const user = await User.findById(req.user.id);
+          if (user && user.password !== value)
+            throw new Error("Password is incorrect");
+          return true;
+        }),
+
       check("newPassword")
         .not()
         .isEmpty()
         .withMessage("Password cannot be empty")
         .isLength({ min: 6 })
-        .withMessage("Password cannot be less than 6 letters"),
+        .withMessage("Password cannot be less than 6 letters")
+        .custom(async (value, { req }) => {
+          const user = await User.findById(req.user.id);
+          if (user && value === user.password)
+            throw new Error("New password and old password cannot be same");
+          return true;
+        }),
 
       check("confirmNewPassword")
         .not()
@@ -298,7 +317,7 @@ router.post(
 
     try {
       const userID = req.user.id;
-      const { password } = req.body;
+      const { newPassword } = req.body;
 
       const user = await User.findById(userID);
 
@@ -307,6 +326,11 @@ router.post(
           type: NOTFOUND,
           errors: [{ msg: "Account doesn't exist" }],
         });
+
+      user.password = newPassword;
+      await user.save();
+
+      res.json({ msg: "Password has been updated" });
     } catch (err) {
       res.status(500).send(SERVER);
       console.error(err.message);
