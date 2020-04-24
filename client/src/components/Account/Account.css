@@ -1,0 +1,17 @@
+.account-tab {
+  max-width: 300px;
+  width: 90%;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--monospace-font);
+  font-size: 1.1rem !important;
+  display: block !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media screen and (max-width: 375px) {
+  .account-tab {
+    font-size: 0.9rem !important;
+  }
+}

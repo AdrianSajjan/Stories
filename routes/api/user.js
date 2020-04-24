@@ -339,13 +339,44 @@ router.post(
 );
 
 /**
- * @Todo : ADD request email token route
+ * @route : GET api/user/confirm/request_token
+ * @desc : Request a validation token
+ * @access : Private
  */
+router.get("/confirm/request_token", auth, async (req, res) => {
+  const userID = req.user.id;
+
+  try {
+    const user = await User.findById(userID);
+
+    if (!user)
+      return res.status(404).json({
+        type: NOTFOUND,
+        errors: [{ msg: "Account doesn't exist " }],
+      });
+
+    const payload_EMAIL = {
+      user: {
+        email: user.email,
+      },
+    };
+
+    encryptAndSendMail(payload_EMAIL, user.email);
+
+    res.json({
+      email: user.email,
+      msg: `New verification mail sent to ${user.email}. It will expire in 1 day`,
+    });
+  } catch (err) {
+    res.status(500).send(SERVER);
+    console.error(err.message);
+  }
+});
 
 /**
  * @route : GET api/user/confirm/:email_token
  * @desc : Validate an User
- * @access : Private
+ * @access : Public
  */
 router.get("/confirm/:email_token", async (req, res) => {
   const token = req.params.email_token;

@@ -24,7 +24,13 @@ const Followers = ({ owner, profile }) => {
   return (
     <div className="profile-followers my-3">
       <div className="profile-followers-container">
-        <hr />
+        <p className="text-center text-dark m-0">
+          Followers{"  "}
+          <span className="text-muted font-weight-bold">
+            {profile.followers.length}
+          </span>
+        </p>
+        <hr className="mt-2" />
         <FollowerList />
       </div>
     </div>

@@ -10,21 +10,6 @@ import Following from "../Following/Following";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 
 const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
-  const tabList = [
-    {
-      name: "Posts",
-      count: 0,
-    },
-    {
-      name: "Followers",
-      count: 1,
-    },
-    {
-      name: "Following",
-      count: 2,
-    },
-  ];
-
   const { profile, loading: profileLoading } = currentProfile;
   const { posts, loading: postsLoading } = userPosts;
 
@@ -34,6 +19,21 @@ const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
     if (profileLoading)
       return <Spinner color="primary" className="d-block my-5 mx-auto" />;
     else return <Redirect to="/home/profile/edit/" />;
+
+  const tabList = [
+    {
+      name: "Posts",
+      count: 0,
+    },
+    {
+      name: `Followers`,
+      count: 1,
+    },
+    {
+      name: `Following`,
+      count: 2,
+    },
+  ];
 
   const ViewPosts = () => {
     if (!posts.length && postsLoading)
@@ -49,7 +49,7 @@ const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
     );
   };
 
-  const ProfileTab = ({ name, count }) => {
+  const ProfileTab = ({ name, data, count }) => {
     return (
       <button
         className={`profile-tab ${tab === count && `active`}`}

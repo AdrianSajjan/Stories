@@ -8,6 +8,8 @@ import ViewProfile from "../View-Profile-Template/_ViewProfile";
 import Posts from "../../Posts/Posts";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 import { Spinner } from "reactstrap";
+import Followers from "../Followers/Followers";
+import Following from "../Following/Following";
 
 const ViewOtherProfile = ({
   currentProfile,
@@ -96,7 +98,9 @@ const ViewOtherProfile = ({
             <ProfileTab name={name} count={count} />
           ))}
         </div>
-        <ViewPosts />
+        {tab === 0 && <ViewPosts />}
+        {tab === 1 && <Followers owner={false} profile={profile} />}
+        {tab === 2 && <Following owner={false} profile={profile} />}
       </div>
     </Fragment>
   );
