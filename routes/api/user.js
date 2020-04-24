@@ -25,6 +25,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+const encryptAndSendMail = (payload, email) => {
+  jwt.sign(
+    payload,
+    process.env.EMAIL_SECRET,
+    { expiresIn: "1d" },
+    (err, token) => {
+      if (err) throw err;
+      const url = `http://localhost:5000/api/user/confirm/${token}`;
+      transporter.sendMail({
+        from: process.env.ADMIN_MAIL,
+        to: email,
+        subject: "Confirm STORIES! Account",
+        html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+      });
+    }
+  );
+};
+
 /**
  * @route : POST api/user
  * @desc : Register an User
@@ -104,28 +122,14 @@ router.post(
         },
       };
 
-      jwt.sign(
-        payload_EMAIL,
-        process.env.EMAIL_SECRET,
-        { expiresIn: 3600 },
-        (err, token) => {
-          if (err) throw err;
-          const url = `http://localhost:5000/api/user/confirm/${token}`;
-          transporter.sendMail({
-            from: process.env.ADMIN_MAIL,
-            to: data.email,
-            subject: "Confirm STORIES! Account",
-            html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
-          });
-        }
-      );
+      encryptAndSendMail(payload_EMAIL, data.email);
 
       jwt.sign(payload_ID, process.env.ID_SECRET, (err, token) => {
         if (err) throw err;
         res.json({
           token,
           validated: data.validated,
-          msg: `Verification mail sent to ${data.email}. It will expire in 1 hour`,
+          msg: `Verification mail sent to ${data.email}. It will expire in 1 day`,
         });
       });
     } catch (err) {
@@ -134,6 +138,185 @@ router.post(
     }
   }
 );
+
+/**
+ * @route : POST api/user/update/name
+ * @desc : Update User Name
+ * @access : Private
+ */
+router.post(
+  "/update/name",
+  [
+    auth,
+    [
+      check("name")
+        .not()
+        .isEmpty()
+        .withMessage("Name cannot be empty")
+        .isLength({ min: 3 })
+        .withMessage("Enter your full name"),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true }),
+      });
+
+    try {
+      const userID = req.user.id;
+      const { name } = req.body;
+
+      const user = await User.findById(userID);
+
+      if (!user)
+        return res.status(404).json({
+          type: NOTFOUND,
+          errors: [{ msg: "Account doesn't exist" }],
+        });
+
+      user.name = name;
+      await user.save();
+
+      res.json({ user, msg: "Name updated successfully!" });
+    } catch (err) {
+      res.status(500).send(SERVER);
+      console.error(err.message);
+    }
+  }
+);
+
+/**
+ * @route : POST api/user/update/email
+ * @desc : Update User Name
+ * @access : Private
+ */
+router.post(
+  "/update/email",
+  [
+    auth,
+    [
+      check("email")
+        .not()
+        .isEmpty()
+        .withMessage("Email cannot be empty")
+        .trim()
+        .isEmail()
+        .withMessage("Enter a valid email")
+        .custom(async (value, { req }) => {
+          let user = await User.findOne({ email: value });
+          if (user) {
+            if (user._id === req.user.id)
+              throw new Error("New and old email cannot be same");
+            else throw new Error("Email already in use");
+          }
+          return true;
+        }),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true }),
+      });
+
+    try {
+      const userID = req.user.id;
+      const { email } = req.body;
+
+      const user = await User.findById(userID);
+
+      if (!user)
+        return res.status(404).json({
+          type: NOTFOUND,
+          errors: [{ msg: "Account doesn't exist" }],
+        });
+
+      user.email = email;
+      user.validated = false;
+      await user.save();
+
+      const payload_EMAIL = {
+        user: {
+          email: user.email,
+        },
+      };
+
+      encryptAndSendMail(payload_EMAIL, user.email);
+
+      res.json({
+        user,
+        msg: `New verification mail sent to ${user.email}. It will expire in 1 day`,
+      });
+    } catch (err) {
+      res.status(500).send(SERVER);
+      console.error(err.message);
+    }
+  }
+);
+
+/**
+ * @Todo : ADD password update route
+ */
+router.post(
+  "/update/password",
+  [
+    auth,
+    [
+      check("newPassword")
+        .not()
+        .isEmpty()
+        .withMessage("Password cannot be empty")
+        .isLength({ min: 6 })
+        .withMessage("Password cannot be less than 6 letters"),
+
+      check("confirmNewPassword")
+        .not()
+        .isEmpty()
+        .withMessage("Password cannot be empty")
+        .custom((value, { req }) => {
+          if (value !== req.body.newPassword)
+            throw new Error("Passwords don't match");
+          return true;
+        }),
+    ],
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty())
+      return res.status(400).json({
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true }),
+      });
+
+    try {
+      const userID = req.user.id;
+      const { password } = req.body;
+
+      const user = await User.findById(userID);
+
+      if (!user)
+        return res.status(404).json({
+          type: NOTFOUND,
+          errors: [{ msg: "Account doesn't exist" }],
+        });
+    } catch (err) {
+      res.status(500).send(SERVER);
+      console.error(err.message);
+    }
+  }
+);
+
+/**
+ * @Todo : ADD request email token route
+ */
 
 /**
  * @route : GET api/user/confirm/:email_token
