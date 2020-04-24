@@ -24,8 +24,8 @@ router.get("/me", auth, async (req, res) => {
       user: req.user.id,
     })
       .populate("user", ["name", "email"])
-      .populate("following.profile", "username")
-      .populate("followers.profile", "username");
+      .populate("following.profile")
+      .populate("followers.profile");
 
     if (!profile)
       return res.status(404).json({
@@ -126,8 +126,8 @@ router.post(
 
         await profile
           .populate("user", ["name", "email"])
-          .populate("following.profile", "username")
-          .populate("followers.profile", "username")
+          .populate("following.profile")
+          .populate("followers.profile")
           .execPopulate();
         return res.send(profile);
       }
@@ -137,8 +137,8 @@ router.post(
       await profile.save();
       await profile
         .populate("user", ["name", "email"])
-        .populate("following.profile", "username")
-        .populate("followers.profile", "username")
+        .populate("following.profile")
+        .populate("followers.profile")
         .execPopulate();
 
       res.json(profile);
@@ -177,8 +177,8 @@ router.get("/search", auth, async (req, res) => {
       ],
     })
       .limit(limit)
-      .populate("following.profile", "username")
-      .populate("followers.profile", "username");
+      .populate("following.profile")
+      .populate("followers.profile");
 
     res.json(profiles);
   } catch (err) {
@@ -220,8 +220,8 @@ router.get("/discover", auth, async (req, res) => {
     })
       .skip(skip)
       .limit(limit)
-      .populate("following.profile", "username")
-      .populate("followers.profile", "username");
+      .populate("following.profile")
+      .populate("followers.profile");
     otherProfiles = [...otherProfiles, ...profiles];
 
     const profilesDiff = limit - otherProfiles.length;
@@ -237,8 +237,8 @@ router.get("/discover", auth, async (req, res) => {
         .skip(skip)
         .limit(limit)
         .limit(profilesDiff)
-        .populate("following.profile", "username")
-        .populate("followers.profile", "username");
+        .populate("following.profile")
+        .populate("followers.profile");
       otherProfiles = [...otherProfiles, ...profiles];
     }
 
@@ -271,8 +271,8 @@ router.get("/:userID", auth, async (req, res) => {
     const profile = await Profile.findOne({
       user: userID,
     })
-      .populate("following.profile", "username")
-      .populate("followers.profile", "username");
+      .populate("following.profile")
+      .populate("followers.profile");
 
     if (!profile)
       return res.status(400).json({
@@ -353,8 +353,8 @@ router.put("/follow/:id", auth, async (req, res) => {
       await profile.save();
       await profile
         .populate("user", ["name", "email"])
-        .populate("following.profile", "username")
-        .populate("followers.profile", "username")
+        .populate("following.profile")
+        .populate("followers.profile")
         .execPopulate();
       await otherProfile.save();
 
@@ -370,8 +370,8 @@ router.put("/follow/:id", auth, async (req, res) => {
     await profile.save();
     await profile
       .populate("user", ["name", "email"])
-      .populate("following.profile", "username")
-      .populate("followers.profile", "username")
+      .populate("following.profile")
+      .populate("followers.profile")
       .execPopulate();
 
     body = {

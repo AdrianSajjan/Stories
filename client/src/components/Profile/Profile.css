@@ -24,11 +24,39 @@
   color: black;
 }
 
-.posts-heading {
+.profile-tab {
+  flex: 1;
+  font-size: 1rem;
+  padding: 5px 0;
   background-color: white;
+  border: none !important;
+  outline: none !important;
   font-family: var(--monospace-font);
   border-radius: 5px;
+  color: var(--secondary);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+}
+
+.profile-tab:nth-child(2) {
+  margin: 0 10px;
+}
+
+.profile-tab.active {
+  color: var(--primary);
+}
+
+.profile-followers,
+.profile-following {
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.profile-followers-container,
+.profile-following-container {
+  background-color: var(--light);
+  border-radius: 5px;
+  padding: 10px;
 }
 
 @media screen and (max-width: 567px) {
@@ -41,5 +69,20 @@
   .profile-info,
   .profile-bio {
     font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .profile-picture {
+    width: 120px;
+    height: 120px;
+  }
+
+  .profile-tab {
+    font-size: 0.8rem;
+  }
+
+  .profile-tab:nth-child(2) {
+    margin: 0 5px;
   }
 }

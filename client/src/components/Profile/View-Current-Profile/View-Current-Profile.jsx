@@ -1,16 +1,34 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
 import PropTypes from "prop-types";
 import { Spinner } from "reactstrap";
 import { connect } from "react-redux";
 import ViewProfile from "../View-Profile-Template/_ViewProfile";
 import Posts from "../../Posts/Posts";
+import Followers from "../Followers/Followers";
+import Following from "../Following/Following";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 
 const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
-  // Current Profile
+  const tabList = [
+    {
+      name: "Posts",
+      count: 0,
+    },
+    {
+      name: "Followers",
+      count: 1,
+    },
+    {
+      name: "Following",
+      count: 2,
+    },
+  ];
+
   const { profile, loading: profileLoading } = currentProfile;
   const { posts, loading: postsLoading } = userPosts;
+
+  const [tab, setTab] = useState(0);
 
   if (!profile)
     if (profileLoading)
@@ -31,12 +49,29 @@ const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
     );
   };
 
+  const ProfileTab = ({ name, count }) => {
+    return (
+      <button
+        className={`profile-tab ${tab === count && `active`}`}
+        onClick={() => setTab(count)}
+      >
+        {name}
+      </button>
+    );
+  };
+
   return (
     <Fragment>
       <ViewProfile profile={profile} image={DefaultImage} owner={true} />
       <div className="view-posts mt-5">
-        <h2 className="text-center py-2 text-secondary posts-heading">Posts</h2>
-        <ViewPosts />
+        <div className="profile-tabs d-flex">
+          {tabList.map(({ name, count }) => (
+            <ProfileTab name={name} count={count} />
+          ))}
+        </div>
+        {tab === 0 && <ViewPosts />}
+        {tab === 1 && <Followers owner={true} profile={profile} />}
+        {tab === 2 && <Following owner={true} profile={profile} />}
       </div>
     </Fragment>
   );

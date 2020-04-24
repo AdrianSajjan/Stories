@@ -57,7 +57,7 @@ const ProfileCard = ({
             </button>
           )}
           <img src={DefaultImage} alt="profile" className="profile-card-img" />
-          <p className="profile-card-username text-dark mt-2 ml-2">
+          <p className="profile-card-username text-dark mt-2">
             @{profile.username}
           </p>
           <div className="profile-btn-group d-flex justify-content-center">

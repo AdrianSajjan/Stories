@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useParams, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
@@ -19,6 +19,14 @@ const ViewOtherProfile = ({
   const { id } = useParams();
   const { profile, loading: profileLoading } = profileByID;
   const { posts, loading: postsLoading } = postsByUser;
+
+  const tabList = [
+    { name: "Posts", count: 0 },
+    { name: "Followers", count: 1 },
+    { name: "Following", count: 2 },
+  ];
+
+  const [tab, setTab] = useState(0);
 
   const ViewPosts = () => {
     if (!posts.length && postsLoading)
@@ -63,6 +71,17 @@ const ViewOtherProfile = ({
       return <p className="text-center my-4 text-danger">Profile not found</p>;
   }
 
+  const ProfileTab = ({ name, count }) => {
+    return (
+      <button
+        className={`profile-tab ${tab === count && `active`}`}
+        onClick={() => setTab(count)}
+      >
+        {name}
+      </button>
+    );
+  };
+
   return (
     <Fragment>
       <ViewProfile
@@ -72,7 +91,11 @@ const ViewOtherProfile = ({
         owner={false}
       />
       <div className="view-posts mt-5">
-        <h2 className="text-center py-2 text-secondary posts-heading">Posts</h2>
+        <div className="profile-tabs d-flex">
+          {tabList.map(({ name, count }) => (
+            <ProfileTab name={name} count={count} />
+          ))}
+        </div>
         <ViewPosts />
       </div>
     </Fragment>

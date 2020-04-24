@@ -18,7 +18,14 @@
   padding: 0;
 }
 
+html {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
+  max-width: 100%;
+  overflow-x: hidden;
   font-family: var(--default-font);
   font-weight: normal;
 }
@@ -196,6 +203,12 @@ label {
 
   .main-area-header .main-title {
     font-size: 1.5rem;
-    padding-left: 10px;
+    padding-right: 40px;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .main-area-header .main-title {
+    padding-right: 20px;
   }
 }
