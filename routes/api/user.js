@@ -154,7 +154,13 @@ router.post(
         .isEmpty()
         .withMessage("Name cannot be empty")
         .isLength({ min: 3 })
-        .withMessage("Enter your full name"),
+        .withMessage("Enter your full name")
+        .custom(async (value, { req }) => {
+          const user = await User.findById(req.user.id);
+          if (user && user.name === value)
+            throw new Error("Old and new name cannot be same");
+          return true;
+        }),
     ],
   ],
   async (req, res) => {
@@ -277,8 +283,10 @@ router.post(
         .withMessage("Password cannot be empty")
         .custom(async (value, { req }) => {
           const user = await User.findById(req.user.id);
-          if (user && user.password !== value)
-            throw new Error("Password is incorrect");
+          if (user) {
+            const isMatch = await bcrypt.compare(value, user.password);
+            if (!isMatch) throw new Error("Password is incorrect");
+          }
           return true;
         }),
 
@@ -290,8 +298,11 @@ router.post(
         .withMessage("Password cannot be less than 6 letters")
         .custom(async (value, { req }) => {
           const user = await User.findById(req.user.id);
-          if (user && value === user.password)
-            throw new Error("New password and old password cannot be same");
+          if (user) {
+            const isMatch = await bcrypt.compare(value, user.password);
+            if (isMatch)
+              throw new Error("New password and old password cannot be same");
+          }
           return true;
         }),
 

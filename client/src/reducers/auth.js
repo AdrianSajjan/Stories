@@ -8,6 +8,8 @@ import {
   USER_LOADED,
   AUTH_ERROR,
   LOGOUT,
+  UPDATE_NAME,
+  UPDATE_EMAIL_ERROR,
 } from "../actions/types";
 
 const initialState = {
@@ -64,6 +66,31 @@ export default function (state = initialState, action) {
           registrationRequest: false,
         },
       };
+    case UPDATE_NAME:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          name: payload,
+        },
+        errors: [],
+      };
+
+    case UPDATE_EMAIL:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          email: payload,
+        },
+        errors: [],
+      };
+    case UPDATE_EMAIL_ERROR:
+      return {
+        ...state,
+        errors: payload,
+      };
+
     case REGISTER_FAILED:
     case AUTH_ERROR:
     case LOGIN_FAILED:

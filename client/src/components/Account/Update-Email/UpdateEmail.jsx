@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Form,
@@ -9,10 +9,19 @@ import {
   FormText,
   FormFeedback,
 } from "reactstrap";
+
+import { resetAccountError } from "../../../actions/account";
 import { connect } from "react-redux";
 
-const UpdateEmail = ({ user }) => {
+const UpdateEmail = ({ user, resetAccountError, errors }) => {
   const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    errors.length > 0 && resetAccountError();
+    return () => {
+      errors.length > 0 && resetAccountError();
+    };
+  }, []);
 
   return (
     <Fragment>
@@ -47,6 +56,11 @@ const UpdateEmail = ({ user }) => {
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
+  errors: state.error.accountErrors,
 });
 
-export default connect(mapStateToProps)(UpdateEmail);
+const mapDispatchToProps = (dispatch) => ({
+  resetAccountError: () => dispatch(resetAccountError()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateEmail);

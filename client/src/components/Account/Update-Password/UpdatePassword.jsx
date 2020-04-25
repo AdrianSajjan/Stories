@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Form,
@@ -11,10 +11,22 @@ import {
   FormText,
   FormFeedback,
 } from "reactstrap";
+
+import {
+  removePasswordError,
+  resetAccountError,
+} from "../../../actions/account";
 import { connect } from "react-redux";
 
-const UpdatePassword = () => {
+const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
+
+  useEffect(() => {
+    errors.length > 0 && resetAccountError();
+    return () => {
+      errors.length > 0 && resetAccountError();
+    };
+  }, []);
 
   const [password, setPassword] = useState({
     oldPassword: "",
@@ -98,6 +110,12 @@ const UpdatePassword = () => {
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
+  errors: state.error.accountErrors,
 });
 
-export default connect(mapStateToProps)(UpdatePassword);
+const mapDispatchToProps = (dispatch) => ({
+  resetAccountError: () => dispatch(resetAccountError()),
+  removePasswordError: () => dispatch(removePasswordError()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(UpdatePassword);

@@ -4,11 +4,17 @@ import {
   SET_REGISTRATION_ERRORS,
   REMOVE_REGISTRATION_ERROR,
   RESET_FORM_ERRORS,
+  UPDATE_PASSWORD_ERROR,
+  REMOVE_PASSWORD_ERROR,
+  RESET_ACCOUNT_ERROR,
+  UPDATE_EMAIL_ERROR,
+  UPDATE_NAME_ERROR,
 } from "../actions/types";
 
 const initialState = {
   loginErrors: [],
   registrationErrors: [],
+  accountErrors: [],
 };
 
 export default function (state = initialState, action) {
@@ -35,6 +41,38 @@ export default function (state = initialState, action) {
       };
     case RESET_FORM_ERRORS:
       return initialState;
+
+    case UPDATE_NAME_ERROR:
+      return {
+        ...state,
+        accountErrors: payload,
+      };
+
+    case UPDATE_EMAIL_ERROR:
+      return {
+        ...state,
+        accountErrors: payload,
+      };
+
+    case UPDATE_PASSWORD_ERROR:
+      return {
+        ...state,
+        accountErrors: payload,
+      };
+    case REMOVE_PASSWORD_ERROR:
+      return {
+        ...state,
+        accountErrors: state.accountErrors.filter(
+          (error) => error.param !== payload
+        ),
+      };
+
+    case RESET_ACCOUNT_ERROR:
+      return {
+        ...state,
+        accountErrors: [],
+      };
+
     default:
       return state;
   }
