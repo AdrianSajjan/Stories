@@ -89,7 +89,7 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
           )}
         </FormGroup>
         <FormGroup>
-          <Label htmlFor="name-input" className="mb-1">
+          <Label htmlFor="password-input" className="mb-1">
             Password
           </Label>
           <InputGroup>

@@ -7,7 +7,11 @@ const Following = ({ owner, profile }) => {
     if (profile.following.length === 0)
       return (
         <Fragment>
-          <p className="text-center my-3">You are not following anyone</p>
+          <p className="text-center my-3">
+            {owner
+              ? "You are not following anyone."
+              : `${profile.username} is not following anyone.`}
+          </p>
           <hr />
         </Fragment>
       );

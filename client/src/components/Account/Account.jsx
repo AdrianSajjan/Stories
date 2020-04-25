@@ -6,6 +6,9 @@ import { openSidebar } from "../../actions/sidebar";
 import Discover from "../Discover/Discover";
 import { connect } from "react-redux";
 import "./Account.css";
+import UpdateName from "./Update-Name/UpdateName";
+import UpdateEmail from "./Update-Email/UpdateEmail";
+import UpdatePassword from "./Update-Password/UpdatePassword";
 
 const Account = ({ openSidebar, currentProfile }) => {
   const tabList = [
@@ -19,7 +22,7 @@ const Account = ({ openSidebar, currentProfile }) => {
 
   const AccountTabs = () => {
     return (
-      <Fragment>
+      <div className="account-tabs">
         {tabList.map(({ route, color, name }) => (
           <Link
             to={`/home/account/${route}`}
@@ -31,7 +34,7 @@ const Account = ({ openSidebar, currentProfile }) => {
         <Button color="success" className="account-tab mt-2">
           Resend Email Token
         </Button>
-      </Fragment>
+      </div>
     );
   };
 
@@ -53,6 +56,21 @@ const Account = ({ openSidebar, currentProfile }) => {
           <div className="main-account-area py-2">
             <Switch>
               <Route exact path="/home/account" component={AccountTabs} />
+              <Route
+                exact
+                path="/home/account/update/name"
+                component={UpdateName}
+              />
+              <Route
+                exact
+                path="/home/account/update/email"
+                component={UpdateEmail}
+              />
+              <Route
+                exact
+                path="/home/account/update/password"
+                component={UpdatePassword}
+              />
             </Switch>
           </div>
         </Col>

@@ -7,7 +7,11 @@ const Followers = ({ owner, profile }) => {
     if (profile.followers.length === 0)
       return (
         <Fragment>
-          <p className="text-center my-3">No one is following you as of now.</p>
+          <p className="text-center my-3">
+            {owner
+              ? "No one is following you as of now."
+              : `${profile.username} has no followers as of now.`}
+          </p>
           <hr />
         </Fragment>
       );
