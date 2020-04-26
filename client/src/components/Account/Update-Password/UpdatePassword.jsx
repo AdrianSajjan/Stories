@@ -91,11 +91,16 @@ const UpdatePassword = ({
               invalid={ParamHasError("oldPassword")}
             />
             <InputGroupAddon addonType="append">
-              { /*prettier-ignore*/ }
-              <button tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible} >
-                {
-                  passwordVisible ? ( <i className="fa fa-eye"></i>) : (<i className="fa fa-eye-slash"></i>)
-                }
+              <button
+                tabIndex="-1"
+                className="toggle-password-btn"
+                onClick={TogglePasswordVisible}
+              >
+                {passwordVisible ? (
+                  <i className="fa fa-eye"></i>
+                ) : (
+                  <i className="fa fa-eye-slash"></i>
+                )}
               </button>
             </InputGroupAddon>
           </InputGroup>

@@ -11,6 +11,7 @@ import Home from "./pages/Home/Home";
 import Logout from "./pages/Logout/Logout";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import Verify from "./pages/Verify/Verify";
 
 if (localStorage.token) {
   setAuthToken(localStorage.token);
@@ -28,6 +29,7 @@ const App = () => {
         <Switch>
           <PrivateRoute path="/home" component={Home} />
           <Route path="/logout" component={Logout} />
+          <Route exact path="/verify/:token" component={Verify} />
           <Route path="/" component={Landing} />
         </Switch>
       </Router>

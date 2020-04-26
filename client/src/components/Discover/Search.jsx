@@ -49,6 +49,25 @@ const Search = ({
     ));
   };
 
+  const ProfileError = () => {
+    return (
+      <Fragment>
+        {" "}
+        <div className="search-result mt-4">
+          <div className="search-result-container py-2">
+            <p className="search-result-title text-center text-secondary m-0">
+              Error
+            </p>
+            <hr className="mt-1" />
+            <p className="text-danger text-center my-3">
+              Please create your profile.
+            </p>
+          </div>
+        </div>
+      </Fragment>
+    );
+  };
+
   const SearchResults = () => {
     return (
       <Fragment>
@@ -110,8 +129,10 @@ const Search = ({
             </form>
           </div>
           {!profile ? (
-            profileLoading && (
+            profileLoading ? (
               <Spinner color="primary" className="d-block mx-auto mt-4" />
+            ) : (
+              <ProfileError />
             )
           ) : (
             <Fragment>

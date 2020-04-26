@@ -10,6 +10,7 @@ import {
   LOGOUT,
   UPDATE_NAME,
   UPDATE_EMAIL,
+  VERIFY_EMAIL,
 } from "../actions/types";
 
 const initialState = {
@@ -81,9 +82,19 @@ export default function (state = initialState, action) {
         ...state,
         user: {
           ...state.user,
-          email: payload,
+          email: payload.email,
+          validated: payload.validated,
         },
         errors: [],
+      };
+
+    case VERIFY_EMAIL:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          validated: payload,
+        },
       };
 
     case REGISTER_FAILED:

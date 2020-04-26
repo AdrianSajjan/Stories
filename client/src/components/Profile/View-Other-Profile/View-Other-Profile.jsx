@@ -94,8 +94,8 @@ const ViewOtherProfile = ({
       />
       <div className="view-posts mt-5">
         <div className="profile-tabs d-flex">
-          {tabList.map(({ name, count }) => (
-            <ProfileTab name={name} count={count} />
+          {tabList.map(({ name, count }, index) => (
+            <ProfileTab key={index} name={name} count={count} />
           ))}
         </div>
         {tab === 0 && <ViewPosts />}

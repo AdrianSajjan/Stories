@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { login } from "../../actions/auth";
 import { removeLoginError, resetFormErrors } from "../../actions/error";
+import queryString from "query-string";
 import {
   Form,
   FormGroup,
@@ -17,7 +18,14 @@ import {
   Spinner,
 } from "reactstrap";
 
-const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
+const Login = ({
+  auth,
+  errors,
+  removeLoginError,
+  resetFormErrors,
+  login,
+  location,
+}) => {
   // Login Form
   const {
     request: { loginRequest: request },
@@ -44,7 +52,11 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
   const HandleSubmit = (e) => {
     e.preventDefault();
     ResetFormError();
-    !request && login({ email: email.trim(), password });
+
+    const parsedQuery = queryString.parse(location.search);
+    const next = parsedQuery.next;
+
+    !request && login({ email: email.trim(), password }, next);
   };
 
   const TogglePasswordVisible = (e) => {
@@ -103,11 +115,16 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
               invalid={ParamHasError("password") ? true : false}
             />
             <InputGroupAddon addonType="append">
-              { /*prettier-ignore*/ }
-              <button tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible} >
-                {
-                  passwordVisible ? ( <i className="fa fa-eye"></i>) : (<i className="fa fa-eye-slash"></i>)
-                }
+              <button
+                tabIndex="-1"
+                className="toggle-password-btn"
+                onClick={TogglePasswordVisible}
+              >
+                {passwordVisible ? (
+                  <i className="fa fa-eye"></i>
+                ) : (
+                  <i className="fa fa-eye-slash"></i>
+                )}
               </button>
             </InputGroupAddon>
           </InputGroup>
@@ -130,8 +147,11 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
         )}
         <p className="text-muted mx-auto w-100 mt-4">
           {"Don't have an acount? "}
-          { /* prettier-ignore*/ }
-          <Link to="/register" className="toggle-btn ml-1" onClick={ResetFormError} >
+          <Link
+            to="/register"
+            className="toggle-btn ml-1"
+            onClick={ResetFormError}
+          >
             Sign Up
           </Link>
         </p>
@@ -153,8 +173,8 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  login: (data) => dispatch(login(data)),
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  login: (data, next) => dispatch(login(data, ownProps, next)),
   removeLoginError: (param) => dispatch(removeLoginError(param)),
   resetFormErrors: () => dispatch(resetFormErrors()),
 });

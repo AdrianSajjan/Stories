@@ -32,7 +32,7 @@ const encryptAndSendMail = (payload, email) => {
     { expiresIn: "1d" },
     (err, token) => {
       if (err) throw err;
-      const url = `http://localhost:5000/api/user/confirm/${token}`;
+      const url = `http://localhost:3000/verify/${token}`;
       transporter.sendMail({
         from: process.env.ADMIN_MAIL,
         to: email,
@@ -221,7 +221,7 @@ router.post(
         .custom(async (value, { req }) => {
           let user = await User.findOne({ email: value.trim() });
           if (user) {
-            if (user._id === req.user.id)
+            if (user._id == req.user.id)
               throw new Error("New and old email cannot be same");
             else throw new Error("Email already in use");
           }
@@ -264,6 +264,7 @@ router.post(
 
       res.json({
         email: user.email,
+        validated: user.validated,
         msg: `New verification mail sent to ${user.email}. It will expire in 1 day`,
       });
     } catch (err) {
@@ -405,19 +406,38 @@ router.get("/confirm/:email_token", async (req, res) => {
 
   try {
     const decode = jwt.decode(token, process.env.EMAIL_SECRET);
+
+    if (!decode)
+      return res
+        .status(400)
+        .send("Token in invalid or expired. Please request a new token");
+
     const email = decode.user.email;
+
+    if (!email)
+      return res
+        .status(400)
+        .send("Token in invalid or expired. Please request a new token");
+
     const user = await User.findOne({ email });
 
     if (!user)
-      return res.status(404).json({
-        type: NOTFOUND,
-        errors: [{ msg: "Account doesn't exist " }],
-      });
+      return res
+        .status(400)
+        .send("Token in invalid or expired. Please request a new token");
+
+    if (user.validated)
+      return res
+        .status(400)
+        .send("Token in invalid or expired. Please request a new token");
 
     user.validated = true;
     await user.save();
 
-    res.send("Email Validated");
+    res.json({
+      validated: user.validated,
+      msg: `Your email ${email} has been validated succesfully! Thank you for using STORIES!`,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send(SERVER);

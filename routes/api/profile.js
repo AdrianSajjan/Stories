@@ -165,7 +165,7 @@ router.get("/search", auth, async (req, res) => {
     const profile = await Profile.findOne({ user: userID });
 
     if (!profile)
-      res.status(404).json({
+      return res.status(404).json({
         type: NOTFOUND,
         msg: "Please create your profile",
       });

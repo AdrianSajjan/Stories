@@ -7,6 +7,7 @@ import {
   UPDATE_PASSWORD_ERROR,
   REMOVE_PASSWORD_ERROR,
   RESET_ACCOUNT_ERROR,
+  VERIFY_EMAIL,
 } from "./types";
 import { setAlert } from "./alert";
 
@@ -46,7 +47,7 @@ export const updateEmail = (email) => async (dispatch) => {
 
     dispatch({
       type: UPDATE_EMAIL,
-      payload: res.data.email,
+      payload: res.data,
     });
   } catch (err) {
     if (err.response.data.type && err.response.data.type === "VALIDATION") {
@@ -99,5 +100,12 @@ export const removePasswordError = (param) => (dispatch) => {
 export const resetAccountError = () => (dispatch) => {
   dispatch({
     type: RESET_ACCOUNT_ERROR,
+  });
+};
+
+export const verifyEmail = (verify) => (dispatch) => {
+  dispatch({
+    type: VERIFY_EMAIL,
+    payload: verify,
   });
 };

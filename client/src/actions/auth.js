@@ -22,18 +22,22 @@ const config = {
   },
 };
 
-export const loadUser = () => async (dispatch) => {
+export const loadUser = (ownProps = null, redirect = null) => async (
+  dispatch
+) => {
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
 
   try {
     const res = await axios.get("/api/auth");
+
     dispatch({
       type: USER_LOADED,
       payload: res.data,
     });
 
+    if (ownProps && redirect) ownProps.history.push(redirect);
     // Handle Errors
   } catch (err) {
     dispatch({
@@ -80,7 +84,9 @@ export const register = (data) => async (dispatch) => {
   }
 };
 
-export const login = (data) => async (dispatch) => {
+export const login = (data, ownProps = null, redirect = null) => async (
+  dispatch
+) => {
   dispatch({
     type: LOGIN_REQUEST,
   });
@@ -93,7 +99,7 @@ export const login = (data) => async (dispatch) => {
       payload: res.data,
     });
 
-    dispatch(loadUser());
+    dispatch(loadUser(ownProps, redirect));
   } catch (err) {
     const _data = err.response.data;
 

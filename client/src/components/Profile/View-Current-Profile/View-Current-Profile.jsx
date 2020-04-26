@@ -65,8 +65,8 @@ const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
       <ViewProfile profile={profile} image={DefaultImage} owner={true} />
       <div className="view-posts mt-5">
         <div className="profile-tabs d-flex">
-          {tabList.map(({ name, count }) => (
-            <ProfileTab name={name} count={count} />
+          {tabList.map(({ name, count }, index) => (
+            <ProfileTab key={index} name={name} count={count} />
           ))}
         </div>
         {tab === 0 && <ViewPosts />}

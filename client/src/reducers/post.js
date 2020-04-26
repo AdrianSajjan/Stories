@@ -144,7 +144,10 @@ export default function (state = initialState, action) {
       };
     case SET_POSTS_FROM_FOLLOWING:
       let _posts = [...state.postsByFollowing.posts, ...payload];
-      let posts = _posts.filter((a, b) => a._id !== b._id);
+      let posts = _posts.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t._id === item._id)
+      );
       return {
         ...state,
         postsByFollowing: {

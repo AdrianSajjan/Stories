@@ -9,6 +9,7 @@ import "./Account.css";
 import UpdateName from "./Update-Name/UpdateName";
 import UpdateEmail from "./Update-Email/UpdateEmail";
 import UpdatePassword from "./Update-Password/UpdatePassword";
+import VerifyEmail from "./Verify-Email/Verify-Email";
 
 const Account = ({ user, openSidebar, currentProfile }) => {
   const tabList = [
@@ -80,6 +81,11 @@ const Account = ({ user, openSidebar, currentProfile }) => {
                 exact
                 path="/home/account/update/password"
                 component={UpdatePassword}
+              />
+              <Route
+                exact
+                path="/home/account/verify/:token"
+                component={VerifyEmail}
               />
             </Switch>
           </div>

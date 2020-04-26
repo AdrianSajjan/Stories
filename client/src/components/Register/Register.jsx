@@ -136,11 +136,17 @@ const Register = ({
               invalid={ParamHasError("password") ? true : false}
             />
             <InputGroupAddon addonType="append">
-              { /*prettier-ignore*/ }
-              <button type="button" tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible}>
-                {
-                  passwordVisible ? ( <i className="fa fa-eye"></i> ) : ( <i className="fa fa-eye-slash"></i> )
-                }
+              <button
+                type="button"
+                tabIndex="-1"
+                className="toggle-password-btn"
+                onClick={TogglePasswordVisible}
+              >
+                {passwordVisible ? (
+                  <i className="fa fa-eye"></i>
+                ) : (
+                  <i className="fa fa-eye-slash"></i>
+                )}
               </button>
             </InputGroupAddon>
           </InputGroup>
