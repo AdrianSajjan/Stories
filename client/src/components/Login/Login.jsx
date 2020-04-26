@@ -44,7 +44,7 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login }) => {
   const HandleSubmit = (e) => {
     e.preventDefault();
     ResetFormError();
-    !request && login({ email, password });
+    !request && login({ email: email.trim(), password });
   };
 
   const TogglePasswordVisible = (e) => {

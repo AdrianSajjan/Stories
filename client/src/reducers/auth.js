@@ -9,7 +9,7 @@ import {
   AUTH_ERROR,
   LOGOUT,
   UPDATE_NAME,
-  UPDATE_EMAIL_ERROR,
+  UPDATE_EMAIL,
 } from "../actions/types";
 
 const initialState = {
@@ -84,11 +84,6 @@ export default function (state = initialState, action) {
           email: payload,
         },
         errors: [],
-      };
-    case UPDATE_EMAIL_ERROR:
-      return {
-        ...state,
-        errors: payload,
       };
 
     case REGISTER_FAILED:

@@ -57,7 +57,13 @@ const Register = ({
   const HandleSubmit = (e) => {
     e.preventDefault();
     ResetFormError();
-    !request && register({ name, email, password, confirmPassword });
+    !request &&
+      register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        confirmPassword,
+      });
   };
 
   const ParamHasError = (param) => {

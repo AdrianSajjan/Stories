@@ -10,22 +10,42 @@ import {
   FormFeedback,
 } from "reactstrap";
 
-import { resetAccountError } from "../../../actions/account";
+import { resetAccountError, updateEmail } from "../../../actions/account";
 import { connect } from "react-redux";
 
-const UpdateEmail = ({ user, resetAccountError, errors }) => {
+const UpdateEmail = ({ user, resetAccountError, errors, updateEmail }) => {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
     errors.length > 0 && resetAccountError();
     return () => {
       errors.length > 0 && resetAccountError();
-    };
+    }; // eslint-disable-next-line
   }, []);
+
+  const HandleChange = (e) => {
+    if (errors.length > 0) resetAccountError();
+    setEmail(e.target.value);
+  };
+
+  const HandleSubmit = (e) => {
+    e.preventDefault();
+    updateEmail(email.trim());
+  };
+
+  const EmailHasError = () => {
+    if (!errors || errors.length === 0) return false;
+    return errors.some((error) => error.param === "email");
+  };
+
+  const GetEmailError = () => {
+    const error = errors.find((error) => error.param === "email");
+    return error ? error.msg : "";
+  };
 
   return (
     <Fragment>
-      <Form className="my-4 px-4 px-md-5">
+      <Form className="my-4 px-4 px-md-5" onSubmit={HandleSubmit}>
         <FormGroup>
           <Label>Current Email</Label>
           <Input type="text" value={user.email} readOnly />
@@ -36,9 +56,13 @@ const UpdateEmail = ({ user, resetAccountError, errors }) => {
             type="text"
             placeholder="Enter new email..."
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={HandleChange}
           />
-          <FormText>Enter a valid email</FormText>
+          {EmailHasError() ? (
+            <FormFeedback invalid="true">{GetEmailError()}</FormFeedback>
+          ) : (
+            <FormText>Enter a valid email</FormText>
+          )}
         </FormGroup>
         <Button color="primary" className="mt-3 btn-rounded">
           Update Email
@@ -61,6 +85,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
+  updateEmail: (email) => dispatch(updateEmail(email)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdateEmail);

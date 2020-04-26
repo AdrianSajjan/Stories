@@ -10,22 +10,42 @@ import {
   FormFeedback,
 } from "reactstrap";
 
-import { resetAccountError } from "../../../actions/account";
+import { resetAccountError, updateName } from "../../../actions/account";
 import { connect } from "react-redux";
 
-const UpdateName = ({ user, resetAccountError, errors }) => {
+const UpdateName = ({ user, resetAccountError, errors, updateName }) => {
   const [name, setName] = useState("");
 
   useEffect(() => {
     errors.length > 0 && resetAccountError();
     return () => {
       errors.length > 0 && resetAccountError();
-    };
+    }; //eslint-disable-next-line
   }, []);
+
+  const HandleChange = (e) => {
+    if (errors.length > 0) resetAccountError();
+    setName(e.target.value);
+  };
+
+  const HandleSubmit = (e) => {
+    e.preventDefault();
+    updateName(name.trim());
+  };
+
+  const NameHasError = () => {
+    if (!errors || errors.length === 0) return false;
+    return errors.some((error) => error.param === "name");
+  };
+
+  const GetNameError = () => {
+    const error = errors.find((error) => error.param === "name");
+    return error ? error.msg : "";
+  };
 
   return (
     <Fragment>
-      <Form className="my-4 px-4 px-md-5">
+      <Form className="my-4 px-4 px-md-5" onSubmit={HandleSubmit}>
         <FormGroup>
           <Label>Current Name</Label>
           <Input type="text" value={user.name} readOnly />
@@ -34,11 +54,17 @@ const UpdateName = ({ user, resetAccountError, errors }) => {
           <Label>New Name</Label>
           <Input
             type="text"
+            name="name"
             placeholder="Enter new name..."
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={HandleChange}
+            invalid={NameHasError() ? true : false}
           />
-          <FormText>Enter your real name</FormText>
+          {NameHasError() ? (
+            <FormFeedback invalid="true">{GetNameError()}</FormFeedback>
+          ) : (
+            <FormText>Enter your real name</FormText>
+          )}
         </FormGroup>
         <Button color="primary" className="mt-3 btn-rounded">
           Change Name
@@ -61,6 +87,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
+  updateName: (name) => dispatch(updateName(name)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdateName);

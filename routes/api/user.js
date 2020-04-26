@@ -52,21 +52,24 @@ router.post(
   "/",
   [
     check("name")
+      .trim()
       .not()
       .isEmpty()
       .withMessage("Name cannot be empty")
       .isLength({ min: 3 })
-      .withMessage("Enter your full name"),
+      .withMessage("Enter your full name")
+      .matches(/^[A-Za-z\s]+$/)
+      .withMessage("Name has invalid characters"),
 
     check("email")
+      .trim()
       .not()
       .isEmpty()
       .withMessage("Email cannot be empty")
-      .trim()
       .isEmail()
       .withMessage("Enter a valid email")
       .custom(async (value) => {
-        const user = await User.findOne({ email: value });
+        const user = await User.findOne({ email: value.trim() });
         if (user) throw new Error("Email already in use");
         return true;
       }),
@@ -103,8 +106,8 @@ router.post(
       const hash = await bcrypt.hash(password, salt);
 
       const user = new User({
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         password: hash,
       });
 
@@ -150,14 +153,17 @@ router.post(
     auth,
     [
       check("name")
+        .trim()
         .not()
         .isEmpty()
         .withMessage("Name cannot be empty")
         .isLength({ min: 3 })
         .withMessage("Enter your full name")
+        .matches(/^[A-Za-z\s]+$/)
+        .withMessage("Name has invalid characters")
         .custom(async (value, { req }) => {
           const user = await User.findById(req.user.id);
-          if (user && user.name === value)
+          if (user && user.name === value.trim())
             throw new Error("Old and new name cannot be same");
           return true;
         }),
@@ -197,7 +203,7 @@ router.post(
 
 /**
  * @route : POST api/user/update/email
- * @desc : Update User Name
+ * @desc : Update User Email
  * @access : Private
  */
 router.post(
@@ -206,14 +212,14 @@ router.post(
     auth,
     [
       check("email")
+        .trim()
         .not()
         .isEmpty()
         .withMessage("Email cannot be empty")
-        .trim()
         .isEmail()
         .withMessage("Enter a valid email")
         .custom(async (value, { req }) => {
-          let user = await User.findOne({ email: value });
+          let user = await User.findOne({ email: value.trim() });
           if (user) {
             if (user._id === req.user.id)
               throw new Error("New and old email cannot be same");
@@ -244,7 +250,7 @@ router.post(
           errors: [{ msg: "Account doesn't exist" }],
         });
 
-      user.email = email;
+      user.email = email.trim();
       user.validated = false;
       await user.save();
 

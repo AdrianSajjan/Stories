@@ -10,7 +10,7 @@ import UpdateName from "./Update-Name/UpdateName";
 import UpdateEmail from "./Update-Email/UpdateEmail";
 import UpdatePassword from "./Update-Password/UpdatePassword";
 
-const Account = ({ openSidebar, currentProfile }) => {
+const Account = ({ user, openSidebar, currentProfile }) => {
   const tabList = [
     { name: "Change Name", color: "info", route: "update/name" },
     { name: "Update Email", color: "info", route: "update/email" },
@@ -23,17 +23,27 @@ const Account = ({ openSidebar, currentProfile }) => {
   const AccountTabs = () => {
     return (
       <div className="account-tabs">
-        {tabList.map(({ route, color, name }) => (
+        {user.validated && (
+          <Fragment>
+            <p className="text-danger px-3 text-center">
+              <i className="fa fa-exclamation-triangle"></i> Your email address{" "}
+              <strong>{user.email}</strong> is not verified. Check your email
+              for a verification link or request a new one.
+            </p>
+            <Button color="success" className="account-tab mb-4">
+              Verify Email
+            </Button>
+          </Fragment>
+        )}
+        {tabList.map(({ route, color, name }, index) => (
           <Link
+            key={index}
             to={`/home/account/${route}`}
             className={`btn btn-${color} account-tab mt-2`}
           >
             {name}
           </Link>
         ))}
-        <Button color="success" className="account-tab mt-2">
-          Resend Email Token
-        </Button>
       </div>
     );
   };
@@ -94,6 +104,7 @@ Account.propTypes = {
 
 const mapStateToProps = (state) => ({
   currentProfile: state.profile.currentProfile,
+  user: state.auth.user,
 });
 
 const mapDispatchToProps = (dispatch) => ({

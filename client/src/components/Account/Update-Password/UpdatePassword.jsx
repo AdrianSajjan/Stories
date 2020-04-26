@@ -25,7 +25,7 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
     errors.length > 0 && resetAccountError();
     return () => {
       errors.length > 0 && resetAccountError();
-    };
+    }; //eslint-disable-next-line
   }, []);
 
   const [password, setPassword] = useState({
