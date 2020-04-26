@@ -30,6 +30,7 @@ const UpdateEmail = ({ user, resetAccountError, errors, updateEmail }) => {
 
   const HandleSubmit = (e) => {
     e.preventDefault();
+    if (errors.length > 0) resetAccountError();
     updateEmail(email.trim());
   };
 
@@ -57,6 +58,7 @@ const UpdateEmail = ({ user, resetAccountError, errors, updateEmail }) => {
             placeholder="Enter new email..."
             value={email}
             onChange={HandleChange}
+            invalid={EmailHasError()}
           />
           {EmailHasError() ? (
             <FormFeedback invalid="true">{GetEmailError()}</FormFeedback>

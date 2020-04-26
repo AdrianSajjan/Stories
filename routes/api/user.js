@@ -344,7 +344,12 @@ router.post(
           errors: [{ msg: "Account doesn't exist" }],
         });
 
-      user.password = newPassword;
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(newPassword, salt);
+
+      console.log(newPassword);
+
+      user.password = hash;
       await user.save();
 
       res.json({ msg: "Password has been updated" });

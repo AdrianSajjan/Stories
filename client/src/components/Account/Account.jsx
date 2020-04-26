@@ -23,7 +23,7 @@ const Account = ({ user, openSidebar, currentProfile }) => {
   const AccountTabs = () => {
     return (
       <div className="account-tabs">
-        {user.validated && (
+        {!user.validated && (
           <Fragment>
             <p className="text-danger px-3 text-center">
               <i className="fa fa-exclamation-triangle"></i> Your email address{" "}

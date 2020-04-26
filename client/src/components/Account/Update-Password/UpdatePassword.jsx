@@ -8,17 +8,22 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  FormText,
   FormFeedback,
 } from "reactstrap";
 
 import {
   removePasswordError,
   resetAccountError,
+  updatePassword,
 } from "../../../actions/account";
 import { connect } from "react-redux";
 
-const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
+const UpdatePassword = ({
+  removePasswordError,
+  resetAccountError,
+  errors,
+  updatePassword,
+}) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   useEffect(() => {
@@ -41,6 +46,18 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
       ...password,
       [e.target.name]: e.target.value,
     });
+    if (ParamHasError(e.target.name)) removePasswordError(e.target.name);
+  };
+
+  const HandleSubmit = (e) => {
+    e.preventDefault();
+    if (errors.length > 0) resetAccountError();
+    updatePassword(password);
+    setPassword({
+      oldPassword: "",
+      newPassword: "",
+      confirmNewPassword: "",
+    });
   };
 
   const TogglePasswordVisible = (e) => {
@@ -48,9 +65,19 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
     setPasswordVisible((prevState) => !prevState);
   };
 
+  const ParamHasError = (param) => {
+    if (!errors || errors.length === 0) return false;
+    return errors.some((error) => error.param === param);
+  };
+
+  const GetParamError = (param) => {
+    const error = errors.find((error) => error.param === param);
+    return error ? error.msg : "";
+  };
+
   return (
     <Fragment>
-      <Form className="my-4 px-4 px-md-5">
+      <Form className="my-4 px-4 px-md-5" onSubmit={HandleSubmit}>
         <FormGroup>
           <Label for="old-password-input">Current Password</Label>
           <InputGroup>
@@ -61,6 +88,7 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
               name="oldPassword"
               value={oldPassword}
               onChange={HandleChange}
+              invalid={ParamHasError("oldPassword")}
             />
             <InputGroupAddon addonType="append">
               { /*prettier-ignore*/ }
@@ -71,6 +99,9 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
               </button>
             </InputGroupAddon>
           </InputGroup>
+          <FormFeedback className="d-block" invalid="true">
+            {GetParamError("oldPassword")}
+          </FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="new-password-input">New Password</Label>
@@ -81,7 +112,11 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
             name="newPassword"
             value={newPassword}
             onChange={HandleChange}
+            invalid={ParamHasError("newPassword")}
           />
+          <FormFeedback invalid="true">
+            {GetParamError("newPassword")}
+          </FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="confirm-new-password-input">Confirm Password</Label>
@@ -92,7 +127,11 @@ const UpdatePassword = ({ removePasswordError, resetAccountError, errors }) => {
             name="confirmNewPassword"
             value={confirmNewPassword}
             onChange={HandleChange}
+            invalid={ParamHasError("confirmNewPassword")}
           />
+          <FormFeedback invalid="true">
+            {GetParamError("confirmNewPassword")}
+          </FormFeedback>
         </FormGroup>
         <Button color="primary" className="mt-3 btn-rounded">
           Update Password
@@ -115,7 +154,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
-  removePasswordError: () => dispatch(removePasswordError()),
+  removePasswordError: (param) => dispatch(removePasswordError(param)),
+  updatePassword: (password) => dispatch(updatePassword(password)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UpdatePassword);

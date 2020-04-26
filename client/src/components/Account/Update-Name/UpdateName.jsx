@@ -30,6 +30,7 @@ const UpdateName = ({ user, resetAccountError, errors, updateName }) => {
 
   const HandleSubmit = (e) => {
     e.preventDefault();
+    if (errors.length > 0) resetAccountError();
     updateName(name.trim());
   };
 
@@ -58,7 +59,7 @@ const UpdateName = ({ user, resetAccountError, errors, updateName }) => {
             placeholder="Enter new name..."
             value={name}
             onChange={HandleChange}
-            invalid={NameHasError() ? true : false}
+            invalid={NameHasError()}
           />
           {NameHasError() ? (
             <FormFeedback invalid="true">{GetNameError()}</FormFeedback>
