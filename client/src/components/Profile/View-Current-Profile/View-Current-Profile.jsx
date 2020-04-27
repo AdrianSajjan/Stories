@@ -60,9 +60,15 @@ const ViewCurrentProfile = ({ currentProfile, userPosts }) => {
     );
   };
 
+  const getProfileImage = () => {
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length)
+      return profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <Fragment>
-      <ViewProfile profile={profile} image={DefaultImage} owner={true} />
+      <ViewProfile profile={profile} image={getProfileImage()} owner={true} />
       <div className="view-posts mt-5">
         <div className="profile-tabs d-flex">
           {tabList.map(({ name, count }, index) => (

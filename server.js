@@ -6,6 +6,7 @@ const authRouter = require("./routes/api/auth");
 const userRouter = require("./routes/api/user");
 const profileRouter = require("./routes/api/profile");
 const postRouter = require("./routes/api/post");
+const uploadRouter = require("./routes/api/upload");
 require("dotenv").config();
 
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,7 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/post", postRouter);
+app.use("/api/uploads", uploadRouter);
 
 server.listen(PORT, () => {
   console.log(`App running on PORT ${PORT}...`);

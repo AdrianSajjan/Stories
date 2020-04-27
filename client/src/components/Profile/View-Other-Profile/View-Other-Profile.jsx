@@ -84,12 +84,18 @@ const ViewOtherProfile = ({
     );
   };
 
+  const getProfileImage = () => {
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length)
+      return profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <Fragment>
       <ViewProfile
         currentProfile={currentProfile.profile}
         profile={profile}
-        image={DefaultImage}
+        image={getProfileImage()}
         owner={false}
       />
       <div className="view-posts mt-5">

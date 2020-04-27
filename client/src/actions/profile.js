@@ -15,6 +15,8 @@ import {
   END_OF_SEARCH_PROFILES,
   CLEAR_SEARCH_PROFILES,
   REMOVE_DISCOVER_PROFILE,
+  GET_PROFILE_IMAGE,
+  SET_PROFILE_IMAGE,
 } from "./types";
 
 const config = {
@@ -64,6 +66,29 @@ export const setProfile = (data) => async (dispatch) => {
     } else {
       dispatch(setAlert("Failed!", err.response, "danger"));
     }
+  }
+};
+
+export const uploadProfileImage = (formData, config) => async (dispatch) => {
+  dispatch({
+    type: GET_PROFILE_IMAGE,
+  });
+
+  try {
+    const res = await axios.post("/api/uploads/profile", formData, config);
+    dispatch({
+      type: SET_PROFILE_IMAGE,
+      payload: res.data,
+    });
+    dispatch(setAlert("Success", "Profile Updated Successfully!", "success"));
+  } catch (err) {
+    dispatch(
+      setAlert(
+        "Failed",
+        err.response.data ? err.response.data : err.response,
+        "danger"
+      )
+    );
   }
 };
 

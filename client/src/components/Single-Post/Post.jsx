@@ -63,10 +63,21 @@ const Post = ({ post, currentProfile, likePost }) => {
     );
   };
 
+  const getProfileImage = () => {
+    if (
+      post.profile &&
+      post.profile.avatar &&
+      post.profile.avatar.url &&
+      post.profile.avatar.url.length
+    )
+      return post.profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <div className="post mt-3">
       <div className="post-header px-3 pt-4">
-        <img src={DefaultImage} alt="profile" className="post-image" />
+        <img src={getProfileImage()} alt="profile" className="post-image" />
         <p className="post-username m-0 ml-2">@{post.profile.username}</p>
         <small className="post-time m-0 ml-auto">{time}</small>
       </div>

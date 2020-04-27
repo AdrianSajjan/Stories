@@ -72,13 +72,25 @@ const PostComment = ({
     const UpdateTime = () => {
       setTime(moment(comment.date).fromNow());
     };
+
+    const getProfileImage = () => {
+      if (
+        comment.profile &&
+        comment.profile.avatar &&
+        comment.profile.avatar.url &&
+        comment.profile.avatar.url.length
+      )
+        return comment.profile.avatar.url;
+      else return DefaultImage;
+    };
+
     return (
       <Fragment>
         <div key={comment._id} className="recent-comment">
           <hr className="my-2" />
           <div className="d-flex align-items-center">
             <img
-              src={DefaultImage}
+              src={getProfileImage()}
               alt="profile"
               className="comment-profile-img my-0"
             />

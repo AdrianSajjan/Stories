@@ -5,7 +5,7 @@ import { createPost } from "../../../actions/post";
 import { connect } from "react-redux";
 import "./CreatePost.css";
 
-const CreatePost = ({ createPost }) => {
+const CreatePost = ({ createPost, profile }) => {
   // Create-Post
   const minRows = 2;
   const [post, setPost] = useState("");
@@ -32,12 +32,23 @@ const CreatePost = ({ createPost }) => {
     setPost("");
   };
 
+  const getProfileImage = () => {
+    if (
+      profile &&
+      profile.avatar &&
+      profile.avatar.url &&
+      profile.avatar.url.length
+    )
+      return profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <Fragment>
       <Form className="p-4 post-form" onSubmit={HandleSubmit}>
         <div className="d-flex align-items-start justify-content-center">
           <img
-            src={DefaultImage}
+            src={getProfileImage()}
             alt="profile"
             className="timeline-profile-img"
           />

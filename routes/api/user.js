@@ -487,10 +487,6 @@ router.delete(
           ],
         });
 
-      res.json({
-        msg: "Account deletion process has begun. It may take some time.",
-      });
-
       // Delete User Likes
       const likedPost = await Post.find({ "likes.user": userID });
 
@@ -584,6 +580,10 @@ router.delete(
 
       await user.remove();
       console.log(`Completely deleted user: ${userID}`);
+
+      res.json({
+        msg: "Account deleted successfully",
+      });
     } catch (err) {
       console.log(err.message);
       res.status(500).send(SERVER);

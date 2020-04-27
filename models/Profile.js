@@ -17,8 +17,8 @@ const ProfileSchema = new Schema({
     lastseen: Date,
   },
   avatar: {
-    src: String,
-    name: String,
+    url: String,
+    public_id: String,
   },
   dob: {
     type: Date,

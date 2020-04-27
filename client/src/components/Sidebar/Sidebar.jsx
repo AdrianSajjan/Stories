@@ -83,6 +83,17 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
     />
   );
 
+  const getProfileImage = () => {
+    if (
+      profile &&
+      profile.avatar &&
+      profile.avatar.url &&
+      profile.avatar.url.length
+    )
+      return profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <CSSTransition in={toggleState} timeout={300} classNames="sidebar">
       <section className="sidebar bg-light fixed-top">
@@ -99,7 +110,7 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
           </div>
           <div className="sidebar-profile mt-4">
             <img
-              src={DefaultImage}
+              src={getProfileImage()}
               alt="profile"
               className="sidebar-profile-img"
             />

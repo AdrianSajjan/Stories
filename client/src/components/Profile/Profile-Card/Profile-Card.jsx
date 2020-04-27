@@ -47,6 +47,12 @@ const ProfileCard = ({
     );
   };
 
+  const getProfileImage = () => {
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length)
+      return profile.avatar.url;
+    else return DefaultImage;
+  };
+
   return (
     <Fragment>
       <div className="profile-card px-2">
@@ -56,7 +62,11 @@ const ProfileCard = ({
               <span className="close-icon">&times;</span>
             </button>
           )}
-          <img src={DefaultImage} alt="profile" className="profile-card-img" />
+          <img
+            src={getProfileImage()}
+            alt="profile"
+            className="profile-card-img"
+          />
           <p className="profile-card-username text-dark mt-2">
             @{profile.username}
           </p>

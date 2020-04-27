@@ -15,12 +15,15 @@ import {
   SET_SEARCH_PROFILES,
   END_OF_SEARCH_PROFILES,
   CLEAR_SEARCH_PROFILES,
+  GET_PROFILE_IMAGE,
+  SET_PROFILE_IMAGE,
 } from "../actions/types";
 
 const initialState = {
   currentProfile: {
     profile: null,
     loading: true,
+    upload: false,
   },
   profileByID: {
     profile: null,
@@ -48,7 +51,29 @@ export default function (state = initialState, action) {
     case SET_PROFILE:
       return {
         ...state,
-        currentProfile: { profile: payload, loading: false },
+        currentProfile: {
+          ...state.currentProfile,
+          profile: payload,
+          loading: false,
+        },
+      };
+
+    case GET_PROFILE_IMAGE:
+      return {
+        ...state,
+        currentProfile: {
+          ...state.currentProfile,
+          upload: false,
+        },
+      };
+    case SET_PROFILE_IMAGE:
+      return {
+        ...state,
+        currentProfile: {
+          profile: payload,
+          loading: false,
+          upload: false,
+        },
       };
 
     case PROFILE_ERROR:

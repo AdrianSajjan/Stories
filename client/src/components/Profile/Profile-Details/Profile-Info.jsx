@@ -19,7 +19,7 @@ import "./Profile-Details.css";
 
 const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
   // Profile Info
-  const { profile, loading: profileLoading } = currentProfile;
+  const { profile, loading: profileLoading, upload } = currentProfile;
 
   const [formData, setFormData] = useState({
     username: "",
@@ -64,7 +64,7 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
 
   const HandleSubmit = (event) => {
     event.preventDefault();
-    setProfile(formData);
+    if (!upload) setProfile(formData);
   };
 
   const ParamHasError = (param) => {
@@ -82,7 +82,7 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
         <Spinner className="d-block mx-auto my-5" />
       ) : (
         <Fragment>
-          <ProfileImage />
+          <ProfileImage profile={profile} upload={upload} />
           <Form className="my-5 px-4 px-md-5" onSubmit={HandleSubmit}>
             <FormGroup>
               <Label htmlFor="username-input">Username</Label>
@@ -177,7 +177,12 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               />
               <FormText>{250 - bio.length}/250</FormText>
             </FormGroup>
-            <Button type="submit" className="mt-2" color="primary">
+            <Button
+              type="submit"
+              className="mt-2"
+              color="primary"
+              disabled={upload ? true : false}
+            >
               {profile !== null ? "Update Profile" : "Create Profile"}
             </Button>
             <Button

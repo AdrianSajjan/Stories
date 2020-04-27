@@ -32,9 +32,9 @@ router.get("/", auth, async (req, res) => {
     })
       .skip(page * limit)
       .limit(limit)
-      .populate("profile", "username")
-      .populate("comments.profile", "username")
-      .populate("likes.profile", "username")
+      .populate("profile")
+      .populate("comments.profile")
+      .populate("likes.profile")
       .sort("-date");
     res.json(posts);
   } catch (err) {
@@ -52,9 +52,9 @@ router.get("/me", auth, async (req, res) => {
   const id = req.user.id;
   try {
     const posts = await Post.find({ user: id })
-      .populate("profile", "username")
-      .populate("comments.profile", "username")
-      .populate("likes.profile", "username")
+      .populate("profile")
+      .populate("comments.profile")
+      .populate("likes.profile")
       .sort("-date");
     res.json(posts);
   } catch (err) {
@@ -75,9 +75,9 @@ router.get("/user/:id", auth, async (req, res) => {
 
   try {
     const posts = await Post.find({ user: id })
-      .populate("profile", "username")
-      .populate("comments.profile", "username")
-      .populate("likes.profile", "username")
+      .populate("profile")
+      .populate("comments.profile")
+      .populate("likes.profile")
       .sort("-date");
     res.json(posts);
   } catch (err) {
@@ -119,9 +119,9 @@ router.post(
       });
       await post.save();
       await post
-        .populate("profile", "username")
-        .populate("comments.profile", "username")
-        .populate("likes.profile", "username")
+        .populate("profile")
+        .populate("comments.profile")
+        .populate("likes.profile")
         .execPopulate();
       res.send(post);
     } catch (err) {
@@ -197,9 +197,9 @@ router.put("/like/:post", auth, async (req, res) => {
       post.likes = post.likes.filter((like) => like.user != id);
       await post.save();
       await post
-        .populate("profile", "username")
-        .populate("comments.profile", "username")
-        .populate("likes.profile", "username")
+        .populate("profile")
+        .populate("comments.profile")
+        .populate("likes.profile")
         .execPopulate();
 
       return res.json(post);
@@ -208,9 +208,9 @@ router.put("/like/:post", auth, async (req, res) => {
     post.likes.push({ user: id, profile: profile.id, date: new Date() });
     await post.save();
     await post
-      .populate("profile", "username")
-      .populate("comments.profile", "username")
-      .populate("likes.profile", "username")
+      .populate("profile")
+      .populate("comments.profile")
+      .populate("likes.profile")
       .execPopulate();
 
     res.json(post);
@@ -273,9 +273,9 @@ router.put(
 
       await post.save();
       await post
-        .populate("profile", "username")
-        .populate("comments.profile", "username")
-        .populate("likes.profile", "username")
+        .populate("profile")
+        .populate("comments.profile")
+        .populate("likes.profile")
         .execPopulate();
 
       res.json(post);
@@ -322,9 +322,9 @@ router.delete("/comment/:comment", auth, async (req, res) => {
 
     await post.save();
     await post
-      .populate("profile", "username")
-      .populate("comments.profile", "username")
-      .populate("likes.profile", "username")
+      .populate("profile")
+      .populate("comments.profile")
+      .populate("likes.profile")
       .execPopulate();
 
     res.json(post);
