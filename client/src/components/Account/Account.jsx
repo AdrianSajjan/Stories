@@ -1,17 +1,23 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
 import { Switch, Link, Route } from "react-router-dom";
 import { Row, Col, Button, Spinner } from "reactstrap";
 import { openSidebar } from "../../actions/sidebar";
 import Discover from "../Discover/Discover";
 import { connect } from "react-redux";
-import "./Account.css";
+import { requestVerificationToken } from "../../actions/account";
 import UpdateName from "./Update-Name/UpdateName";
 import UpdateEmail from "./Update-Email/UpdateEmail";
 import UpdatePassword from "./Update-Password/UpdatePassword";
 import VerifyEmail from "./Verify-Email/Verify-Email";
+import "./Account.css";
 
-const Account = ({ user, openSidebar, currentProfile }) => {
+const Account = ({
+  user,
+  openSidebar,
+  currentProfile,
+  requestVerificationToken,
+}) => {
   const tabList = [
     { name: "Change Name", color: "info", route: "update/name" },
     { name: "Update Email", color: "info", route: "update/email" },
@@ -20,6 +26,14 @@ const Account = ({ user, openSidebar, currentProfile }) => {
   ];
 
   const { profile, loading: userLoading } = currentProfile;
+
+  const [requestVerification, setRequestVerification] = useState(false);
+
+  const requestToken = () => {
+    if (requestVerification) return;
+    setRequestVerification(true);
+    requestVerificationToken(setRequestVerification);
+  };
 
   const AccountTabs = () => {
     return (
@@ -31,8 +45,13 @@ const Account = ({ user, openSidebar, currentProfile }) => {
               <strong>{user.email}</strong> is not verified. Check your email
               for a verification link or request a new one.
             </p>
-            <Button color="success" className="account-tab mb-4">
-              Verify Email
+            <Button
+              color="success"
+              className="account-tab mb-4"
+              disabled={requestVerification}
+              onClick={requestToken}
+            >
+              {requestVerification ? "Requesting..." : "Verify Email"}
             </Button>
           </Fragment>
         )}
@@ -115,6 +134,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   openSidebar: () => dispatch(openSidebar()),
+  requestVerificationToken: (setState) =>
+    dispatch(requestVerificationToken(setState)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Account);

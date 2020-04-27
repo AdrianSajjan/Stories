@@ -375,7 +375,12 @@ router.get("/confirm/request_token", auth, async (req, res) => {
     if (!user)
       return res.status(404).json({
         type: NOTFOUND,
-        errors: [{ msg: "Account doesn't exist " }],
+        error: { msg: "Account doesn't exist " },
+      });
+
+    if (user.validated)
+      return res.status(400).json({
+        msg: "Email already verified",
       });
 
     const payload_EMAIL = {

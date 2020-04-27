@@ -29,11 +29,7 @@ export const updateName = (name) => async (dispatch) => {
       });
     } else {
       dispatch(
-        setAlert(
-          `Error: ${err.response.status}`,
-          err.response.data ? err.response.data : err.response,
-          "danger"
-        )
+        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
       );
     }
   }
@@ -57,11 +53,7 @@ export const updateEmail = (email) => async (dispatch) => {
       });
     } else {
       dispatch(
-        setAlert(
-          `Error: ${err.response.status}`,
-          err.response.data ? err.response.data : err.response,
-          "danger"
-        )
+        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
       );
     }
   }
@@ -80,11 +72,7 @@ export const updatePassword = (password) => async (dispatch) => {
       });
     } else {
       dispatch(
-        setAlert(
-          `Error: ${err.response.status}`,
-          err.response.data ? err.response.data : err.response,
-          "danger"
-        )
+        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
       );
     }
   }
@@ -108,4 +96,19 @@ export const verifyEmail = (verify) => (dispatch) => {
     type: VERIFY_EMAIL,
     payload: verify,
   });
+};
+
+export const requestVerificationToken = (setState) => (dispatch) => {
+  axios
+    .get("/api/user/confirm/request_token")
+    .then((res) => {
+      dispatch(setAlert("Success", res.data.msg, "success"));
+      setState(false);
+    })
+    .catch((err) => {
+      dispatch(
+        setAlert("Failed", err.response.data.msg || err.response.data, "danger")
+      );
+      setState(false);
+    });
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import DefaultImage from "../../../assets/images/sample-profile-picture.png";
 import { connect } from "react-redux";
 import { uploadProfileImage } from "../../../actions/profile";
+import { Spinner } from "reactstrap";
 
 const ProfileImage = ({ profile, uploadProfileImage, upload }) => {
   // ProfileImage
@@ -77,7 +78,7 @@ const ProfileImage = ({ profile, uploadProfileImage, upload }) => {
           className="btn btn-primary mb-2 ml-2"
           disabled={image !== null && !upload ? false : true}
         >
-          Upload
+          {!upload ? "Upload" : <Spinner size="sm" color="white" />}
         </button>
       </div>
     </form>

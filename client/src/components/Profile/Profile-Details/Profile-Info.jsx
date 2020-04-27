@@ -183,7 +183,11 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               color="primary"
               disabled={upload ? true : false}
             >
-              {profile !== null ? "Update Profile" : "Create Profile"}
+              {profile !== null
+                ? !upload
+                  ? "Update Profile"
+                  : "Uploading..."
+                : "Create Profile"}
             </Button>
             <Button
               type="button"

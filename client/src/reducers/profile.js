@@ -63,7 +63,7 @@ export default function (state = initialState, action) {
         ...state,
         currentProfile: {
           ...state.currentProfile,
-          upload: false,
+          upload: true,
         },
       };
     case SET_PROFILE_IMAGE:
