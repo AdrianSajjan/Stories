@@ -1,8 +1,10 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { Row, Col } from "reactstrap";
-import { openSidebar } from "../../actions/sidebar";
 import { connect } from "react-redux";
+import { openSidebar } from "../../actions/sidebar";
+import FollowingList from "./Following-List/Following-List";
+import "./Chats.css";
 
 const Chats = ({ openSidebar }) => {
   return (
@@ -18,10 +20,12 @@ const Chats = ({ openSidebar }) => {
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
             </button>
-            <h1 className="main-title text-secondary">Chats</h1>
+            <h1 className="main-title text-primary">Chats</h1>
           </div>
         </Col>
-        <Col lg="4" className="side-area d-none d-lg-block"></Col>
+        <Col lg="4" className="side-area">
+          <FollowingList />
+        </Col>
       </Row>
     </Fragment>
   );

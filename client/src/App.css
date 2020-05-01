@@ -104,6 +104,10 @@ label {
   color: var(--jelly-bean);
 }
 
+.leading-1 {
+  letter-spacing: 0.3px;
+}
+
 .border-right-none {
   border-right: none !important;
 }
