@@ -1,80 +1,71 @@
-import React, { useState, useEffect, Fragment } from "react";
-import PropTypes from "prop-types";
-import DatePicker from "react-datepicker";
-import {
-  Form,
-  Input,
-  Button,
-  FormGroup,
-  Label,
-  FormFeedback,
-  FormText,
-  Spinner,
-} from "reactstrap";
-import { connect } from "react-redux";
-import { setProfile } from "../../../actions/profile";
-import ProfileImage from "./Profile-Image";
-import "react-datepicker/dist/react-datepicker.css";
-import "./Profile-Details.css";
+import React, { useState, useEffect, Fragment } from 'react'
+import PropTypes from 'prop-types'
+import DatePicker from 'react-datepicker'
+import { Form, Input, Button, FormGroup, Label, FormFeedback, FormText, Spinner } from 'reactstrap'
+import { connect } from 'react-redux'
+import { setProfile } from '../../../actions/profile'
+import ProfileImage from './Profile-Image'
+import 'react-datepicker/dist/react-datepicker.css'
+import './Profile-Details.css'
 
 const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
   // Profile Info
-  const { profile, loading: profileLoading, upload } = currentProfile;
+  const { profile, loading: profileLoading, upload } = currentProfile
 
   const [formData, setFormData] = useState({
-    username: "",
+    username: '',
     dob: new Date(),
-    bio: "",
-    country: "",
-    state: "",
-    locality: "",
-  });
+    bio: '',
+    country: '',
+    state: '',
+    locality: ''
+  })
 
-  const { username, dob, bio, country, state, locality } = formData;
+  const { username, dob, bio, country, state, locality } = formData
 
   const InitFields = () => {
     setFormData({
       username: profile.username,
       dob: new Date(profile.dob),
       country: profile.country,
-      bio: profile.bio || "",
-      state: profile.state || "",
-      locality: profile.locality || "",
-    });
-  };
+      bio: profile.bio || '',
+      state: profile.state || '',
+      locality: profile.locality || ''
+    })
+  }
 
   useEffect(() => {
-    if (profile !== null) InitFields();
+    if (profile !== null) InitFields()
     // eslint-disable-next-line
-  }, [profile]);
+  }, [profile])
 
   const HandleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+      [e.target.name]: e.target.value
+    })
+  }
 
   const HandleDate = (value) => {
     setFormData({
       ...formData,
-      dob: value,
-    });
-  };
+      dob: value
+    })
+  }
 
   const HandleSubmit = (event) => {
-    event.preventDefault();
-    if (!upload) setProfile(formData);
-  };
+    event.preventDefault()
+    if (!upload) setProfile(formData)
+  }
 
   const ParamHasError = (param) => {
-    return errors.some((error) => error.param && error.param === param);
-  };
+    return errors.some((error) => error.param && error.param === param)
+  }
 
   const GetParamError = (param) => {
-    const error = errors.find((error) => error.param && error.param === param);
-    return error ? error.msg : "";
-  };
+    const error = errors.find((error) => error.param && error.param === param)
+    return error ? error.msg : ''
+  }
 
   return (
     <Fragment>
@@ -89,38 +80,25 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               <Input
                 id="username-input"
                 name="username"
-                invalid={ParamHasError("username") ? true : false}
+                invalid={ParamHasError('username') ? true : false}
                 placeholder="Give yourself an username"
                 value={username}
                 onChange={HandleChange}
               />
-              {!ParamHasError("username") ? (
+              {!ParamHasError('username') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">
-                  {GetParamError("username")}
-                </FormFeedback>
+                <FormFeedback invalid="true">{GetParamError('username')}</FormFeedback>
               )}
             </FormGroup>
             <FormGroup className="d-flex flex-column">
               <Label htmlFor="dob-input">Date of birth</Label>
-              <DatePicker
-                name="dob"
-                id="dob-input"
-                className="form-control"
-                selected={dob}
-                onChange={HandleDate}
-              />
-              <Input
-                invalid={ParamHasError("dob") ? true : false}
-                className="d-none"
-              />
-              {!ParamHasError("dob") ? (
+              <DatePicker name="dob" id="dob-input" className="form-control" selected={dob} onChange={HandleDate} />
+              <Input invalid={ParamHasError('dob') ? true : false} className="d-none" />
+              {!ParamHasError('dob') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">
-                  {GetParamError("dob")}
-                </FormFeedback>
+                <FormFeedback invalid="true">{GetParamError('dob')}</FormFeedback>
               )}
             </FormGroup>
             <FormGroup>
@@ -128,17 +106,15 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               <Input
                 id="country-input"
                 name="country"
-                invalid={ParamHasError("country") ? true : false}
+                invalid={ParamHasError('country') ? true : false}
                 placeholder="Which country are you presently living?"
                 value={country}
                 onChange={HandleChange}
               />
-              {!ParamHasError("country") ? (
+              {!ParamHasError('country') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">
-                  {GetParamError("country")}
-                </FormFeedback>
+                <FormFeedback invalid="true">{GetParamError('country')}</FormFeedback>
               )}
             </FormGroup>
             <FormGroup>
@@ -177,46 +153,32 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               />
               <FormText>{250 - bio.length}/250</FormText>
             </FormGroup>
-            <Button
-              type="submit"
-              className="mt-2"
-              color="primary"
-              disabled={upload ? true : false}
-            >
-              {profile !== null
-                ? !upload
-                  ? "Update Profile"
-                  : "Uploading..."
-                : "Create Profile"}
+            <Button type="submit" className="mt-2" color="primary" disabled={upload ? true : false}>
+              {profile !== null ? (!upload ? 'Update Profile' : 'Uploading...') : 'Create Profile'}
             </Button>
-            <Button
-              type="button"
-              className="mt-2 ml-2"
-              color="secondary"
-              onClick={InitFields}
-            >
+            <Button type="button" className="mt-2 ml-2" color="secondary" onClick={InitFields}>
               Cancel
             </Button>
           </Form>
         </Fragment>
       )}
     </Fragment>
-  );
-};
+  )
+}
 
 ProfileInfo.propTypes = {
   currentProfile: PropTypes.object.isRequired,
   setProfile: PropTypes.func.isRequired,
-  errors: PropTypes.array.isRequired,
-};
+  errors: PropTypes.array.isRequired
+}
 
 const mapStateToProps = (state) => ({
   currentProfile: state.profile.currentProfile,
-  errors: state.profile.errors,
-});
+  errors: state.profile.errors
+})
 
 const mapDispatchToProps = (dispatch) => ({
-  setProfile: (data) => dispatch(setProfile(data)),
-});
+  setProfile: (data) => dispatch(setProfile(data))
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileInfo)
