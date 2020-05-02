@@ -1,54 +1,42 @@
-import React from "react";
-import moment from "moment";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import { Button } from "reactstrap";
-import { connect } from "react-redux";
-import { updateFollowing } from "../../../actions/profile";
+import React from 'react'
+import moment from 'moment'
+import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
+import { Button } from 'reactstrap'
+import { connect } from 'react-redux'
+import { updateFollowing } from '../../../actions/profile'
 
-const ViewProfile = ({
-  currentProfile,
-  image,
-  profile,
-  owner,
-  updateFollowing,
-}) => {
+const ViewProfile = ({ currentProfile, image, profile, owner, updateFollowing }) => {
   const GetLocation = ({ locality, state, country }) => {
-    let location = "";
-    if (locality) location = location.concat(`${locality}, `);
-    if (state) location = location.concat(`${state}, `);
-    return location.concat(country);
-  };
+    let location = ''
+    if (locality) location = location.concat(`${locality}, `)
+    if (state) location = location.concat(`${state}, `)
+    return location.concat(country)
+  }
 
   const FollowBtn = () => {
-    if (owner) return null;
+    if (owner) return null
 
-    const isFollowing = currentProfile.following.some(
-      (follow) => follow.profile._id === profile._id
-    );
+    const isFollowing = currentProfile.following.some((follow) => follow.profile._id === profile._id)
 
     if (isFollowing)
       return (
-        <Button
-          outline
-          color="primary"
-          className="mt-4"
-          onClick={() => updateFollowing(profile.user)}
-        >
-          Unfollow User
-        </Button>
-      );
+        <div className="d-flex flex-column flex-sm-row mt-4">
+          <Button color="success" className="mr-sm-2">
+            Message User
+          </Button>
+          <Button outline color="primary" className="ml-sm-2 mt-2 mt-sm-0" onClick={() => updateFollowing(profile.user)}>
+            Unfollow User
+          </Button>
+        </div>
+      )
 
     return (
-      <Button
-        color="primary"
-        className="mt-4"
-        onClick={() => updateFollowing(profile.user)}
-      >
+      <Button color="primary" className="mt-4" onClick={() => updateFollowing(profile.user)}>
         Follow User
       </Button>
-    );
-  };
+    )
+  }
 
   return (
     <div className="container-fluid">
@@ -62,9 +50,7 @@ const ViewProfile = ({
             </div>
             <div>
               <p className="text-dark profile-label">Age:</p>
-              <p className="text-muted profile-info">
-                {moment().diff(profile.dob, "year", false)} Years
-              </p>
+              <p className="text-muted profile-info">{moment().diff(profile.dob, 'year', false)} Years</p>
             </div>
             <div>
               <p className="text-dark profile-label">Location:</p>
@@ -78,10 +64,7 @@ const ViewProfile = ({
           </div>
         )}
         {owner ? (
-          <Link
-            to="/home/profile/edit"
-            className={"btn btn-primary " + (profile.bio ? "mt-2" : "mt-4")}
-          >
+          <Link to="/home/profile/edit" className={'btn btn-primary ' + (profile.bio ? 'mt-2' : 'mt-4')}>
             Edit Profile
           </Link>
         ) : (
@@ -89,17 +72,17 @@ const ViewProfile = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
 ViewProfile.propTypes = {
   image: PropTypes.any.isRequired,
   profile: PropTypes.object.isRequired,
-  owner: PropTypes.bool.isRequired,
-};
+  owner: PropTypes.bool.isRequired
+}
 
 const mapDispatchToProps = (dispatch) => ({
-  updateFollowing: (id) => dispatch(updateFollowing(id)),
-});
+  updateFollowing: (id) => dispatch(updateFollowing(id))
+})
 
-export default connect(null, mapDispatchToProps)(ViewProfile);
+export default connect(null, mapDispatchToProps)(ViewProfile)

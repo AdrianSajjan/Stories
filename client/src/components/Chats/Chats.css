@@ -22,3 +22,15 @@
   padding: 0.4rem 1rem;
   margin-top: 20px;
 }
+
+.main-area .chat-list-container {
+  display: none;
+  margin-top: 20px;
+  height: calc(100vh - 87.5px) !important;
+}
+
+@media screen and (max-width: 992px) {
+  .main-area .chat-list-container {
+    display: block;
+  }
+}
