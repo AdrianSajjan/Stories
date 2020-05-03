@@ -1,27 +1,28 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Spinner } from 'reactstrap'
 
 const ChatList = ({ chat }) => {
   const {
-    profile,
+    reciever,
     chat: { messages }
   } = chat
 
   const getFormattedMessage = () => {
-    const sender = messages[messages.length - 1].sender.user === profile.user ? profile.username : 'You'
+    const sender = messages[messages.length - 1].sender.user === reciever.user ? reciever.username : 'You'
     const message = `${sender}: ${messages[messages.length - 1].message}`
     return message
   }
 
   return (
-    <button className="chat-list py-2">
-      <img className="chat-avatar-lg" src={profile.avatar.url} alt="profile" />
+    <Link to={`/home/chats/${reciever.user}`} className="chat-list py-2">
+      <img className="chat-avatar-lg" src={reciever.avatar.url} alt="reciever" />
       <div className="d-flex flex-column ml-4 align-items-start justify-content-center">
-        <p className="text-secondary font-weight-bold leading-1 m-0">@{profile.username}</p>
+        <p className="text-secondary font-weight-bold leading-1 m-0">@{reciever.username}</p>
         <p className="text-secondary m-0">{getFormattedMessage()}</p>
       </div>
-    </button>
+    </Link>
   )
 }
 

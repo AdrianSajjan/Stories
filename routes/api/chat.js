@@ -15,7 +15,7 @@ const router = express.Router()
  */
 router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Message cannot be empty')]], async (req, res) => {
   const senderID = req.user.id
-  const receiptentID = req.params.id
+  const receiverID = req.params.id
 
   try {
     const sender = await Profile.findOne({ user: senderID })
@@ -33,9 +33,9 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         errors: errors.array({ onlyFirstError: true })
       })
 
-    const receiptent = await Profile.findOne({ user: receiptentID })
+    const receiver = await Profile.findOne({ user: receiverID })
 
-    if (!receiptent)
+    if (!receiver)
       return res.status(404).json({
         type: NOTFOUND,
         errors: [
@@ -45,7 +45,7 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         ]
       })
 
-    if (!ObjectID.isValid(receiptentID) || new ObjectID(receiptentID) != receiptentID)
+    if (!ObjectID.isValid(receiverID) || new ObjectID(receiverID) != receiverID)
       return res.status(400).json({
         type: NOTFOUND,
         errors: [
@@ -55,7 +55,7 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         ]
       })
 
-    if (senderID === receiptentID)
+    if (senderID === receiverID)
       return res.status(500).json({
         type: NOTFOUND,
         errors: [
@@ -66,8 +66,8 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
       })
 
     let chat = await Chat.findOne({
-      //participants: { $all: [{ $elemMatch: { user: senderID } }, { $elemMatch: { user: receiptentID } }] }
-      $and: [{ 'participants.user': senderID }, { 'participants.user': receiptentID }]
+      //participants: { $all: [{ $elemMatch: { user: senderID } }, { $elemMatch: { user: receiverID } }] }
+      $and: [{ 'participants.user': senderID }, { 'participants.user': receiverID }]
     })
 
     if (chat) {
@@ -79,7 +79,7 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         }
       })
       await chat.save()
-      return res.json({ receiptent, chat })
+      return res.json({ receiver, chat })
     }
 
     const chatData = {
@@ -94,14 +94,14 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
       ],
       participants: [
         { user: senderID, profile: sender._id },
-        { user: receiptentID, profile: receiptent._id }
+        { user: receiverID, profile: receiver._id }
       ]
     }
 
     chat = new Chat(chatData)
     chat = await chat.save()
 
-    res.json({ receiptent, chat })
+    res.json({ receiver, chat })
   } catch (err) {
     console.error(err.message)
     res.status(500).send(SERVER)
@@ -126,7 +126,7 @@ router.get('/', auth, async (req, res) => {
         participant.profile = participant.profile._id
       })
 
-      return { profile, chat }
+      return { reciever: profile, chat }
     })
 
     res.json(allChats)
@@ -143,29 +143,29 @@ router.get('/', auth, async (req, res) => {
  */
 router.get('/:id', auth, async (req, res) => {
   const userID = req.user.id
-  const receiptentID = req.params.id
+  const receiverID = req.params.id
 
   try {
-    if (!ObjectID.isValid(receiptentID) || new ObjectID(receiptentID) != receiptentID)
+    if (!ObjectID.isValid(receiverID) || new ObjectID(receiverID) != receiverID)
       return res.status(400).json({
         type: NOTFOUND,
         msg: "User doesn't exist"
       })
 
-    const receiptent = await Profile.findOne({ user: receiptentID })
+    const receiver = await Profile.findOne({ user: receiverID })
 
-    if (!receiptent)
+    if (!receiver)
       return res.status(404).json({
         type: NOTFOUND,
         msg: "User doesn't exist"
       })
 
     const chat = await Chat.findOne({
-      //participants: { $all: [{ $elemMatch: { user: userID } }, { $elemMatch: { user: receiptentID } }] }
-      $and: [{ 'participants.user': userID }, { 'participants.user': receiptentID }]
+      //participants: { $all: [{ $elemMatch: { user: userID } }, { $elemMatch: { user: receiverID } }] }
+      $and: [{ 'participants.user': userID }, { 'participants.user': receiverID }]
     })
 
-    res.json({ receiptent, chat })
+    res.json({ receiver, chat })
   } catch (err) {
     console.log(err.message)
     res.status(500).send(SERVER)

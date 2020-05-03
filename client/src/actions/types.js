@@ -63,6 +63,7 @@ export const GET_ALL_CHATS = 'GET_ALL_CHATS'
 export const SET_ALL_CHATS = 'SET_ALL_CHATS'
 export const GET_USER_CHAT = 'GET_USER_CHAT'
 export const SET_USER_CHAT = 'SET_USER_CHAT'
+export const SET_USER_CHAT_ERROR = 'SET_USER_CHAT_ERROR'
 
 export const LOGOUT = 'LOGOUT'
 

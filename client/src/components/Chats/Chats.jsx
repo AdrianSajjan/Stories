@@ -1,10 +1,12 @@
 import React, { Fragment } from 'react'
+import { Switch, Route } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { Row, Col } from 'reactstrap'
 import { connect } from 'react-redux'
 import { openSidebar } from '../../actions/sidebar'
 import FollowingList from './Following-List/Following-List'
 import ChatList from './Chat-List/Chat-List'
+import Chat from './Chat/Chat'
 import './Chats.css'
 
 const Chats = ({ openSidebar }) => {
@@ -18,7 +20,10 @@ const Chats = ({ openSidebar }) => {
             </button>
             <h1 className="main-title text-primary">Chats</h1>
           </div>
-          <ChatList />
+          <Switch>
+            <Route path="/home/chats/" component={ChatList} exact />
+            <Route path="/home/chats/:id" component={Chat} exact />
+          </Switch>
         </Col>
         <Col lg="4" className="side-area d-none d-lg-block">
           <FollowingList />

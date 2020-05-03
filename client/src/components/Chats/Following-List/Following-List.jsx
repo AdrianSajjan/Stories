@@ -1,13 +1,14 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Spinner } from 'reactstrap'
 
 const ChatList = ({ profile }) => {
   return (
-    <button className="chat-list">
+    <Link to={`/home/chats/${profile.user}`} className="chat-list">
       <img className="chat-avatar" src={profile.avatar.url} alt="profile" />
       <p className="mb-1 ml-2 text-secondary font-weight-bold leading-1">@{profile.username}</p>
-    </button>
+    </Link>
   )
 }
 

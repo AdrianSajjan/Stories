@@ -37,3 +37,23 @@
   margin-top: 20px;
   height: calc(100vh - 87.5px) !important;
 }
+
+.chat-container {
+  margin-top: 25px;
+}
+
+.back-btn {
+  background-color: transparent !important;
+  outline: none !important;
+  border: none !important;
+  color: var(--dark);
+}
+
+.back-btn:hover {
+  color: var(--dark);
+}
+
+.chat-box {
+  height: calc(100vh - 250px);
+  max-height: 400px;
+}
