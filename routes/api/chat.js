@@ -115,10 +115,21 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
  */
 router.get('/', auth, async (req, res) => {
   const userID = req.user.id
-
+  let allChats = []
   try {
-    const chat = await Chat.find({ 'participants.user': userID }).populate('participants.profile')
-    res.json(chat)
+    const chats = await Chat.find({ 'participants.user': userID }).populate('participants.profile')
+    allChats = chats.map((chat) => {
+      const participant = chat.participants.filter((participant) => participant.user != userID)
+      const profile = participant[0].profile
+
+      chat.participants.forEach((participant) => {
+        participant.profile = participant.profile._id
+      })
+
+      return { profile, chat }
+    })
+
+    res.json(allChats)
   } catch (err) {
     console.error(err.message)
     res.status(500).send(SERVER)
@@ -130,7 +141,6 @@ router.get('/', auth, async (req, res) => {
  * @desc : Get A Particular Chat
  * @access : Private
  */
-
 router.get('/:id', auth, async (req, res) => {
   const userID = req.user.id
   const receiptentID = req.params.id

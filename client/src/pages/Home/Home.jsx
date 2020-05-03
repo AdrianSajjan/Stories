@@ -1,26 +1,28 @@
-import React, { useEffect } from "react";
-import PropTypes from "prop-types";
-import { Route, Switch } from "react-router-dom";
-import { Container } from "reactstrap";
-import Sidebar from "../../components/Sidebar/Sidebar";
-import Timeline from "../../components/Timeline/Timeline";
-import Profile from "../../components/Profile/Profile";
-import Search from "../../components/Discover/Search";
-import Account from "../../components/Account/Account";
-import Chats from "../../components/Chats/Chats";
-import Notification from "../../components/Notification/Notification";
-import { getCurrentProfile } from "../../actions/profile";
-import { getCurrentUserPosts } from "../../actions/post";
-import { connect } from "react-redux";
-import "./Home.css";
+import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { Route, Switch } from 'react-router-dom'
+import { Container } from 'reactstrap'
+import Sidebar from '../../components/Sidebar/Sidebar'
+import Timeline from '../../components/Timeline/Timeline'
+import Profile from '../../components/Profile/Profile'
+import Search from '../../components/Discover/Search'
+import Account from '../../components/Account/Account'
+import Chats from '../../components/Chats/Chats'
+import Notification from '../../components/Notification/Notification'
+import { getCurrentProfile } from '../../actions/profile'
+import { getCurrentUserPosts } from '../../actions/post'
+import { getAllChats } from '../../actions/chat'
+import { connect } from 'react-redux'
+import './Home.css'
 
-const Home = ({ getCurrentProfile, getCurrentUserPosts }) => {
+const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats }) => {
   // Home
   useEffect(() => {
-    getCurrentProfile();
-    getCurrentUserPosts();
+    getCurrentProfile()
+    getCurrentUserPosts()
+    getAllChats()
     // eslint-disable-next-line
-  }, []);
+  }, [])
 
   return (
     <section className="w-100 bg-light">
@@ -41,17 +43,18 @@ const Home = ({ getCurrentProfile, getCurrentUserPosts }) => {
         </Container>
       </main>
     </section>
-  );
-};
+  )
+}
 
 Home.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
-  getCurrentUserPosts: PropTypes.func.isRequired,
-};
+  getCurrentUserPosts: PropTypes.func.isRequired
+}
 
 const mapDispatchToProps = (dispatch) => ({
   getCurrentProfile: () => dispatch(getCurrentProfile()),
   getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
-});
+  getAllChats: () => dispatch(getAllChats())
+})
 
-export default connect(null, mapDispatchToProps)(Home);
+export default connect(null, mapDispatchToProps)(Home)

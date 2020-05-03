@@ -4,6 +4,7 @@ import { Row, Col } from 'reactstrap'
 import { connect } from 'react-redux'
 import { openSidebar } from '../../actions/sidebar'
 import FollowingList from './Following-List/Following-List'
+import ChatList from './Chat-List/Chat-List'
 import './Chats.css'
 
 const Chats = ({ openSidebar }) => {
@@ -17,7 +18,7 @@ const Chats = ({ openSidebar }) => {
             </button>
             <h1 className="main-title text-primary">Chats</h1>
           </div>
-          <FollowingList />
+          <ChatList />
         </Col>
         <Col lg="4" className="side-area d-none d-lg-block">
           <FollowingList />

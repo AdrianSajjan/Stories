@@ -2,6 +2,16 @@
   height: 45px;
   width: 45px;
   border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.chat-avatar-lg {
+  height: 60px;
+  width: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .chat-list-container {
@@ -24,13 +34,6 @@
 }
 
 .main-area .chat-list-container {
-  display: none;
   margin-top: 20px;
   height: calc(100vh - 87.5px) !important;
-}
-
-@media screen and (max-width: 992px) {
-  .main-area .chat-list-container {
-    display: block;
-  }
 }
