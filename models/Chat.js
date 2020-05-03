@@ -14,15 +14,20 @@ const ChatSchema = new Schema({
         default: Date.now
       },
       sender: {
-        type: Schema.Types.ObjectId,
-        ref: 'user'
+        user: { type: Schema.Types.ObjectId, ref: 'user' },
+        profile: { type: Schema.Types.ObjectId, ref: 'profile' }
       }
     }
   ],
   participants: [
     {
       user: {
-        type: Schema.Types.ObjectId
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+      },
+      profile: {
+        type: Schema.Types.ObjectId,
+        ref: 'profile'
       }
     }
   ]

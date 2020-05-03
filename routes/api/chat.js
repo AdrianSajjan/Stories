@@ -14,7 +14,6 @@ const router = express.Router()
  * @access : Private
  */
 router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Message cannot be empty')]], async (req, res) => {
-  const errors = validationResult(req)
   const senderID = req.user.id
   const receiptentID = req.params.id
 
@@ -27,6 +26,7 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         msg: 'Please create your profile.'
       })
 
+    const errors = validationResult(req)
     if (!errors.isEmpty())
       return res.status(400).json({
         type: VALIDATION,
@@ -65,29 +65,43 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
         ]
       })
 
-    const chat = await Chat.find({
-      participants: { $all: [{ $elemMatch: { user: senderID } }, { $elemMatch: { user: receiptentID } }] }
+    let chat = await Chat.findOne({
+      //participants: { $all: [{ $elemMatch: { user: senderID } }, { $elemMatch: { user: receiptentID } }] }
+      $and: [{ 'participants.user': senderID }, { 'participants.user': receiptentID }]
     })
 
     if (chat) {
       chat.messages.push({
         message: req.body.message,
-        sender: senderID
+        sender: {
+          user: senderID,
+          profile: sender._id
+        }
       })
       await chat.save()
-
-      return res.json(chat)
+      return res.json({ receiptent, chat })
     }
 
     const chatData = {
-      messages: [{ message: req.body.message, sender: senderID, timestamp: req.body.date ? req.body.date : new Date() }],
-      participants: [{ user: senderID }, { user: receiptentID }]
+      messages: [
+        {
+          message: req.body.message,
+          sender: {
+            user: senderID,
+            profile: sender._id
+          }
+        }
+      ],
+      participants: [
+        { user: senderID, profile: sender._id },
+        { user: receiptentID, profile: receiptent._id }
+      ]
     }
 
     chat = new Chat(chatData)
-    const data = await chat.save()
+    chat = await chat.save()
 
-    res.json(data)
+    res.json({ receiptent, chat })
   } catch (err) {
     console.error(err.message)
     res.status(500).send(SERVER)
@@ -99,3 +113,53 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
  * @desc : Get All Messages
  * @access : Private
  */
+router.get('/', auth, async (req, res) => {
+  const userID = req.user.id
+
+  try {
+    const chat = await Chat.find({ 'participants.user': userID }).populate('participants.profile')
+    res.json(chat)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send(SERVER)
+  }
+})
+
+/**
+ * @route : GET /api/chats/:id
+ * @desc : Get A Particular Chat
+ * @access : Private
+ */
+
+router.get('/:id', auth, async (req, res) => {
+  const userID = req.user.id
+  const receiptentID = req.params.id
+
+  try {
+    if (!ObjectID.isValid(receiptentID) || new ObjectID(receiptentID) != receiptentID)
+      return res.status(400).json({
+        type: NOTFOUND,
+        msg: "User doesn't exist"
+      })
+
+    const receiptent = await Profile.findOne({ user: receiptentID })
+
+    if (!receiptent)
+      return res.status(404).json({
+        type: NOTFOUND,
+        msg: "User doesn't exist"
+      })
+
+    const chat = await Chat.findOne({
+      //participants: { $all: [{ $elemMatch: { user: userID } }, { $elemMatch: { user: receiptentID } }] }
+      $and: [{ 'participants.user': userID }, { 'participants.user': receiptentID }]
+    })
+
+    res.json({ receiptent, chat })
+  } catch (err) {
+    console.log(err.message)
+    res.status(500).send(SERVER)
+  }
+})
+
+module.exports = router
