@@ -65,19 +65,53 @@ export default function (state = initialState, action) {
     case SEND_MESSAGE:
       const { receiver } = payload
 
-      const isActiveChat = state.useChat.chat && state.userChat.chat.receiver.user === receiver.user
-      if (isActiveChat) {
-        state.userChat.chat = payload
-      }
+      const isActiveChat = state.userChat.chat && state.userChat.chat.receiver.user === receiver.user
 
       const isExistingChat = state.allChats.chats.find((chat) => chat.receiver.user === receiver.user)
-      if (isExistingChat) {
-        state.allChats.chats = state.allChats.chats.map((chat) => (chat.receiver.user === receiver.user ? chat : payload))
-      } else {
-        state.allChats.chats = [...state.allChats.chats, payload]
-      }
 
-      return state
+      if (isExistingChat) {
+        if (isActiveChat)
+          return {
+            ...state,
+            userChat: {
+              ...state.userChat,
+              chat: payload
+            },
+            allChats: {
+              ...state.allChats,
+              chats: state.allChats.chats.map((chat) => (chat.receiver.user === receiver.user ? payload : chat))
+            }
+          }
+
+        return {
+          ...state,
+          allChats: {
+            ...state.allChats,
+            chats: state.allChats.chats.map((chat) => (chat.receiver.user === receiver.user ? payload : chat))
+          }
+        }
+      } else {
+        if (isActiveChat)
+          return {
+            ...state,
+            userChat: {
+              ...state.userChat,
+              chat: payload
+            },
+            allChats: {
+              ...state.allChats,
+              chats: [...state.allChats.chats, payload]
+            }
+          }
+
+        return {
+          ...state,
+          allChats: {
+            ...state.allChats,
+            chats: [...state.allChats.chats, payload]
+          }
+        }
+      }
 
     default:
       return state

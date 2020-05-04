@@ -126,7 +126,7 @@ router.get('/', auth, async (req, res) => {
         participant.profile = participant.profile._id
       })
 
-      return { reciever: profile, chat }
+      return { receiver: profile, chat }
     })
 
     res.json(allChats)

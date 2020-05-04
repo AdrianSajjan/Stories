@@ -23,11 +23,16 @@ export const getUserChat = (id) => async (dispatch) => {
   }
 }
 
+export const resetUserChat = () => (dispatch) => {
+  dispatch({ type: GET_USER_CHAT })
+}
+
 export const sendMessage = (message, id) => async (dispatch) => {
   try {
     const res = await axios.post(`/api/chat/${id}`, { message })
     dispatch({ type: SEND_MESSAGE, payload: res.data })
   } catch (err) {
-    dispatch(setAlert('Message Not Sent!', err.response.data, 'danger'))
+    console.log(err)
+    dispatch(setAlert('Message Not Sent!', err.response.data || err.response, 'danger'))
   }
 }

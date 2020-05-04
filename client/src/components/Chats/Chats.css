@@ -55,5 +55,29 @@
 
 .chat-box {
   height: calc(100vh - 250px);
-  max-height: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.message-bubble-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+  overflow: hidden;
+}
+
+.message-bubble {
+  max-width: 50%;
+  margin: 20px 0 0;
+}
+
+.message-bubble:first-child {
+  margin: 0;
+}
+
+.message-bubble-text {
+  background-color: var(--info);
+  color: var(--light);
+  word-wrap: break-word;
+  margin: 0 !important;
 }

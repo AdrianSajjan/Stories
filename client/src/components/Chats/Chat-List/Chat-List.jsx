@@ -5,21 +5,21 @@ import { Spinner } from 'reactstrap'
 
 const ChatList = ({ chat }) => {
   const {
-    reciever,
+    receiver,
     chat: { messages }
   } = chat
 
   const getFormattedMessage = () => {
-    const sender = messages[messages.length - 1].sender.user === reciever.user ? reciever.username : 'You'
+    const sender = messages[messages.length - 1].sender.user === receiver.user ? receiver.username : 'You'
     const message = `${sender}: ${messages[messages.length - 1].message}`
     return message
   }
 
   return (
-    <Link to={`/home/chats/${reciever.user}`} className="chat-list py-2">
-      <img className="chat-avatar-lg" src={reciever.avatar.url} alt="reciever" />
+    <Link to={`/home/chats/${receiver.user}`} className="chat-list py-2">
+      <img className="chat-avatar-lg" src={receiver.avatar.url} alt="receiver" />
       <div className="d-flex flex-column ml-4 align-items-start justify-content-center">
-        <p className="text-secondary font-weight-bold leading-1 m-0">@{reciever.username}</p>
+        <p className="text-secondary font-weight-bold leading-1 m-0">@{receiver.username}</p>
         <p className="text-secondary m-0">{getFormattedMessage()}</p>
       </div>
     </Link>
