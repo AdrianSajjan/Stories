@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
+import io from 'socket.io-client'
 import { Route, Switch } from 'react-router-dom'
 import { Container } from 'reactstrap'
 import Sidebar from '../../components/Sidebar/Sidebar'
@@ -12,17 +13,27 @@ import Notification from '../../components/Notification/Notification'
 import { getCurrentProfile } from '../../actions/profile'
 import { getCurrentUserPosts } from '../../actions/post'
 import { getAllChats } from '../../actions/chat'
+import { initSocket } from '../../actions/auth'
 import { connect } from 'react-redux'
 import './Home.css'
 
-const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats }) => {
-  // Home
+const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket, user }) => {
   useEffect(() => {
     getCurrentProfile()
     getCurrentUserPosts()
     getAllChats()
     // eslint-disable-next-line
   }, [])
+
+  useEffect(() => {
+    if (user) {
+      const socket = io('http://localhost:5000')
+      initSocket(socket)
+
+      socket.emit('login', user._id)
+    }
+    // eslint-disable-next-line
+  }, [user])
 
   return (
     <section className="w-100 bg-light">
@@ -51,10 +62,15 @@ Home.propTypes = {
   getCurrentUserPosts: PropTypes.func.isRequired
 }
 
+const mapStateToProps = (state) => ({
+  user: state.auth.user
+})
+
 const mapDispatchToProps = (dispatch) => ({
   getCurrentProfile: () => dispatch(getCurrentProfile()),
   getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
-  getAllChats: () => dispatch(getAllChats())
+  getAllChats: () => dispatch(getAllChats()),
+  initSocket: (socket) => dispatch(initSocket(socket))
 })
 
-export default connect(null, mapDispatchToProps)(Home)
+export default connect(mapStateToProps, mapDispatchToProps)(Home)

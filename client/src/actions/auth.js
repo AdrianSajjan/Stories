@@ -2,13 +2,17 @@ import axios from 'axios'
 import { setAlert } from './alert'
 import { setLoginErrors, setRegistrationErrors } from './error'
 import setAuthToken from '../utils/set-auth-token'
-import { REGISTER_SUCCESS, REGISTER_FAILED, USER_LOADED, LOGIN_REQUEST, REGISTRATION_REQUEST } from './types'
+import { REGISTER_SUCCESS, REGISTER_FAILED, USER_LOADED, LOGIN_REQUEST, REGISTRATION_REQUEST, INIT_SOCKET } from './types'
 import { AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, CLEAR_PROFILES, REMOVE_ALL_POSTS } from './types'
 
 const config = {
   header: {
     'Content-Type': 'application/json'
   }
+}
+
+export const initSocket = (socket) => (dispatch) => {
+  dispatch({ type: INIT_SOCKET, payload: socket })
 }
 
 export const loadUser = (ownProps = null, redirect = null) => async (dispatch) => {
