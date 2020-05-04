@@ -61,6 +61,7 @@ export const POST_COMMENT = 'POST_COMMENT'
 export const REMOVE_ALL_POSTS = 'REMOVE_ALL_POSTS'
 
 export const SEND_MESSAGE = 'SEND_MESSAGE'
+export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE'
 export const GET_ALL_CHATS = 'GET_ALL_CHATS'
 export const SET_ALL_CHATS = 'SET_ALL_CHATS'
 export const GET_USER_CHAT = 'GET_USER_CHAT'

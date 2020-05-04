@@ -27,9 +27,16 @@ const ChatList = ({ chat }) => {
 }
 
 const ChatLists = ({ allChats }) => {
-  const { chats } = allChats
+  const { chats, loading } = allChats
 
-  if (!chats || chats.length === 0) return <Spinner color="primary" className="d-block mt-4 mx-auto" />
+  if (!chats.length && loading) return <Spinner color="primary" className="d-block mt-4 mx-auto" />
+
+  if (!chats.length && !loading)
+    return (
+      <div className="side-area-container chat-list-container">
+        <h3 className="text-center text-muted">No Chats Found</h3>
+      </div>
+    )
 
   return (
     <div className="side-area-container chat-list-container">

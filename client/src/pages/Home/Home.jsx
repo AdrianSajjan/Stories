@@ -12,12 +12,12 @@ import Chats from '../../components/Chats/Chats'
 import Notification from '../../components/Notification/Notification'
 import { getCurrentProfile } from '../../actions/profile'
 import { getCurrentUserPosts } from '../../actions/post'
-import { getAllChats } from '../../actions/chat'
+import { getAllChats, receiveMessage } from '../../actions/chat'
 import { initSocket } from '../../actions/auth'
 import { connect } from 'react-redux'
 import './Home.css'
 
-const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket, user }) => {
+const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket, user, receiveMessage }) => {
   useEffect(() => {
     getCurrentProfile()
     getCurrentUserPosts()
@@ -27,13 +27,18 @@ const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket,
 
   useEffect(() => {
     if (user) {
-      const socket = io('http://localhost:5000')
+      const socket = io()
       initSocket(socket)
-
       socket.emit('login', user._id)
+      socket.on('receive-message', (payload) => {
+        console.log(payload)
+        receiveMessage(payload)
+      })
     }
     // eslint-disable-next-line
   }, [user])
+
+  useEffect(() => {}, [])
 
   return (
     <section className="w-100 bg-light">
@@ -70,7 +75,8 @@ const mapDispatchToProps = (dispatch) => ({
   getCurrentProfile: () => dispatch(getCurrentProfile()),
   getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
   getAllChats: () => dispatch(getAllChats()),
-  initSocket: (socket) => dispatch(initSocket(socket))
+  initSocket: (socket) => dispatch(initSocket(socket)),
+  receiveMessage: (payload) => dispatch(receiveMessage(payload))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

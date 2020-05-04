@@ -22,9 +22,9 @@ const ViewProfile = ({ currentProfile, image, profile, owner, updateFollowing })
     if (isFollowing)
       return (
         <div className="d-flex flex-column flex-sm-row mt-4">
-          <Button color="success" className="mr-sm-2">
+          <Link to={`/home/chats/${profile.user}`} className="mr-sm-2 btn btn-outline-success">
             Message User
-          </Button>
+          </Link>
           <Button outline color="primary" className="ml-sm-2 mt-2 mt-sm-0" onClick={() => updateFollowing(profile.user)}>
             Unfollow User
           </Button>
@@ -32,9 +32,14 @@ const ViewProfile = ({ currentProfile, image, profile, owner, updateFollowing })
       )
 
     return (
-      <Button color="primary" className="mt-4" onClick={() => updateFollowing(profile.user)}>
-        Follow User
-      </Button>
+      <div className="d-flex flex-column flex-sm-row mt-4">
+        <Link to={`/home/chats/${profile.user}`} className="mr-sm-2 btn btn-success">
+          Message User
+        </Link>
+        <Button color="primary" className="ml-sm-2 mt-2 mt-sm-0" onClick={() => updateFollowing(profile.user)}>
+          Follow User
+        </Button>
+      </div>
     )
   }
 

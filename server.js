@@ -39,9 +39,14 @@ server.listen(PORT, () => {
 const io = socketio(server)
 
 io.on('connection', (socket) => {
-  console.log('An User connected')
   socket.on('login', async (id) => {
     await socketMethods.connectUser(id, socket.id)
+    socket.join(id)
+  })
+
+  socket.on('send-message', (payload, id) => {
+    const isOnline = socketMethods.isOnline(id)
+    if (isOnline) io.to(id).emit('receive-message', payload)
   })
 
   socket.on('disconnect', async () => {

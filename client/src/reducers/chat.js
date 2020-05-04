@@ -1,4 +1,4 @@
-import { GET_ALL_CHATS, SET_ALL_CHATS, SEND_MESSAGE } from '../actions/types'
+import { GET_ALL_CHATS, SET_ALL_CHATS, SEND_MESSAGE, RECEIVE_MESSAGE } from '../actions/types'
 import { GET_USER_CHAT, SET_USER_CHAT, SET_USER_CHAT_ERROR } from '../actions/types'
 
 const initialState = {
@@ -62,12 +62,13 @@ export default function (state = initialState, action) {
         }
       }
 
+    case RECEIVE_MESSAGE:
     case SEND_MESSAGE:
       const { receiver } = payload
 
-      const isActiveChat = state.userChat.chat && state.userChat.chat.receiver.user === receiver.user
+      let isActiveChat = state.userChat.chat && state.userChat.chat.receiver.user === receiver.user
 
-      const isExistingChat = state.allChats.chats.find((chat) => chat.receiver.user === receiver.user)
+      let isExistingChat = state.allChats.chats.find((chat) => chat.receiver.user === receiver.user)
 
       if (isExistingChat) {
         if (isActiveChat)

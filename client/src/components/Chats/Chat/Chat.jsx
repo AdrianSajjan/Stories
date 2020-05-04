@@ -5,7 +5,7 @@ import { Form, InputGroup, InputGroupAddon, Input, Spinner, Button } from 'react
 import { connect } from 'react-redux'
 import { getUserChat, resetUserChat, sendMessage } from '../../../actions/chat'
 
-const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserChat }) => {
+const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserChat, socket }) => {
   const { chat, loading, error } = userChat
   const { id } = useParams()
 
@@ -19,8 +19,8 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
   const onSubmit = (e) => {
     e.preventDefault()
     if (message.length === 0) return
-
-    sendMessage(message, id)
+    sendMessage(message, id, socket, currentProfile.profile)
+    setMessage('')
   }
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
       </div>
       <hr />
       <div className="chat-box">
-        <Messages chat={chat.chat} profile={currentProfile.profile} />
+        <Messages chat={chat.chat} receiver={chat.receiver} profile={currentProfile.profile} />
         <div className="ref-div" ref={bottomRef}></div>
       </div>
       <hr />
@@ -81,8 +81,11 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
   )
 }
 
-const Messages = ({ chat, profile }) => {
+const Messages = ({ chat, receiver, profile }) => {
   const getBubbleClass = (sender) => {
+    console.log(`sender: ${sender.user}`)
+    console.log(profile.user)
+    console.log(sender.user === profile.user._id)
     if (sender.user === profile.user._id) return 'message-bubble ml-auto d-flex flex-column align-items-end'
     else return 'message-bubble mr-auto d-flex flex-column align-items-start'
   }
@@ -95,6 +98,8 @@ const Messages = ({ chat, profile }) => {
     if (msgDate === currentDate) return `${msgTime}`
     else return `${msgDate}, ${msgTime}`
   }
+
+  if (!chat) return <p className="text-center text-primary mt-2">Say Hi to @{receiver.username}</p>
 
   return (
     <div className="message-bubble-container">
@@ -110,13 +115,14 @@ const Messages = ({ chat, profile }) => {
 
 const mapStateToProps = (state) => ({
   userChat: state.chat.userChat,
-  currentProfile: state.profile.currentProfile
+  currentProfile: state.profile.currentProfile,
+  socket: state.auth.socket
 })
 
 const mapDispatchToProps = (dispatch) => ({
   getUserChat: (id) => dispatch(getUserChat(id)),
   resetUserChat: () => dispatch(resetUserChat()),
-  sendMessage: (message, id) => dispatch(sendMessage(message, id))
+  sendMessage: (message, id, socket, profile) => dispatch(sendMessage(message, id, socket, profile))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat)
