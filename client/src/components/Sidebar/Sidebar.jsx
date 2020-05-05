@@ -1,67 +1,67 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { Link, Route } from "react-router-dom";
-import { CSSTransition } from "react-transition-group";
-import { closeSidebar } from "../../actions/sidebar";
-import { connect } from "react-redux";
-import DefaultImage from "../../assets/images/sample-profile-picture.png";
-import "./Sidebar.css";
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Link, Route } from 'react-router-dom'
+import { CSSTransition } from 'react-transition-group'
+import { closeSidebar } from '../../actions/sidebar'
+import { connect } from 'react-redux'
+import DefaultImage from '../../assets/images/sample-profile-picture.png'
+import './Sidebar.css'
 
 const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
   // Sidebar
-  const { profile } = currentProfile;
+  const { profile } = currentProfile
 
   const SidebarOptions = [
     {
       id: 1,
-      path: "/home",
-      name: "Home",
-      icon: "home",
-      exact: true,
+      path: '/home',
+      name: 'Home',
+      icon: 'home',
+      exact: true
     },
     {
       id: 2,
-      path: "/home/discover",
-      name: "Discover",
-      icon: "fire",
-      exact: false,
+      path: '/home/discover',
+      name: 'Discover',
+      icon: 'fire',
+      exact: false
     },
     {
       id: 3,
-      path: "/home/chats",
-      name: "Chats",
-      icon: "envelope",
-      exact: false,
+      path: '/home/chats',
+      name: 'Chats',
+      icon: 'envelope',
+      exact: false
     },
     {
       id: 4,
-      path: "/home/notification",
-      name: "Notification",
-      icon: "bell",
-      exact: false,
+      path: '/home/activities',
+      name: 'Activities',
+      icon: 'bell',
+      exact: false
     },
     {
       id: 5,
-      path: "/home/profile",
-      name: "Profile",
-      icon: "user",
-      exact: false,
+      path: '/home/profile',
+      name: 'Profile',
+      icon: 'user',
+      exact: false
     },
     {
       id: 6,
-      path: "/home/account",
-      name: "Account",
-      icon: "wrench",
-      exact: false,
+      path: '/home/account',
+      name: 'Account',
+      icon: 'wrench',
+      exact: false
     },
     {
       id: 7,
-      path: "/logout",
-      name: "Logout",
-      icon: "sign-out",
-      exact: false,
-    },
-  ];
+      path: '/logout',
+      name: 'Logout',
+      icon: 'sign-out',
+      exact: false
+    }
+  ]
 
   const SidebarOption = (id, path, name, icon, exact) => (
     <Route
@@ -69,30 +69,18 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
       key={id}
       path={path}
       children={({ match }) => (
-        <Link
-          className={
-            "sidebar-option mt-2" + (match ? " sidebar-option-active" : "")
-          }
-          to={path}
-          onClick={closeSidebar}
-        >
+        <Link className={'sidebar-option mt-2' + (match ? ' sidebar-option-active' : '')} to={path} onClick={closeSidebar}>
           <i className={`fa fa-${icon} fa-lg option-icon`}></i>
           <span className="option-name">{name}</span>
         </Link>
       )}
     />
-  );
+  )
 
   const getProfileImage = () => {
-    if (
-      profile &&
-      profile.avatar &&
-      profile.avatar.url &&
-      profile.avatar.url.length
-    )
-      return profile.avatar.url;
-    else return DefaultImage;
-  };
+    if (profile && profile.avatar && profile.avatar.url && profile.avatar.url.length) return profile.avatar.url
+    else return DefaultImage
+  }
 
   return (
     <CSSTransition in={toggleState} timeout={300} classNames="sidebar">
@@ -109,53 +97,45 @@ const Sidebar = ({ currentProfile, toggleState, closeSidebar }) => {
             </button>
           </div>
           <div className="sidebar-profile mt-4">
-            <img
-              src={getProfileImage()}
-              alt="profile"
-              className="sidebar-profile-img"
-            />
-            <p className="sidebar-profile-name mb-1 mt-1">
-              {profile === null ? "" : profile.username}
-            </p>
+            <img src={getProfileImage()} alt="profile" className="sidebar-profile-img" />
+            <p className="sidebar-profile-name mb-1 mt-1">{profile === null ? '' : profile.username}</p>
             <div className="sidebar-profile-details d-flex">
               <div className="sidebar-following d-flex flex-column mr-2">
                 <span className="details-text">Following</span>
                 <span className="following-amount text-center mr-1">
-                  {profile === null ? "0" : profile.following.length.toString()}
+                  {profile === null ? '0' : profile.following.length.toString()}
                 </span>
               </div>
               <div className="sidebar-followers d-flex flex-column ml-2">
                 <span className="details-text">Followers</span>
                 <span className="following-amount text-center mr-1">
-                  {profile === null ? "0" : profile.followers.length.toString()}
+                  {profile === null ? '0' : profile.followers.length.toString()}
                 </span>
               </div>
             </div>
           </div>
           <div className="sidebar-options mt-3">
-            {SidebarOptions.map(({ id, name, path, icon, exact }) =>
-              SidebarOption(id, path, name, icon, exact)
-            )}
+            {SidebarOptions.map(({ id, name, path, icon, exact }) => SidebarOption(id, path, name, icon, exact))}
           </div>
         </div>
       </section>
     </CSSTransition>
-  );
-};
+  )
+}
 
 Sidebar.propTypes = {
   currentProfile: PropTypes.object.isRequired,
   closeSidebar: PropTypes.func.isRequired,
-  toggleState: PropTypes.bool.isRequired,
-};
+  toggleState: PropTypes.bool.isRequired
+}
 
 const mapStateToProps = (state) => ({
   currentProfile: state.profile.currentProfile,
-  toggleState: state.sidebar,
-});
+  toggleState: state.sidebar
+})
 
 const mapDispatchToProps = (dispatch) => ({
-  closeSidebar: () => dispatch(closeSidebar()),
-});
+  closeSidebar: () => dispatch(closeSidebar())
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(Sidebar);
+export default connect(mapStateToProps, mapDispatchToProps)(Sidebar)

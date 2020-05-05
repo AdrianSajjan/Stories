@@ -2,6 +2,7 @@
   min-height: 100vh;
   padding: 0;
   margin: 0;
+  position: relative;
 }
 
 .landing-page .grid-row {
@@ -12,6 +13,7 @@
 
 .landing-page .grid-col {
   min-height: 100vh;
+  position: relative;
 }
 
 .landing-page .grid-col-branding {

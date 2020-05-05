@@ -3,18 +3,19 @@ import PropTypes from 'prop-types'
 import io from 'socket.io-client'
 import { Route, Switch } from 'react-router-dom'
 import { Container } from 'reactstrap'
+import { connect } from 'react-redux'
 import Sidebar from '../../components/Sidebar/Sidebar'
 import Timeline from '../../components/Timeline/Timeline'
 import Profile from '../../components/Profile/Profile'
 import Search from '../../components/Discover/Search'
 import Account from '../../components/Account/Account'
 import Chats from '../../components/Chats/Chats'
-import Notification from '../../components/Notification/Notification'
+import Activity from '../../components/Activity/Activity'
+import Error404 from '../../components/Error-404/Error-404'
 import { getCurrentProfile } from '../../actions/profile'
 import { getCurrentUserPosts } from '../../actions/post'
 import { getAllChats, receiveMessage } from '../../actions/chat'
 import { initSocket } from '../../actions/auth'
-import { connect } from 'react-redux'
 import './Home.css'
 
 const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket, user, receiveMessage }) => {
@@ -51,10 +52,8 @@ const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket,
             <Route path="/home/discover" component={Search} />
             <Route path="/home/chats" component={Chats} />
             <Route path="/home/account" component={Account} />
-            <Route path="/home/notification" component={Notification} />
-            <Route>
-              <h1>Page Not Found</h1>
-            </Route>
+            <Route path="/home/activities" component={Activity} />
+            <Route component={Error404} />
           </Switch>
         </Container>
       </main>
