@@ -13,14 +13,22 @@ require('dotenv').config()
 
 const router = express.Router()
 const transporter = nodemailer.createTransport({
-  service: process.env.MAIL_SERVICE,
+  pool: true,
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
+    type: 'OAuth2',
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD
+    clientId: '749025541922 - ftg5ria8ogkgjl3anel28renehlk1t0q.apps.googleusercontent.com',
+    clientSecret: 'oguS9B2NSToDw8wT8cdIjZna',
+    refreshToken: '1//04CVVcfrphscnCgYIARAAGAQSNwF-L9IrrmHM3VHBcKZOwcgt1b0qBLi11Un84Ldlrw4M-rPeOoDQnNUwdwv7gAp7cyKpRJc7zvU',
+    accessToken:
+      'ya29.a0Ae4lvC3lBeP4ZCxiyoD2kBaRpB9I0RGMOkj7tBkX2RxNEebdx-kEFTiTEPt8KfDYfpDPgHs7EBV8fGdGyr3Zsa8lqdlLIuwcuRFQuz5cKTlijJjFN_TQJFAodAjsbjQEbN2GuDFpljHmbKJjjQd-m0bTlziCABU64zU'
   }
 })
 
-transporter.verify((err, succ) => {
+transporter.verify((err, success) => {
   if (err) console.error(err.message)
   else console.log('Email ready to use')
 })
