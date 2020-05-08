@@ -1,6 +1,6 @@
 const AUTHENTICATION = 'AUTHENTICATION'
 const VALIDATION = 'VALIDATION'
 const NOTFOUND = 'NOTFOUND'
-const SERVER = 'SoMeThiNg WenT wROng! TrY agaIN PLOXX! :P'
+const SERVER = 'Something went wrong! Please try again!'
 
 module.exports = { AUTHENTICATION, VALIDATION, NOTFOUND, SERVER }
