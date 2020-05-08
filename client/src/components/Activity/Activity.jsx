@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { Row, Col } from 'reactstrap'
-import { openSidebar } from '../../actions/sidebar'
 import { connect } from 'react-redux'
+import { openSidebar } from '../../actions/sidebar'
+import Discover from '../Discover/Discover'
 
 const Activity = ({ openSidebar }) => {
   return (
@@ -15,8 +16,11 @@ const Activity = ({ openSidebar }) => {
             </button>
             <h1 className="main-title text-primary">Activity</h1>
           </div>
+          <p className="lead text-center text-danger mt-4">Work in progress</p>
         </Col>
-        <Col lg="4" className="side-area d-none d-lg-block"></Col>
+        <Col lg="4" className="side-area d-none d-lg-block">
+          <Discover />
+        </Col>
       </Row>
     </Fragment>
   )

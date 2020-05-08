@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const http = require('http')
+const path = require('path')
 const socketio = require('socket.io')
 const connectDB = require('./config/database')
 const authRouter = require('./routes/api/auth')
@@ -21,16 +22,19 @@ app.use(cors())
 
 connectDB()
 
-app.get('/', (req, res) => {
-  res.send('API is active...')
-})
-
 app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/profile', profileRouter)
 app.use('/api/post', postRouter)
 app.use('/api/uploads', uploadRouter)
 app.use('/api/chat', chatRouter)
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'))
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+  })
+}
 
 server.listen(PORT, () => {
   console.log(`App running on PORT ${PORT}...`)

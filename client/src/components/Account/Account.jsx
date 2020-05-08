@@ -10,6 +10,7 @@ import UpdateName from './Update-Name/UpdateName'
 import UpdateEmail from './Update-Email/UpdateEmail'
 import UpdatePassword from './Update-Password/UpdatePassword'
 import VerifyEmail from './Verify-Email/Verify-Email'
+import DeleteAccount from './Delete-Account/DeleteAccount'
 import './Account.css'
 
 const Account = ({ user, openSidebar, currentProfile, requestVerificationToken }) => {
@@ -70,6 +71,7 @@ const Account = ({ user, openSidebar, currentProfile, requestVerificationToken }
               <Route exact path="/home/account/update/email" component={UpdateEmail} />
               <Route exact path="/home/account/update/password" component={UpdatePassword} />
               <Route exact path="/home/account/verify/:token" component={VerifyEmail} />
+              <Route exact path="/home/account/delete" component={DeleteAccount} />
             </Switch>
           </div>
         </Col>

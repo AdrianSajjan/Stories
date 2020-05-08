@@ -16,8 +16,8 @@
 }
 
 .post-image {
-  height: 40px;
-  width: 40px;
+  height: 48px;
+  width: 48px;
   object-fit: cover;
   object-position: center;
   border-radius: 50%;
