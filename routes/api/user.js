@@ -22,6 +22,11 @@ const transporter = nodemailer.createTransport({
   }
 })
 
+transporter.verify((err, succ) => {
+  if (err) console.error(err.message)
+  else console.log('Email ready to use')
+})
+
 const encryptAndSendMail = (payload, email) => {
   jwt.sign(payload, process.env.EMAIL_SECRET, { expiresIn: '1d' }, (err, token) => {
     if (err) throw err
