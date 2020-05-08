@@ -47,7 +47,7 @@ router.post('/profile', [auth, parser.single('profile')], async (req, res) => {
       url: req.file.url
     }
 
-    if (profile.avatar && profile.avatar.public_id.length) {
+    if (profile.avatar && profile.avatar.public_id && profile.avatar.public_id.length) {
       cloudinary.v2.uploader.destroy(profile.avatar.public_id, async (error, result) => {
         profile.avatar = avatar
         await profile.save()
