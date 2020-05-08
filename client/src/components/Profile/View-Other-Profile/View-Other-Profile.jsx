@@ -26,7 +26,7 @@ const ViewOtherProfile = ({ currentProfile, profileByID, getProfileByID, getPost
 
   const ViewPosts = () => {
     if (!posts.length && postsLoading) return <Spinner color="primary" className="d-block my-2 mx-auto" />
-    if (!posts.length && !postsLoading) return <p className="text-center text-muted my-2">No Posts Found</p>
+    if (!posts.length && !postsLoading) return <p className="text-center text-muted mt-4 mb-2">No Posts Found</p>
 
     return (
       <Fragment>
