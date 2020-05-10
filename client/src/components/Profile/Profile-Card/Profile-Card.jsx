@@ -1,57 +1,38 @@
-import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "reactstrap";
-import { connect } from "react-redux";
-import { dismissProfileCard, updateFollowing } from "../../../actions/profile";
-import PropTypes from "prop-types";
-import DefaultImage from "../../../assets/images/sample-profile-picture.png";
-import "./Profile-Card.css";
+import React, { Fragment } from 'react'
+import { Link } from 'react-router-dom'
+import { Button } from 'reactstrap'
+import { connect } from 'react-redux'
+import { dismissProfileCard, updateFollowing } from '../../../actions/profile'
+import PropTypes from 'prop-types'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
+import './Profile-Card.css'
 
-const ProfileCard = ({
-  currentProfile,
-  profile,
-  dismissProfileCard,
-  updateFollowing,
-  isDismissable,
-}) => {
+const ProfileCard = ({ currentProfile, profile, dismissProfileCard, updateFollowing, isDismissable }) => {
   const DismissCard = () => {
-    dismissProfileCard(profile._id);
-  };
+    dismissProfileCard(profile._id)
+  }
 
   const FollowBtn = () => {
-    const isFollowing = currentProfile.profile.following.some(
-      (follow) => follow.profile._id === profile._id
-    );
+    const isFollowing = currentProfile.profile.following.some((follow) => follow.profile._id === profile._id)
 
     if (isFollowing)
       return (
-        <Button
-          outline
-          color="info"
-          className="py-1 mr-2"
-          onClick={() => updateFollowing(profile.user)}
-        >
+        <Button outline color="info" className="py-1 mr-2" onClick={() => updateFollowing(profile.user)}>
           Unfollow
         </Button>
-      );
+      )
 
     return (
-      <Button
-        outline
-        color="primary"
-        className="py-1 mr-2"
-        onClick={() => updateFollowing(profile.user)}
-      >
+      <Button outline color="primary" className="py-1 mr-2" onClick={() => updateFollowing(profile.user)}>
         Follow
       </Button>
-    );
-  };
+    )
+  }
 
   const getProfileImage = () => {
-    if (profile.avatar && profile.avatar.url && profile.avatar.url.length)
-      return profile.avatar.url;
-    else return DefaultImage;
-  };
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length) return profile.avatar.url
+    else return DefaultImage
+  }
 
   return (
     <Fragment>
@@ -62,20 +43,11 @@ const ProfileCard = ({
               <span className="close-icon">&times;</span>
             </button>
           )}
-          <img
-            src={getProfileImage()}
-            alt="profile"
-            className="profile-card-img"
-          />
-          <p className="profile-card-username text-dark mt-2">
-            @{profile.username}
-          </p>
+          <img src={getProfileImage()} alt="profile" className="profile-card-img" />
+          <p className="profile-card-username text-dark mt-2">@{profile.username}</p>
           <div className="profile-btn-group d-flex justify-content-center">
-            <FollowBtn />
-            <Link
-              to={`/home/profile/view/${profile.user}`}
-              className="btn btn-outline-success py-1 ml-2"
-            >
+            {currentProfile.profile.user !== profile.user && <FollowBtn />}
+            <Link to={`/home/profile/view/${profile.user}`} className="btn btn-outline-success py-1 ml-2">
               Profile
             </Link>
           </div>
@@ -83,21 +55,21 @@ const ProfileCard = ({
       </div>
       <hr />
     </Fragment>
-  );
-};
+  )
+}
 
 ProfileCard.propTypes = {
   profile: PropTypes.object.isRequired,
-  isDismissable: PropTypes.bool.isRequired,
-};
+  isDismissable: PropTypes.bool.isRequired
+}
 
 const mapStateToProps = (state) => ({
-  currentProfile: state.profile.currentProfile,
-});
+  currentProfile: state.profile.currentProfile
+})
 
 const mapDispatchToProps = (dispatch) => ({
   dismissProfileCard: (id) => dispatch(dismissProfileCard(id)),
-  updateFollowing: (id) => dispatch(updateFollowing(id)),
-});
+  updateFollowing: (id) => dispatch(updateFollowing(id))
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileCard);
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileCard)

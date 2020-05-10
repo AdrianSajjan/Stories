@@ -16,36 +16,36 @@ import {
   END_OF_SEARCH_PROFILES,
   CLEAR_SEARCH_PROFILES,
   GET_PROFILE_IMAGE,
-  SET_PROFILE_IMAGE,
-} from "../actions/types";
+  SET_PROFILE_IMAGE
+} from '../actions/types'
 
 const initialState = {
   currentProfile: {
     profile: null,
     loading: true,
-    upload: false,
+    upload: false
   },
   profileByID: {
     profile: null,
-    loading: true,
+    loading: true
   },
   discoverProfiles: {
     profiles: [],
     loading: true,
     endOfProfiles: false,
-    currentPage: 0,
+    currentPage: 0
   },
   searchResults: {
-    queryString: "",
+    queryString: '',
     profiles: [],
     loading: false,
-    endOfProfiles: false,
+    endOfProfiles: false
   },
-  errors: [],
-};
+  errors: []
+}
 
 export default function (state = initialState, action) {
-  const { type, payload } = action;
+  const { type, payload } = action
   switch (type) {
     case GET_PROFILE:
     case SET_PROFILE:
@@ -54,43 +54,43 @@ export default function (state = initialState, action) {
         currentProfile: {
           ...state.currentProfile,
           profile: payload,
-          loading: false,
-        },
-      };
+          loading: false
+        }
+      }
 
     case GET_PROFILE_IMAGE:
       return {
         ...state,
         currentProfile: {
           ...state.currentProfile,
-          upload: true,
-        },
-      };
+          upload: true
+        }
+      }
     case SET_PROFILE_IMAGE:
       return {
         ...state,
         currentProfile: {
           profile: payload,
           loading: false,
-          upload: false,
-        },
-      };
+          upload: false
+        }
+      }
 
     case PROFILE_ERROR:
-      return { ...state, errors: payload };
+      return { ...state, errors: payload }
     case REMOVE_PROFILE_ERROR:
       return {
         ...state,
-        errors: state.errors.filter((error) => error.param !== payload),
-      };
+        errors: state.errors.filter((error) => error.param !== payload)
+      }
     case RESET_PROFILE_ERRORS:
-      return { ...state, errors: [] };
+      return { ...state, errors: [] }
 
     case GET_DISCOVER_PROFILES:
       return {
         ...state,
-        discoverProfiles: { ...state.discoverProfiles, loading: true },
-      };
+        discoverProfiles: { ...state.discoverProfiles, loading: true }
+      }
     case SET_DISCOVER_PROFILES:
       return {
         ...state,
@@ -98,33 +98,31 @@ export default function (state = initialState, action) {
           ...state.discoverProfiles,
           loading: false,
           profiles: [...state.discoverProfiles.profiles, ...payload],
-          currentPage: state.discoverProfiles.currentPage + 1,
-        },
-      };
+          currentPage: state.discoverProfiles.currentPage + 1
+        }
+      }
     case REMOVE_DISCOVER_PROFILE:
       return {
         ...state,
         discoverProfiles: {
           ...state.discoverProfiles,
-          profiles: state.discoverProfiles.profiles.filter(
-            (profile) => profile._id !== payload
-          ),
-        },
-      };
+          profiles: state.discoverProfiles.profiles.filter((profile) => profile._id !== payload)
+        }
+      }
     case DISCOVER_PROFILES_END:
       return {
         ...state,
         discoverProfiles: {
           ...state.discoverProfiles,
           loading: false,
-          endOfProfiles: true,
-        },
-      };
+          endOfProfiles: true
+        }
+      }
 
     case GET_PROFILE_BY_ID:
-      return { ...state, profileByID: { profile: payload, loading: false } };
+      return { ...state, profileByID: { profile: payload, loading: false } }
     case REMOVE_PROFILE_BY_ID:
-      return { ...state, profileByID: initialState.profileByID };
+      return { ...state, profileByID: initialState.profileByID }
 
     case GET_SEARCH_PROFILES:
       return {
@@ -133,9 +131,9 @@ export default function (state = initialState, action) {
           ...state.searchResults,
           queryString: payload,
           loading: true,
-          endOfProfiles: false,
-        },
-      };
+          endOfProfiles: false
+        }
+      }
     case SET_SEARCH_PROFILES:
       return {
         ...state,
@@ -143,27 +141,27 @@ export default function (state = initialState, action) {
           ...state.searchResults,
           loading: false,
           profiles: payload,
-          endOfProfiles: false,
-        },
-      };
+          endOfProfiles: false
+        }
+      }
     case END_OF_SEARCH_PROFILES:
       return {
         ...state,
         searchResults: {
           ...initialState.searchResults,
           queryString: state.searchResults.queryString,
-          endOfProfiles: true,
-        },
-      };
+          endOfProfiles: true
+        }
+      }
     case CLEAR_SEARCH_PROFILES:
       return {
         ...state,
-        searchResults: initialState.searchResults,
-      };
+        searchResults: initialState.searchResults
+      }
 
     case CLEAR_PROFILES:
-      return initialState;
+      return initialState
     default:
-      return state;
+      return state
   }
 }
