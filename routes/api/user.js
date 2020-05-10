@@ -2,6 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { check, validationResult } = require('express-validator')
+const { google } = require('googleapis')
 const nodemailer = require('nodemailer')
 const User = require('../../models/User')
 const Profile = require('../../models/Profile')
@@ -11,42 +12,63 @@ const { VALIDATION, SERVER, NOTFOUND, AUTHENTICATION } = require('../../config/e
 
 require('dotenv').config()
 
+const OAUTH_PLAYGROUND = 'https://developers.google.com/oauthplayground'
+
+const { OAuth2 } = google.auth
 const router = express.Router()
+
+const oauth2Client = new OAuth2(
+  process.env.MAILING_SERVICE_CLIENT_ID,
+  process.env.MAILING_SERVICE_CLIENT_SECRET,
+  OAUTH_PLAYGROUND
+)
+
 const transporter = nodemailer.createTransport({
-  service: 'Gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     type: 'OAuth2',
-    clientId: process.env.MAIL_ID,
-    clientSecret: process.env.MAIL_SECRET
+    clientId: process.env.MAILING_SERVICE_CLIENT_ID,
+    clientSecret: process.env.MAILING_SERVICE_CLIENT_SECRET
   }
 })
 
-transporter.verify((error, success) => {
-  if (error) console.log(error)
-  else console.log(success)
-})
+const encryptMail = async (payload, email) => {
+  oauth2Client.setCredentials({
+    refresh_token: process.env.MAILING_SERVICE_REFRESH_TOKEN
+  })
 
-const encryptAndSendMail = (payload, email) => {
-  jwt.sign(payload, process.env.EMAIL_SECRET, { expiresIn: '1d' }, (err, token) => {
-    if (err) throw err
-    const url = `https://stories-codex.herokuapp.com/verify/${token}`
-    transporter.sendMail(
-      {
-        from: process.env.ADMIN_MAIL,
-        to: email,
-        subject: 'Confirm STORIES! Account',
-        html: `Please click this link to confirm your email: <a href="${url}">${Verify}</a>`,
-        auth: {
-          user: process.env.MAIL_USER,
-          refreshToken: process.env.MAIL_REFRESH,
-          accessToken: process.env.MAIL_ACCESS,
-          accessUrl: 'https://developers.google.com/oauthplayground'
-        }
-      },
-      (error, response) => {
-        error ? console.log(error) : console.log(response)
+  const accessToken = await oauth2Client.getAccessToken()
+
+  const token = jwt.sign(payload, process.env.EMAIL_SECRET, { expiresIn: '1d' })
+  const url = `https://stories-codex.herokuapp.com/verify/${token}`
+
+  const mailOptions = {
+    from: process.env.MAIL_USER,
+    to: email,
+    subject: 'Confirm STORIES! Account',
+    html: `Please click this link to confirm your email: <a href="${url}">Verify</a>`,
+    auth: {
+      user: process.env.MAIL_USER,
+      refreshToken: process.env.MAILING_SERVICE_REFRESH_TOKEN,
+      accessToken: accessToken.token
+    }
+  }
+
+  return mailOptions
+}
+
+const sendMail = (mailOptions) => {
+  return new Promise((resolve) => {
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        throw error
       }
-    )
+
+      console.log('Email sent succesfully')
+      resolve()
+    })
   })
 }
 
@@ -131,10 +153,10 @@ router.post(
         }
       }
 
-      encryptAndSendMail(payload_EMAIL, data.email)
+      const mailOptions = await encryptMail(payload_EMAIL, data.email)
 
-      jwt.sign(payload_ID, process.env.ID_SECRET, (err, token) => {
-        if (err) throw err
+      sendMail(mailOptions).then(() => {
+        const token = jwt.sign(payload_ID, process.env.ID_SECRET)
         res.json({
           token,
           validated: data.validated,
@@ -264,12 +286,14 @@ router.post(
         }
       }
 
-      encryptAndSendMail(payload_EMAIL, user.email)
+      const mailOptions = await encryptMail(payload_EMAIL, user.email)
 
-      res.json({
-        email: user.email,
-        validated: user.validated,
-        msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
+      sendMail(mailOptions).then(() => {
+        res.json({
+          email: user.email,
+          validated: user.validated,
+          msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
+        })
       })
     } catch (err) {
       res.status(500).send(SERVER)
@@ -391,11 +415,13 @@ router.get('/confirm/request_token', auth, async (req, res) => {
       }
     }
 
-    encryptAndSendMail(payload_EMAIL, user.email)
+    const mailOptions = await encryptMail(payload_EMAIL, user.email)
 
-    res.json({
-      email: user.email,
-      msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
+    sendMail(mailOptions).then(() => {
+      res.json({
+        email: user.email,
+        msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
+      })
     })
   } catch (err) {
     res.status(500).send(SERVER)
