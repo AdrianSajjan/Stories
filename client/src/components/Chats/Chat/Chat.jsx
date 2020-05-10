@@ -4,6 +4,7 @@ import moment from 'moment'
 import { Form, InputGroup, InputGroupAddon, Input, Spinner, Button } from 'reactstrap'
 import { connect } from 'react-redux'
 import { getUserChat, resetUserChat, sendMessage } from '../../../actions/chat'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
 
 const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserChat, socket }) => {
   const { chat, loading, error } = userChat
@@ -50,6 +51,11 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
     return null
   }
 
+  const getProfileImage = () => {
+    if (chat.receiver.avatar && chat.receiver.avatar.url && chat.receiver.avatar.url.length) return chat.receiver.avatar.url
+    else return DefaultImage
+  }
+
   return (
     <div className="side-area-container chat-container">
       <div className="d-flex align-items-center px-2">
@@ -57,7 +63,7 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
           <i className="fa fa-chevron-left fa-lg"></i>
         </Link>
         <div className="mx-auto pr-2 pr-sm-4 d-flex align-items-center">
-          <img src={chat.receiver.avatar.url} alt="profile" className="chat-avatar mr-1 my-0" />
+          <img src={getProfileImage()} alt="profile" className="chat-avatar mr-1 my-0" />
           <p className="lead text-center text-muted mt-0 mb-1 ml-1">@{chat.receiver.username}</p>
         </div>
       </div>

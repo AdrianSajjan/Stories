@@ -13,35 +13,36 @@ require('dotenv').config()
 
 const router = express.Router()
 const transporter = nodemailer.createTransport({
-  pool: true,
   host: 'smtp.gmail.com',
   port: 465,
   secure: true,
   auth: {
     type: 'OAuth2',
-    user: process.env.MAIL_USER,
     clientId: process.env.MAIL_ID,
-    clientSecret: process.env.MAIL_SECRET,
-    refreshToken: process.env.MAIL_REFRESH,
-    accessToken: process.env.MAIL_ACCESS
+    clientSecret: process.env.MAIL_SECRET
   }
-})
-
-transporter.verify((err, success) => {
-  if (err) console.error(err.message)
-  else console.log('Email ready to use')
 })
 
 const encryptAndSendMail = (payload, email) => {
   jwt.sign(payload, process.env.EMAIL_SECRET, { expiresIn: '1d' }, (err, token) => {
     if (err) throw err
     const url = `https://stories-codex.herokuapp.com/verify/${token}`
-    transporter.sendMail({
-      from: process.env.ADMIN_MAIL,
-      to: email,
-      subject: 'Confirm STORIES! Account',
-      html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`
-    })
+    transporter.sendMail(
+      {
+        from: process.env.ADMIN_MAIL,
+        to: email,
+        subject: 'Confirm STORIES! Account',
+        html: `Please click this link to confirm your email: <a href="${url}">${Verify}</a>`,
+        auth: {
+          user: process.env.MAIL_USER,
+          refreshToken: process.env.MAIL_REFRESH,
+          accessToken: process.env.MAIL_ACCESS
+        }
+      },
+      (error, response) => {
+        error ? console.error(`Error sending email ${error}`) : console.log(`Email sent succesfully: ${response}`)
+      }
+    )
   })
 }
 

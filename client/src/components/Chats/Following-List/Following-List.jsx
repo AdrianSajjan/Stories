@@ -2,11 +2,17 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Spinner } from 'reactstrap'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
 
 const ChatList = ({ profile }) => {
+  const getProfileImage = () => {
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length) return profile.avatar.url
+    else return DefaultImage
+  }
+
   return (
     <Link to={`/home/chats/${profile.user}`} className="chat-list">
-      <img className="chat-avatar" src={profile.avatar.url} alt="profile" />
+      <img className="chat-avatar" src={getProfileImage()} alt="profile" />
       <p className="mb-1 ml-2 text-secondary font-weight-bold leading-1">@{profile.username}</p>
     </Link>
   )
