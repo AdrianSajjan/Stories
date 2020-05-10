@@ -46,7 +46,7 @@ const ProfileCard = ({ currentProfile, profile, dismissProfileCard, updateFollow
           <img src={getProfileImage()} alt="profile" className="profile-card-img" />
           <p className="profile-card-username text-dark mt-2">@{profile.username}</p>
           <div className="profile-btn-group d-flex justify-content-center">
-            {currentProfile.profile.user !== profile.user && <FollowBtn />}
+            {currentProfile.profile.user._id !== profile.user && <FollowBtn />}
             <Link to={`/home/profile/view/${profile.user}`} className="btn btn-outline-success py-1 ml-2">
               Profile
             </Link>
