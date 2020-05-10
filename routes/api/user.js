@@ -13,9 +13,7 @@ require('dotenv').config()
 
 const router = express.Router()
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  service: 'Gmail',
   auth: {
     type: 'OAuth2',
     clientId: process.env.MAIL_ID,
@@ -41,7 +39,8 @@ const encryptAndSendMail = (payload, email) => {
         auth: {
           user: process.env.MAIL_USER,
           refreshToken: process.env.MAIL_REFRESH,
-          accessToken: process.env.MAIL_ACCESS
+          accessToken: process.env.MAIL_ACCESS,
+          accessUrl: 'https://developers.google.com/oauthplayground'
         }
       },
       (error, response) => {
