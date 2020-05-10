@@ -52,7 +52,7 @@ router.post(
         .isLength({ min: 4 })
         .withMessage('Username should be more than 3 letters')
         .matches(/^[a-zA-Z0-9._]*$/)
-        .withMessage('Allowed characters: A-Z, a-z, 0-9, . and _')
+        .withMessage('Only letters, numbers, dot (.) and underscore (_) allowed')
         .custom(async (value, { req }) => {
           const profile = await Profile.findOne({ username: value })
           if (profile && profile.user != req.user.id) throw new Error('Username is already taken')
