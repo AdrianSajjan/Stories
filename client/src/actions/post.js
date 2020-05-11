@@ -6,6 +6,7 @@ import {
   GET_POSTS_BY_USER,
   GET_POSTS_FROM_FOLLOWING,
   SET_POSTS_FROM_FOLLOWING,
+  CHECK_NEW_TIMELINE_POSTS,
   REMOVE_ALL_POSTS,
   POSTS_FROM_FOLLOWING_END,
   POST_LIKE,
@@ -60,10 +61,14 @@ export const getCurrentUserPosts = () => async (dispatch) => {
   }
 }
 
-export const getTimelinePosts = (page) => async (dispatch) => {
+export const getTimelinePosts = () => async (dispatch, getState) => {
   try {
     dispatch({ type: GET_POSTS_FROM_FOLLOWING })
-    const res = await axios.get(`/api/post?page=${page}`, config)
+
+    const length = getState().post.postsByFollowing.posts.length
+    const lastID = length > 0 ? getState().post.postsByFollowing.posts[length - 1]._id : ''
+
+    const res = await axios.get(`/api/post?postID=${lastID}`, config)
 
     if (res.data.length > 0)
       dispatch({
@@ -77,6 +82,26 @@ export const getTimelinePosts = (page) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: POSTS_FROM_FOLLOWING_END
+    })
+  }
+}
+
+export const checkNewTimelinePosts = () => async (dispatch, getState) => {
+  try {
+    const length = getState().post.postsByFollowing.posts.length
+    if (length === 0) return
+
+    const lastID = getState().post.postsByFollowing.posts[0]._id
+    const res = await axios.get(`/api/post/new?postID=${lastID}`, config)
+
+    dispatch({
+      type: CHECK_NEW_TIMELINE_POSTS,
+      payload: res.data
+    })
+  } catch (err) {
+    dispatch({
+      type: CHECK_NEW_TIMELINE_POSTS,
+      payload: []
     })
   }
 }

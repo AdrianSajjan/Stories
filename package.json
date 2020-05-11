@@ -4,7 +4,7 @@
   "description": "STORIES! A social media platform",
   "main": "server.js",
   "scripts": {
-    "server": "node server.js",
+    "server": "nodemon server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"yarn server\" \"yarn client\"",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
