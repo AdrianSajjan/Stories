@@ -53,6 +53,11 @@ io.on('connection', (socket) => {
     if (isOnline) io.to(id).emit('receive-message', payload)
   })
 
+  socket.on('new-notification', (payload, id) => {
+    const isOnline = socketMethods.isOnline(id)
+    if (isOnline) io.to(id).emit('receive-notification', payload)
+  })
+
   socket.on('disconnect', async () => {
     await socketMethods.disconnectUser(socket.id)
   })

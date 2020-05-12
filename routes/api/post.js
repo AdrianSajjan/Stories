@@ -169,6 +169,7 @@ router.post('/', [auth, [check('content').not().isEmpty().withMessage('Content c
         type: NOTFOUND,
         msg: 'Create your profile in order to post.'
       })
+
     const post = new Post({
       user: req.user.id,
       profile: profile._id,
@@ -176,7 +177,42 @@ router.post('/', [auth, [check('content').not().isEmpty().withMessage('Content c
     })
     await post.save()
     await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
-    res.send(post)
+
+    res.json(post)
+  } catch (err) {
+    console.log(err.message)
+    res.status(500).send(SERVER)
+  }
+})
+
+/**
+ * @route : PUT api/post/:post
+ * @desc : Edit a Post
+ * @access : Private
+ */
+router.put('/:post', [auth, [check('content').not().isEmpty().withMessage('Content cannot be empty')]], async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty())
+    return res.status(400).json({
+      type: VALIDATION,
+      errors: errors.array({ onlyFirstError: true })
+    })
+
+  try {
+    const postID = req.params.post
+
+    if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+      return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+
+    const post = await Post.findById(postID)
+
+    if (!post) return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+
+    post.content = req.body.content
+    await post.save()
+    await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+
+    return res.json(post)
   } catch (err) {
     console.log(err.message)
     res.status(500).send(SERVER)
@@ -189,22 +225,16 @@ router.post('/', [auth, [check('content').not().isEmpty().withMessage('Content c
  * @access : Private
  */
 router.delete('/:post', auth, async (req, res) => {
-  const id = req.user.id
   const postID = req.params.post
+
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
-    return res.status(404).json({
-      type: NOTFOUND,
-      msg: 'Post not found'
-    })
+    return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+
   try {
-    const profile = await Profile.findOne({ user: id })
-    if (!profile)
-      return res.status(400).json({
-        type: NOTFOUND,
-        msg: 'Post not found'
-      })
     const post = await Post.findByIdAndDelete(postID)
+
     if (!post) return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+
     res.json({ msg: 'Post deleted successfully' })
   } catch (err) {
     console.log(err.message)

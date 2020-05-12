@@ -1,24 +1,32 @@
 const User = require('./../models/User')
 
-let onlineUsers = []
+const onlineUsers = []
 
 const connectUser = async (userID, socketID) => {
-  onlineUsers.push({ user: userID, socket: socketID })
-  const user = await User.findById(userID)
-  user.active = true
-  await user.save()
-  console.log(`User with ID ${userID} added.`)
+  try {
+    onlineUsers.push({ user: userID, socket: socketID })
+    const user = await User.findById(userID)
+    user.active = true
+    await user.save()
+    console.log(`User with ID ${userID} added.`)
+  } catch (err) {
+    console.log(err.message)
+  }
 }
 
 const disconnectUser = async (socketID) => {
-  const userIndex = onlineUsers.findIndex((user) => user.socket === socketID)
-  if (userIndex !== -1) {
+  try {
+    const userIndex = onlineUsers.findIndex((user) => user.socket === socketID)
+    if (userIndex === -1) return
+
     const userID = onlineUsers[userIndex].user
     onlineUsers.splice(userIndex, 1)
     const user = await User.findById(userID)
     user.active = false
     await user.save()
     console.log(`User with ID ${userID} removed.`)
+  } catch (err) {
+    console.log(err.message)
   }
 }
 
