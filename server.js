@@ -10,6 +10,7 @@ const profileRouter = require('./routes/api/profile')
 const postRouter = require('./routes/api/post')
 const uploadRouter = require('./routes/api/upload')
 const chatRouter = require('./routes/api/chat')
+const activityRouter = require('./routes/api/activity')
 const socketMethods = require('./utils/socket')
 require('dotenv').config()
 
@@ -28,6 +29,7 @@ app.use('/api/profile', profileRouter)
 app.use('/api/post', postRouter)
 app.use('/api/uploads', uploadRouter)
 app.use('/api/chat', chatRouter)
+app.use('/api/activity', activityRouter)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'))

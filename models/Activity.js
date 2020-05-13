@@ -12,7 +12,21 @@ const ActivitySchema = new Schema({
     ref: 'profile'
   },
   activity: {
-    type: String,
+    message: {
+      type: String,
+      required: true
+    },
+    profile: {
+      type: Schema.Types.ObjectId,
+      ref: 'profile'
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    }
+  },
+  activity_type: {
+    type: 'String',
     required: true
   },
   timestamp: {

@@ -6,6 +6,8 @@ const auth = require('../../middleware/token-auth')
 const { check, validationResult } = require('express-validator')
 const { VALIDATION, SERVER, NOTFOUND, AUTHENTICATION } = require('../../config/errors')
 
+const { followActivity } = require('../../utils/activity')
+
 const router = express.Router()
 
 /**
@@ -241,11 +243,7 @@ router.get('/:userID', auth, async (req, res) => {
   if (!ObjectID.isValid(userID) || new ObjectID(userID) != userID)
     return res.status(400).json({
       type: NOTFOUND,
-      errors: [
-        {
-          msg: 'Profile Not Found'
-        }
-      ]
+      errors: [{ msg: 'Profile Not Found' }]
     })
 
   try {
@@ -258,11 +256,7 @@ router.get('/:userID', auth, async (req, res) => {
     if (!profile)
       return res.status(400).json({
         type: NOTFOUND,
-        errors: [
-          {
-            msg: 'Profile Not Found'
-          }
-        ]
+        errors: [{ msg: 'Profile Not Found' }]
       })
 
     res.json(profile)
@@ -284,21 +278,13 @@ router.put('/follow/:id', auth, async (req, res) => {
   if (otherUser === id)
     return res.status(400).json({
       type: VALIDATION,
-      errors: [
-        {
-          msg: 'You cannot follow yourself'
-        }
-      ]
+      errors: [{ msg: 'You cannot follow yourself' }]
     })
 
   if (!ObjectID.isValid(otherUser) || new ObjectID(otherUser) != otherUser)
     return res.status(400).json({
       type: NOTFOUND,
-      errors: [
-        {
-          msg: 'Profile not found!!'
-        }
-      ]
+      errors: [{ msg: 'Profile not found!!' }]
     })
 
   try {
@@ -306,32 +292,25 @@ router.put('/follow/:id', auth, async (req, res) => {
     if (!otherProfile)
       return res.status(400).json({
         type: NOTFOUND,
-        errors: [
-          {
-            msg: 'Profile not found'
-          }
-        ]
+        errors: [{ msg: 'Profile not found' }]
       })
 
     let profile = await Profile.findOne({ user: id })
     if (!profile)
       return res.status(404).json({
         type: NOTFOUND,
-        errors: [
-          {
-            msg: 'Create your profile before following other users'
-          }
-        ]
+        errors: [{ msg: 'Create your profile before following other users' }]
       })
 
     if (profile.following.some((item) => item.user == otherUser)) {
       profile.following = profile.following.filter((item) => item.user != otherUser)
       otherProfile.followers = otherProfile.followers.filter((item) => item.user != id)
-      await profile.save()
-      await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
-      await otherProfile.save()
 
-      return res.json(profile)
+      await profile.save()
+      await otherProfile.save()
+      await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
+
+      return res.json({ profile })
     }
 
     let body = {
@@ -341,6 +320,9 @@ router.put('/follow/:id', auth, async (req, res) => {
     }
     profile.following.push(body)
     await profile.save()
+
+    const activity = await followActivity(profile, otherProfile)
+
     await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
 
     body = {
@@ -351,7 +333,7 @@ router.put('/follow/:id', auth, async (req, res) => {
     otherProfile.followers.push(body)
     await otherProfile.save()
 
-    return res.json(profile)
+    return res.json({ profile, activity })
   } catch (err) {
     console.log(err.message)
     res.status(500).send(SERVER)

@@ -4,6 +4,7 @@ import { Row, Col } from 'reactstrap'
 import { connect } from 'react-redux'
 import { openSidebar } from '../../actions/sidebar'
 import Discover from '../Discover/Discover'
+import ActivityList from './Activity-List/Activity-List'
 
 const Activity = ({ openSidebar }) => {
   return (
@@ -16,7 +17,7 @@ const Activity = ({ openSidebar }) => {
             </button>
             <h1 className="main-title text-primary">Activity</h1>
           </div>
-          <p className="lead text-center text-danger mt-4">Work in progress</p>
+          <ActivityList />
         </Col>
         <Col lg="4" className="side-area d-none d-lg-block">
           <Discover />

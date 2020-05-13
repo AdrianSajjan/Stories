@@ -144,11 +144,17 @@ export const clearSearchProfileResult = () => (dispatch) => {
   dispatch({ type: CLEAR_SEARCH_PROFILES })
 }
 
-export const updateFollowing = (id) => async (dispatch) => {
+export const updateFollowing = (id) => async (dispatch, getState) => {
   try {
     const res = await axios.put(`/api/profile/follow/${id}`)
-    dispatch({ type: SET_PROFILE, payload: res.data })
+    console.log(res.data)
+    dispatch({ type: SET_PROFILE, payload: res.data.profile })
+
+    if (res.data.activity) {
+      const socket = getState().auth.socket
+      if (socket) socket.emit('new-notification', res.data.activity, id)
+    }
   } catch (err) {
-    setAlert(`Error: ${err.response.status}`, err.response.data, 'danger')
+    if (err.response) setAlert(`Error: ${err.response.status}`, err.response.data, 'danger')
   }
 }

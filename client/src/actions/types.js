@@ -69,6 +69,11 @@ export const GET_USER_CHAT = 'GET_USER_CHAT'
 export const SET_USER_CHAT = 'SET_USER_CHAT'
 export const SET_USER_CHAT_ERROR = 'SET_USER_CHAT_ERROR'
 
+export const GET_ACTIVITIES = 'GET_ACTIVITIES'
+export const SET_ACTIVITIES = 'SET_ACTIVITIES'
+export const READ_ACTIVITY = 'READ_ACTIVITY'
+export const PUSH_ACTIVITY = 'PUSH_ACTIVITY'
+
 export const LOGOUT = 'LOGOUT'
 
 export const OPEN_SIDEBAR = 'OPEN_SIDEBAR'
