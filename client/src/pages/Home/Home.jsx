@@ -15,14 +15,25 @@ import Error404 from '../../components/Error-404/Error-404'
 import { getCurrentProfile } from '../../actions/profile'
 import { getCurrentUserPosts } from '../../actions/post'
 import { getAllChats, receiveMessage } from '../../actions/chat'
+import { getActivities, pushActivity } from '../../actions/activity'
 import { initSocket } from '../../actions/auth'
 import './Home.css'
 
-const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket, user, receiveMessage }) => {
+const Home = ({
+  getCurrentProfile,
+  getCurrentUserPosts,
+  getAllChats,
+  initSocket,
+  user,
+  receiveMessage,
+  getActivities,
+  pushActivity
+}) => {
   useEffect(() => {
     getCurrentProfile()
     getCurrentUserPosts()
     getAllChats()
+    getActivities()
     // eslint-disable-next-line
   }, [])
 
@@ -32,14 +43,14 @@ const Home = ({ getCurrentProfile, getCurrentUserPosts, getAllChats, initSocket,
       initSocket(socket)
       socket.emit('login', user._id)
       socket.on('receive-message', (payload) => {
-        console.log(payload)
         receiveMessage(payload)
+      })
+      socket.on('receive-notification', (payload) => {
+        pushActivity(payload)
       })
     }
     // eslint-disable-next-line
   }, [user])
-
-  useEffect(() => {}, [])
 
   return (
     <section className="w-100 bg-light">
@@ -75,7 +86,9 @@ const mapDispatchToProps = (dispatch) => ({
   getCurrentUserPosts: () => dispatch(getCurrentUserPosts()),
   getAllChats: () => dispatch(getAllChats()),
   initSocket: (socket) => dispatch(initSocket(socket)),
-  receiveMessage: (payload) => dispatch(receiveMessage(payload))
+  receiveMessage: (payload) => dispatch(receiveMessage(payload)),
+  getActivities: () => dispatch(getActivities()),
+  pushActivity: (payload) => dispatch(pushActivity(payload))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home)

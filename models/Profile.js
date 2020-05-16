@@ -1,82 +1,82 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const ProfileSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: "user",
+    ref: 'user'
   },
   username: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   status: {
     online: Boolean,
-    lastseen: Date,
+    lastseen: Date
   },
   avatar: {
     url: String,
-    public_id: String,
+    public_id: String
   },
   dob: {
     type: Date,
-    required: true,
+    required: true
   },
   locality: {
-    type: String,
+    type: String
   },
   state: {
-    type: String,
+    type: String
   },
   country: {
-    type: String,
+    type: String
   },
   bio: {
-    type: String,
+    type: String
   },
   following: [
     {
       user: {
         type: Schema.Types.ObjectId,
-        ref: "user",
+        ref: 'user'
       },
       profile: {
         type: Schema.Types.ObjectId,
-        ref: "profile",
+        ref: 'profile'
       },
-      date: Date,
-    },
+      date: Date
+    }
   ],
   followers: [
     {
       user: {
         type: Schema.Types.ObjectId,
-        ref: "user",
+        ref: 'user'
       },
       profile: {
         type: Schema.Types.ObjectId,
-        ref: "profile",
+        ref: 'profile'
       },
-      date: Date,
-    },
+      date: Date
+    }
   ],
   notifications: [
     {
       msg: String,
-      date: Date,
-    },
+      date: Date
+    }
   ],
   blacklist: [
     {
       user: {
         type: Schema.Types.ObjectId,
-        ref: "user",
+        ref: 'user'
       },
-      date: Date,
-    },
-  ],
-});
+      date: Date
+    }
+  ]
+})
 
-module.exports = Profile = mongoose.model("profile", ProfileSchema, "Profiles");
+module.exports = Profile = mongoose.model('profile', ProfileSchema, 'Profiles')

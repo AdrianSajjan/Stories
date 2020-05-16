@@ -34,6 +34,8 @@ const ProfileCard = ({ currentProfile, profile, dismissProfileCard, updateFollow
     else return DefaultImage
   }
 
+  if (!currentProfile.profile) return null
+
   return (
     <Fragment>
       <div className="profile-card px-2">

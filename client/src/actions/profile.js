@@ -147,7 +147,7 @@ export const clearSearchProfileResult = () => (dispatch) => {
 export const updateFollowing = (id) => async (dispatch, getState) => {
   try {
     const res = await axios.put(`/api/profile/follow/${id}`)
-    console.log(res.data)
+
     dispatch({ type: SET_PROFILE, payload: res.data.profile })
 
     if (res.data.activity) {

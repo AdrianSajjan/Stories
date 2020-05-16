@@ -304,11 +304,14 @@ router.put('/follow/:id', auth, async (req, res) => {
 
     if (profile.following.some((item) => item.user == otherUser)) {
       profile.following = profile.following.filter((item) => item.user != otherUser)
+
       otherProfile.followers = otherProfile.followers.filter((item) => item.user != id)
 
       await profile.save()
-      await otherProfile.save()
+
       await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
+
+      await otherProfile.save()
 
       return res.json({ profile })
     }
@@ -321,10 +324,6 @@ router.put('/follow/:id', auth, async (req, res) => {
     profile.following.push(body)
     await profile.save()
 
-    const activity = await followActivity(profile, otherProfile)
-
-    await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
-
     body = {
       user: id,
       profile: profile.id,
@@ -332,6 +331,9 @@ router.put('/follow/:id', auth, async (req, res) => {
     }
     otherProfile.followers.push(body)
     await otherProfile.save()
+
+    const activity = await followActivity(profile, otherProfile)
+    await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
 
     return res.json({ profile, activity })
   } catch (err) {

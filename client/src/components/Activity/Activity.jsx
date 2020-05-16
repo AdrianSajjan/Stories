@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { openSidebar } from '../../actions/sidebar'
 import Discover from '../Discover/Discover'
 import ActivityList from './Activity-List/Activity-List'
+import './Activity.css'
 
 const Activity = ({ openSidebar }) => {
   return (

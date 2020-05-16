@@ -12,7 +12,7 @@ const followActivity = async (profile, followProfile) => {
   try {
     const url = ''.concat(FOLLOW_URL, profile.user)
     const activity = {
-      message: ''.concat(profile.username, ' ', FOLLOW),
+      message: ''.concat('@', profile.username, ' ', FOLLOW),
       profile: profile._id,
       user: profile.user
     }
@@ -37,7 +37,7 @@ const commentActivity = async (post, profile) => {
   try {
     const url = ''.concat(COMMENT_URL, post._id)
     const activity = {
-      message: ''.concat(profile.username, ' ', COMMENT),
+      message: ''.concat('@', profile.username, ' ', COMMENT),
       profile: profile._id
     }
 

@@ -1,4 +1,4 @@
-import { GET_ACTIVITIES, SET_ACTIVITIES } from '../actions/types'
+import { GET_ACTIVITIES, SET_ACTIVITIES, READ_ACTIVITY, PUSH_ACTIVITY } from '../actions/types'
 
 const initialState = {
   activities: [],
@@ -31,5 +31,8 @@ export default function (state = initialState, action) {
         ...state,
         activities: [...state.activities, payload]
       }
+
+    default:
+      return state
   }
 }

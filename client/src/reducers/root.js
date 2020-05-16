@@ -6,6 +6,7 @@ import profile from './profile'
 import sidebar from './sidebar'
 import post from './post'
 import chat from './chat'
+import activity from './activity'
 
 export default combineReducers({
   alert,
@@ -14,5 +15,6 @@ export default combineReducers({
   profile,
   sidebar,
   post,
-  chat
+  chat,
+  activity
 })

@@ -1,0 +1,29 @@
+.activity-avatar {
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.activity-list {
+  display: flex;
+  width: 100%;
+  border: none;
+  outline: none !important;
+  align-items: center;
+  background-color: var(--light);
+  border-radius: 10px;
+  padding: 0.4rem 1rem;
+  margin-top: 20px;
+}
+
+.activity-list.unread {
+  background-color: rgba(186, 255, 222, 0.3);
+}
+
+.activity-list-container {
+  overflow-y: auto;
+  margin-top: 20px;
+  height: calc(100vh - 87.5px) !important;
+}
