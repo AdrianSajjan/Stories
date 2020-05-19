@@ -1,11 +1,13 @@
 const express = require('express')
-const router = express.Router()
 const ObjectID = require('mongoose').Types.ObjectId
-const { check, validationResult } = require('express-validator')
 const Post = require('../../models/Post')
 const Profile = require('../../models/Profile')
 const auth = require('../../middleware/token-auth')
+const { commentActivity } = require('../../utils/activity')
 const { VALIDATION, SERVER, NOTFOUND } = require('../../config/errors')
+const { check, validationResult } = require('express-validator')
+
+const router = express.Router()
 
 /**
  * @route : GET api/post/
@@ -28,21 +30,8 @@ router.get('/', auth, async (req, res) => {
 
     if (profile.following.length == 0) return res.json([])
 
-    /* 
-    * Previous Post Getter
-    const page = parseInt(req.query.page) || 0
-    const posts = await Post.find({
-      user: { $in: profile.following.map(({ user }) => user) },
-    })
-      .skip(page * limit)
-      .limit(limit)
-      .populate("profile")
-      .populate("comments.profile")
-      .populate("likes.profile")
-      .sort("-date");
-    */
-
     let posts
+
     if (lastPostID === '')
       posts = await Post.find({
         user: { $in: profile.following.map(({ user }) => user) }
@@ -177,6 +166,35 @@ router.post('/', [auth, [check('content').not().isEmpty().withMessage('Content c
     })
     await post.save()
     await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+
+    res.json(post)
+  } catch (err) {
+    console.log(err.message)
+    res.status(500).send(SERVER)
+  }
+})
+
+/**
+ * @route : GET api/post/:post
+ * @desc : Get a Post
+ * @access : Private
+ */
+router.get('/:id', auth, async (req, res) => {
+  const postID = req.params.id
+
+  if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+    return res.status(400).json({
+      type: NOTFOUND,
+      error: 'Post Not Found'
+    })
+
+  try {
+    const post = await Post.findById(postID).populate('profile').populate('comments.profile').populate('likes.profile')
+    if (!post)
+      return res.status(400).json({
+        type: NOTFOUND,
+        error: 'Post Not Found'
+      })
 
     res.json(post)
   } catch (err) {
@@ -343,7 +361,9 @@ router.put(
       await post.save()
       await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
 
-      res.json(post)
+      const activity = await commentActivity(post, profile)
+
+      res.json({ post, activity })
     } catch (err) {
       console.log(err.message)
       res.status(500).send(SERVER)

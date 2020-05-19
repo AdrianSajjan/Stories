@@ -6,6 +6,11 @@ const { SERVER } = require('../../config/errors')
 
 const router = express.Router()
 
+/**
+ * @route : GET api/activity/
+ * @desc : Get all activities
+ * @access : Private
+ */
 router.get('/', auth, async (req, res) => {
   const userID = req.user.id
 
@@ -18,6 +23,11 @@ router.get('/', auth, async (req, res) => {
   }
 })
 
+/**
+ * @route : GET api/activity/:activityID
+ * @desc : Mark activity as read
+ * @access : Private
+ */
 router.get('/:activityID', auth, async (req, res) => {
   const activityID = req.params.activityID
 

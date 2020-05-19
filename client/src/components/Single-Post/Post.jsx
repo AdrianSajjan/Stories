@@ -41,17 +41,16 @@ const Post = ({ post, currentProfile, likePost }) => {
 
   const PostOptions = () => {
     if (!options) return null
+
     return (
       <Fragment>
         <div className="post-options-menu">
-          {post.user === profile.user._id ? (
+          {post.user === profile.user._id && (
             <Fragment>
               <button className="post-option py-2 px-4 text-success">Edit Post</button>
               <hr className="m-0" />
               <button className="post-option py-2 px-4 text-danger">Delete Post</button>
             </Fragment>
-          ) : (
-            <button className="post-option py-2 px-4 text-danger">Report Post</button>
           )}
         </div>
       </Fragment>
@@ -92,9 +91,11 @@ const Post = ({ post, currentProfile, likePost }) => {
           <i className={PostHasUserComment() ? 'fa fa-comment fa-lg' : 'fa fa-comment-o fa-lg'}></i>
           <span className="ml-2">{post.comments.length}</span>
         </button>
-        <button className={`post-options m-0 pb-2 pt-3 ${options && 'active'}`} onClick={PostOptionClick}>
-          <i className="fa fa-ellipsis-h fa-lg"></i>
-        </button>
+        {post.user === profile.user._id && (
+          <button className={`post-options m-0 pb-2 pt-3 ${options && 'active'}`} onClick={PostOptionClick}>
+            <i className="fa fa-ellipsis-h fa-lg"></i>
+          </button>
+        )}
       </div>
       {comment && (
         <PostComment postID={post._id} postComments={post.comments} postOwner={post.user} currentProfile={profile.user._id} />

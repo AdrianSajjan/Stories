@@ -5,8 +5,8 @@ const COMMENT_URL = '/home/post/view/'
 const FOLLOW = 'started following you'
 const FOLLOW_URL = '/home/profile/view/'
 
-const ACTIVITY_FOLLOW = 'Follow'
-const ACTIVITY_COMMENT = 'Comment'
+const ACTIVITY_FOLLOW = 'follow'
+const ACTIVITY_COMMENT = 'comment'
 
 const followActivity = async (profile, followProfile) => {
   try {
@@ -38,12 +38,14 @@ const commentActivity = async (post, profile) => {
     const url = ''.concat(COMMENT_URL, post._id)
     const activity = {
       message: ''.concat('@', profile.username, ' ', COMMENT),
-      profile: profile._id
+      profile: profile._id,
+      user: profile.user,
+      post: post._id
     }
 
     let activityData = new Activity({
       user: post.user,
-      profile: post.profile,
+      profile: post.profile._id,
       activity: activity,
       activity_type: ACTIVITY_COMMENT,
       link: url

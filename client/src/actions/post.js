@@ -136,13 +136,15 @@ export const likePost = (post) => async (dispatch) => {
   }
 }
 
-export const commentPost = (post, comment) => async (dispatch) => {
+export const commentPost = (post, comment) => async (dispatch, getState) => {
   try {
     const res = await axios.put(`/api/post/comment/${post}`, { comment })
-    dispatch({
-      type: POST_COMMENT,
-      payload: res.data
-    })
+    dispatch({ type: POST_COMMENT, payload: res.data.post })
+
+    if (res.data.activity) {
+      const socket = getState().auth.socket
+      if (socket) socket.emit('new-notification', res.data.activity, post.user)
+    }
   } catch (err) {
     console.error(err.response)
   }

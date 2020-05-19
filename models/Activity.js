@@ -23,6 +23,10 @@ const ActivitySchema = new Schema({
     user: {
       type: Schema.Types.ObjectId,
       ref: 'user'
+    },
+    post: {
+      type: Schema.Types.ObjectID,
+      ref: 'post'
     }
   },
   activity_type: {
