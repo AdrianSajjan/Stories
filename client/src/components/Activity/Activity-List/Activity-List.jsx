@@ -18,7 +18,7 @@ const SingleActivity = ({ activity, readActivity }) => {
 
   const getProfileImage = () => {
     const profile = activity.activity.profile
-    if (profile.avatar && profile.avatar.url && profile.url.length) return profile.avatar.url
+    if (profile.avatar && profile.avatar.url && profile.avatar.url.length) return profile.avatar.url
     else return DefaultImage
   }
 
