@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Post from '../Single-Post/Post'
+import Post from './Post/Post'
 
 const Posts = ({ posts }) => posts.map((post) => <Post key={post._id} post={post} />)
 

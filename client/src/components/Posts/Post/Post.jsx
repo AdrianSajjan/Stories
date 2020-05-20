@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { connect } from 'react-redux'
-import { likePost } from '../../actions/post'
+import { likePost } from '../../../actions/post'
 import PostComment from './Post-Comment/Post-Comment'
-import DefaultImage from '../../assets/images/sample-profile-picture.png'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
 import './Post.css'
 
 const Post = ({ post, currentProfile, likePost }) => {
