@@ -198,12 +198,7 @@ router.post(
   ],
   async (req, res) => {
     const errors = validationResult(req)
-
-    if (!errors.isEmpty())
-      return res.status(400).json({
-        type: VALIDATION,
-        errors: errors.array({ onlyFirstError: true })
-      })
+    if (!errors.isEmpty()) return res.status(400).json({ type: VALIDATION, errors: errors.array({ onlyFirstError: true }) })
 
     try {
       const userID = req.user.id
@@ -214,7 +209,7 @@ router.post(
       if (!user)
         return res.status(404).json({
           type: NOTFOUND,
-          errors: [{ msg: "Account doesn't exist" }]
+          msg: "Account doesn't exist"
         })
 
       user.name = name
@@ -270,11 +265,7 @@ router.post(
 
       const user = await User.findById(userID)
 
-      if (!user)
-        return res.status(404).json({
-          type: NOTFOUND,
-          errors: [{ msg: "Account doesn't exist" }]
-        })
+      if (!user) return res.status(404).json({ type: NOTFOUND, msg: "Account doesn't exist" })
 
       user.email = email.trim()
       user.validated = false
@@ -440,17 +431,17 @@ router.get('/confirm/:email_token', async (req, res) => {
   try {
     const decode = jwt.decode(token, process.env.EMAIL_SECRET)
 
-    if (!decode) return res.status(400).send('Token in invalid or expired. Please request a new token')
+    if (!decode) return res.status(400).send({ msg: 'Token in invalid or expired. Please request a new token' })
 
     const email = decode.user.email
 
-    if (!email) return res.status(400).send('Token in invalid or expired. Please request a new token')
+    if (!email) return res.status(400).send({ msg: 'Token in invalid or expired. Please request a new token' })
 
     const user = await User.findOne({ email })
 
-    if (!user) return res.status(400).send('Token in invalid or expired. Please request a new token')
+    if (!user) return res.status(400).send({ msg: 'Token in invalid or expired. Please request a new token' })
 
-    if (user.validated) return res.status(400).send('Token in invalid or expired. Please request a new token')
+    if (user.validated) return res.status(400).send({ msg: 'Token in invalid or expired. Please request a new token' })
 
     user.validated = true
     await user.save()
@@ -483,11 +474,7 @@ router.delete('/', [auth, [check('password').not().isEmpty().withMessage('Passwo
   try {
     const user = await User.findById(userID)
 
-    if (!user)
-      return res.status(404).json({
-        type: NOTFOUND,
-        errors: [{ msg: "Account doesn't exist" }]
-      })
+    if (!user) return res.status(404).json({ type: NOTFOUND, errors: [{ msg: "Account doesn't exist" }] })
 
     const isMatch = await bcrypt.compare(password, user.password)
 
@@ -582,9 +569,7 @@ router.delete('/', [auth, [check('password').not().isEmpty().withMessage('Passwo
     await user.remove()
     console.log(`Completely deleted user: ${userID}`)
 
-    res.json({
-      msg: 'Account deleted successfully'
-    })
+    res.json({ msg: 'Account deleted successfully' })
   } catch (err) {
     console.log(err.message)
     res.status(500).send(SERVER)

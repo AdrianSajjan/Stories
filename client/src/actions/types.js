@@ -47,6 +47,7 @@ export const CLEAR_SEARCH_PROFILES = 'CLEAR_SEARCH_PROFILES'
 export const CLEAR_PROFILES = 'CLEAR_PROFILE'
 
 export const CREATE_POST = 'CREATE_POST'
+export const EDIT_POST = 'EDIT_POST'
 export const POST_ERROR = 'POST_ERROR'
 export const GET_POST_BY_ID = 'GET_POST_BY_ID'
 export const REMOVE_POST_BY_ID = 'REMOVE_POST_BY_ID'

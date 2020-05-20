@@ -1,19 +1,18 @@
-import React from "react";
-import { useHistory } from "react-router-dom";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { removeAlert } from "../../actions/alert";
+import React from 'react'
+import { useHistory } from 'react-router-dom'
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { removeAlert } from '../../actions/alert'
 
 const Alert = ({ alert, removeAlert }) => {
-  // Alert
-  const { type, header, msg, active, redirect, callback } = alert;
-  const history = useHistory();
+  const { type, header, msg, active, redirect, callback } = alert
+  const history = useHistory()
   const CloseModal = () => {
-    removeAlert();
-    if (redirect !== "") history.push(redirect);
-    if (callback) callback();
-  };
+    removeAlert()
+    if (redirect !== '') history.push(redirect)
+    if (callback) callback()
+  }
 
   return (
     <Modal isOpen={active} toggle={CloseModal}>
@@ -27,20 +26,20 @@ const Alert = ({ alert, removeAlert }) => {
         </Button>
       </ModalFooter>
     </Modal>
-  );
-};
+  )
+}
 
 Alert.propTypes = {
   alert: PropTypes.object.isRequired,
-  removeAlert: PropTypes.func.isRequired,
-};
+  removeAlert: PropTypes.func.isRequired
+}
 
 const mapStateToProps = (state) => ({
-  alert: state.alert,
-});
+  alert: state.alert
+})
 
 const mapDispatchToProps = (dispatch) => ({
-  removeAlert: () => dispatch(removeAlert()),
-});
+  removeAlert: () => dispatch(removeAlert())
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(Alert);
+export default connect(mapStateToProps, mapDispatchToProps)(Alert)

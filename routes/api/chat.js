@@ -35,38 +35,14 @@ router.post('/:id', [auth, [check('message').not().isEmpty().withMessage('Messag
 
     const receiver = await Profile.findOne({ user: receiverID })
 
-    if (!receiver)
-      return res.status(404).json({
-        type: NOTFOUND,
-        errors: [
-          {
-            msg: "User doesn't exist"
-          }
-        ]
-      })
+    if (!receiver) return res.status(404).json({ type: NOTFOUND, msg: "User doesn't exist" })
 
     if (!ObjectID.isValid(receiverID) || new ObjectID(receiverID) != receiverID)
-      return res.status(400).json({
-        type: NOTFOUND,
-        errors: [
-          {
-            msg: "User doesn't exist"
-          }
-        ]
-      })
+      return res.status(400).json({ type: NOTFOUND, msg: "User doesn't exist" })
 
-    if (senderID === receiverID)
-      return res.status(500).json({
-        type: NOTFOUND,
-        errors: [
-          {
-            msg: "You cant't message yourself"
-          }
-        ]
-      })
+    if (senderID === receiverID) return res.status(500).json({ type: NOTFOUND, msg: "You cant't message yourself" })
 
     let chat = await Chat.findOne({
-      //participants: { $all: [{ $elemMatch: { user: senderID } }, { $elemMatch: { user: receiverID } }] }
       $and: [{ 'participants.user': senderID }, { 'participants.user': receiverID }]
     })
 

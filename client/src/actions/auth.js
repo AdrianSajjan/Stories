@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { setAlert } from './alert'
-import { setLoginErrors, setRegistrationErrors } from './error'
 import setAuthToken from '../utils/set-auth-token'
+import { toast } from 'react-toastify'
+import { setLoginErrors, setRegistrationErrors } from './error'
 import { REGISTER_SUCCESS, REGISTER_FAILED, USER_LOADED, LOGIN_REQUEST, REGISTRATION_REQUEST, INIT_SOCKET } from './types'
 import { AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, CLEAR_PROFILES, REMOVE_ALL_POSTS } from './types'
 
@@ -15,94 +15,56 @@ export const initSocket = (socket) => (dispatch) => {
   dispatch({ type: INIT_SOCKET, payload: socket })
 }
 
-export const loadUser = (ownProps = null, redirect = null) => async (dispatch) => {
-  if (localStorage.token) {
-    setAuthToken(localStorage.token)
-  }
-
+export const loadUser = (ownProps, redirect) => async (dispatch) => {
   try {
+    if (localStorage.token) setAuthToken(localStorage.token)
     const res = await axios.get('/api/auth')
-
-    dispatch({
-      type: USER_LOADED,
-      payload: res.data
-    })
-
+    dispatch({ type: USER_LOADED, payload: res.data })
     if (ownProps && redirect) ownProps.history.push(redirect)
-    // Handle Errors
   } catch (err) {
-    dispatch({
-      type: AUTH_ERROR
-    })
+    dispatch({ type: AUTH_ERROR })
   }
 }
 
-export const register = (data) => async (dispatch) => {
-  dispatch({
-    type: REGISTRATION_REQUEST
-  })
-
+export const register = (data, ownProps) => async (dispatch) => {
   try {
+    dispatch({ type: REGISTRATION_REQUEST })
     const res = await axios.post('/api/user', data, config)
-
-    dispatch({
-      type: REGISTER_SUCCESS,
-      payload: res.data
-    })
-
-    dispatch(setAlert('Account Created', res.data.msg, 'success', '/home/profile'))
-    dispatch(loadUser())
+    dispatch({ type: REGISTER_SUCCESS, payload: res.data })
+    dispatch(loadUser(ownProps, '/home/profile/edit'))
+    toast.success(res.data.msg)
   } catch (err) {
-    const _data = err.response.data
-
-    if (_data.type === 'VALIDATION') {
-      dispatch(setRegistrationErrors(_data.errors))
+    const data = err.response.data
+    if (data && data.type) {
+      if (data.type === 'VALIDATION') dispatch(setRegistrationErrors(data.errors))
+      else toast.error(data.msg || 'Registration failed!')
     } else {
-      dispatch(setAlert(`Error: ${err.response.status}`, _data ? _data : err.response, 'danger'))
+      toast.error('Registration failed!')
     }
-
-    dispatch({
-      type: REGISTER_FAILED
-    })
+    dispatch({ type: REGISTER_FAILED })
   }
 }
 
-export const login = (data, ownProps = null, redirect = null) => async (dispatch) => {
-  dispatch({
-    type: LOGIN_REQUEST
-  })
-
+export const login = (data, ownProps, redirect) => async (dispatch) => {
   try {
+    dispatch({ type: LOGIN_REQUEST })
     const res = await axios.post('/api/auth', data, config)
-
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: res.data
-    })
-
+    dispatch({ type: LOGIN_SUCCESS, payload: res.data })
     dispatch(loadUser(ownProps, redirect))
   } catch (err) {
-    const _data = err.response.data
-
-    if (_data && _data.type) {
-      if (_data.type === 'VALIDATION' || _data.type === 'AUTHENTICATION') dispatch(setLoginErrors(_data.errors))
-      else dispatch(setAlert(`Error: ${err.response.status}`, _data ? _data : err.response, 'danger'))
+    const data = err.response.data
+    dispatch({ type: LOGIN_FAILED })
+    if (data && data.type) {
+      if (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION') dispatch(setLoginErrors(data.errors))
+      else toast.error(data.msg || 'Login failed!')
+    } else {
+      toast.error('Login failed!')
     }
-
-    dispatch({
-      type: LOGIN_FAILED
-    })
   }
 }
 
 export const logout = () => (dispatch) => {
-  dispatch({
-    type: REMOVE_ALL_POSTS
-  })
-  dispatch({
-    type: CLEAR_PROFILES
-  })
-  dispatch({
-    type: LOGOUT
-  })
+  dispatch({ type: REMOVE_ALL_POSTS })
+  dispatch({ type: CLEAR_PROFILES })
+  dispatch({ type: LOGOUT })
 }

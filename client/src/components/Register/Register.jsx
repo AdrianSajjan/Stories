@@ -1,80 +1,62 @@
-import React, { useState, Fragment } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { register } from "../../actions/auth";
-import { resetFormErrors, removeRegistrationError } from "../../actions/error";
-import {
-  Form,
-  FormGroup,
-  InputGroup,
-  InputGroupAddon,
-  Input,
-  Label,
-  FormFeedback,
-  FormText,
-  Button,
-  Spinner,
-} from "reactstrap";
+import React, { useState, Fragment } from 'react'
+import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { register } from '../../actions/auth'
+import { resetFormErrors, removeRegistrationError } from '../../actions/error'
+import { Form, FormGroup, InputGroup, InputGroupAddon, Input, Label, FormFeedback, FormText, Button, Spinner } from 'reactstrap'
 
-const Register = ({
-  auth,
-  errors,
-  register,
-  resetFormErrors,
-  removeRegistrationError,
-}) => {
-  // Register Component
+const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationError }) => {
   const {
     request: { registrationRequest: request },
-    isAuthenticated,
-  } = auth;
+    isAuthenticated
+  } = auth
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false)
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  })
 
-  const { name, email, password, confirmPassword } = formData;
+  const { name, email, password, confirmPassword } = formData
 
   const ResetFormError = () => {
-    if (errors && errors.length > 0) resetFormErrors();
-  };
+    if (errors && errors.length > 0) resetFormErrors()
+  }
 
   const HandleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (ParamHasError(e.target.name)) removeRegistrationError(e.target.name);
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    if (ParamHasError(e.target.name)) removeRegistrationError(e.target.name)
+  }
 
   const TogglePasswordVisible = (e) => {
-    e.preventDefault();
-    setPasswordVisible(!passwordVisible);
-  };
+    e.preventDefault()
+    setPasswordVisible(!passwordVisible)
+  }
 
   const HandleSubmit = (e) => {
-    e.preventDefault();
-    ResetFormError();
+    e.preventDefault()
+    ResetFormError()
     !request &&
       register({
         name: name.trim(),
         email: email.trim(),
         password,
-        confirmPassword,
-      });
-  };
+        confirmPassword
+      })
+  }
 
   const ParamHasError = (param) => {
-    if (!errors || errors.length === 0) return false;
-    return errors.some((error) => error.param === param);
-  };
+    if (!errors || errors.length === 0) return false
+    return errors.some((error) => error.param === param)
+  }
 
   const GetParamError = (param) => {
-    const error = errors.find((error) => error.param === param);
-    return error ? error.msg : "";
-  };
+    const error = errors.find((error) => error.param === param)
+    return error ? error.msg : ''
+  }
 
   return (
     <Fragment>
@@ -94,12 +76,12 @@ const Register = ({
             name="name"
             value={name}
             onChange={HandleChange}
-            invalid={ParamHasError("name") ? true : false}
+            invalid={ParamHasError('name') ? true : false}
           />
-          {!ParamHasError("name") ? (
+          {!ParamHasError('name') ? (
             <FormText>Please enter your real name.</FormText>
           ) : (
-            <FormFeedback invalid="true">{GetParamError("name")}</FormFeedback>
+            <FormFeedback invalid="true">{GetParamError('name')}</FormFeedback>
           )}
         </FormGroup>
         <FormGroup>
@@ -113,12 +95,12 @@ const Register = ({
             name="email"
             value={email}
             onChange={HandleChange}
-            invalid={ParamHasError("email") ? true : false}
+            invalid={ParamHasError('email') ? true : false}
           />
-          {!ParamHasError("email") ? (
+          {!ParamHasError('email') ? (
             <FormText>We will never share your email.</FormText>
           ) : (
-            <FormFeedback invalid="true">{GetParamError("email")}</FormFeedback>
+            <FormFeedback invalid="true">{GetParamError('email')}</FormFeedback>
           )}
         </FormGroup>
         <FormGroup>
@@ -127,34 +109,25 @@ const Register = ({
           </Label>
           <InputGroup>
             <Input
-              type={passwordVisible ? "text" : "password"}
+              type={passwordVisible ? 'text' : 'password'}
               id="password-input"
               placeholder="Enter A Password"
               name="password"
               value={password}
               onChange={HandleChange}
-              invalid={ParamHasError("password") ? true : false}
+              invalid={ParamHasError('password') ? true : false}
             />
             <InputGroupAddon addonType="append">
-              <button
-                type="button"
-                tabIndex="-1"
-                className="toggle-password-btn"
-                onClick={TogglePasswordVisible}
-              >
-                {passwordVisible ? (
-                  <i className="fa fa-eye"></i>
-                ) : (
-                  <i className="fa fa-eye-slash"></i>
-                )}
+              <button type="button" tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible}>
+                {passwordVisible ? <i className="fa fa-eye"></i> : <i className="fa fa-eye-slash"></i>}
               </button>
             </InputGroupAddon>
           </InputGroup>
-          {!ParamHasError("password") ? (
+          {!ParamHasError('password') ? (
             <FormText>Password should be minimum 6 letters.</FormText>
           ) : (
             <FormFeedback invalid="true" className="d-block">
-              {GetParamError("password")}
+              {GetParamError('password')}
             </FormFeedback>
           )}
         </FormGroup>
@@ -163,20 +136,18 @@ const Register = ({
             Confirm Password
           </Label>
           <Input
-            type={passwordVisible ? "text" : "password"}
+            type={passwordVisible ? 'text' : 'password'}
             id="confirm-password-input"
             placeholder="Confirm Your Password"
             name="confirmPassword"
             value={confirmPassword}
             onChange={HandleChange}
-            invalid={ParamHasError("confirmPassword") ? true : false}
+            invalid={ParamHasError('confirmPassword') ? true : false}
           />
-          {!ParamHasError("confirmPassword") ? (
+          {!ParamHasError('confirmPassword') ? (
             <FormText>Retype your password.</FormText>
           ) : (
-            <FormFeedback invalid="true">
-              {GetParamError("confirmPassword")}
-            </FormFeedback>
+            <FormFeedback invalid="true">{GetParamError('confirmPassword')}</FormFeedback>
           )}
         </FormGroup>
         {request && !isAuthenticated ? (
@@ -189,7 +160,7 @@ const Register = ({
           </Button>
         )}
         <p className="text-muted mx-auto w-100 mt-4">
-          {"Already have an acount? "}
+          {'Already have an acount? '}
           { /* prettier-ignore*/ }
           <Link to="/login" className="toggle-btn ml-1" onClick={ResetFormError} >
             Sign In
@@ -197,26 +168,26 @@ const Register = ({
         </p>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
 Register.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.array.isRequired,
   register: PropTypes.func.isRequired,
   removeRegistrationError: PropTypes.func.isRequired,
-  resetFormErrors: PropTypes.func.isRequired,
-};
+  resetFormErrors: PropTypes.func.isRequired
+}
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  errors: state.error.registrationErrors,
-});
+  errors: state.error.registrationErrors
+})
 
-const mapDispatchToProps = (dispatch) => ({
-  register: (data) => dispatch(register(data)),
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  register: (data) => dispatch(register(data, ownProps)),
   removeRegistrationError: (param) => dispatch(removeRegistrationError(param)),
-  resetFormErrors: () => dispatch(resetFormErrors()),
-});
+  resetFormErrors: () => dispatch(resetFormErrors())
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default connect(mapStateToProps, mapDispatchToProps)(Register)

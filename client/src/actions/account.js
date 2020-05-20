@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from 'axios'
+import { toast } from 'react-toastify'
 import {
   UPDATE_NAME,
   UPDATE_NAME_ERROR,
@@ -7,108 +8,77 @@ import {
   UPDATE_PASSWORD_ERROR,
   REMOVE_PASSWORD_ERROR,
   RESET_ACCOUNT_ERROR,
-  VERIFY_EMAIL,
-} from "./types";
-import { setAlert } from "./alert";
+  VERIFY_EMAIL
+} from './types'
 
 export const updateName = (name) => async (dispatch) => {
   try {
-    const res = await axios.post("/api/user/update/name", { name });
-
-    dispatch(setAlert("Success", res.data.msg, "success"));
-
-    dispatch({
-      type: UPDATE_NAME,
-      payload: res.data.name,
-    });
+    const res = await axios.post('/api/user/update/name', { name })
+    toast.success(res.data.msg)
+    dispatch({ type: UPDATE_NAME, payload: res.data.name })
   } catch (err) {
-    if (err.response.data.type && err.response.data.type === "VALIDATION") {
-      dispatch({
-        type: UPDATE_NAME_ERROR,
-        payload: err.response.data.errors,
-      });
+    const data = err.response.data
+    if (data && data.type) {
+      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_NAME_ERROR, payload: err.response.data.errors })
+      else toast.error(data.msg || "Coudn't update name")
     } else {
-      dispatch(
-        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
-      );
+      toast.error("Coudn't update name")
     }
   }
-};
+}
 
 export const updateEmail = (email) => async (dispatch) => {
   try {
-    const res = await axios.post("/api/user/update/email", { email });
-
-    dispatch(setAlert("Success", res.data.msg, "success"));
-
-    dispatch({
-      type: UPDATE_EMAIL,
-      payload: res.data,
-    });
+    const res = await axios.post('/api/user/update/email', { email })
+    dispatch({ type: UPDATE_EMAIL, payload: res.data })
+    toast.success(res.data.msg)
   } catch (err) {
-    if (err.response.data.type && err.response.data.type === "VALIDATION") {
-      dispatch({
-        type: UPDATE_EMAIL_ERROR,
-        payload: err.response.data.errors,
-      });
+    const data = err.response.data
+    if (data && data.type) {
+      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_EMAIL_ERROR, payload: err.response.data.errors })
+      else toast.error(data.msg || "Coudn't update email")
     } else {
-      dispatch(
-        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
-      );
+      toast.error("Coudn't update email")
     }
   }
-};
+}
 
 export const updatePassword = (password) => async (dispatch) => {
   try {
-    const res = await axios.post("/api/user/update/password", password);
-
-    dispatch(setAlert("Success", res.data.msg, "success"));
+    const res = await axios.post('/api/user/update/password', password)
+    toast.success(res.data.msg)
   } catch (err) {
-    if (err.response.data.type && err.response.data.type === "VALIDATION") {
-      dispatch({
-        type: UPDATE_PASSWORD_ERROR,
-        payload: err.response.data.errors,
-      });
+    const data = err.response.data
+    if (data && data.type) {
+      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_PASSWORD_ERROR, payload: err.response.data.errors })
+      else toast.error(data.msg || "Coudn't update password")
     } else {
-      dispatch(
-        setAlert(`Error: ${err.response.status}`, err.response.data, "danger")
-      );
+      toast.error("Coudn't update password")
     }
   }
-};
+}
 
 export const removePasswordError = (param) => (dispatch) => {
-  dispatch({
-    type: REMOVE_PASSWORD_ERROR,
-    payload: param,
-  });
-};
+  dispatch({ type: REMOVE_PASSWORD_ERROR, payload: param })
+}
 
 export const resetAccountError = () => (dispatch) => {
-  dispatch({
-    type: RESET_ACCOUNT_ERROR,
-  });
-};
+  dispatch({ type: RESET_ACCOUNT_ERROR })
+}
 
 export const verifyEmail = (verify) => (dispatch) => {
-  dispatch({
-    type: VERIFY_EMAIL,
-    payload: verify,
-  });
-};
+  dispatch({ type: VERIFY_EMAIL, payload: verify })
+}
 
 export const requestVerificationToken = (setState) => (dispatch) => {
   axios
-    .get("/api/user/confirm/request_token")
+    .get('/api/user/confirm/request_token')
     .then((res) => {
-      dispatch(setAlert("Success", res.data.msg, "success"));
-      setState(false);
+      toast.success(res.data.msg)
+      setState(false)
     })
     .catch((err) => {
-      dispatch(
-        setAlert("Failed", err.response.data.msg || err.response.data, "danger")
-      );
-      setState(false);
-    });
-};
+      toast.error(err.response.data.msg || 'Unable to send token')
+      setState(false)
+    })
+}
