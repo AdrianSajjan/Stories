@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { toast } from 'react-toastify'
+import { useToast } from 'react-toast-notifications'
 import {
   UPDATE_NAME,
   UPDATE_NAME_ERROR,
@@ -11,52 +11,64 @@ import {
   VERIFY_EMAIL
 } from './types'
 
+const { addToast } = useToast()
+
+const config = {
+  header: {
+    'Content-Type': 'application/json'
+  }
+}
+
 export const updateName = (name) => async (dispatch) => {
   try {
-    const res = await axios.post('/api/user/update/name', { name })
-    toast.success(res.data.msg)
+    const res = await axios.post('/api/user/update/name', { name }, config)
+    addToast(res.data.msg || 'Name has been updated!', {
+      appearance: 'success'
+    })
     dispatch({ type: UPDATE_NAME, payload: res.data.name })
   } catch (err) {
     const data = err.response.data
-    if (data && data.type) {
-      if (data.type === 'VALIDATION')
-        dispatch({ type: UPDATE_NAME_ERROR, payload: err.response.data.errors })
-      else toast.error(data.msg || "Coudn't update name")
+    if (data.type && data.type === 'VALIDATION') {
+      dispatch({ type: UPDATE_NAME_ERROR, payload: data.errors })
     } else {
-      toast.error("Coudn't update name")
+      addToast(data.msg || 'Name update failed!', { appearance: 'error' })
     }
   }
 }
 
 export const updateEmail = (email) => async (dispatch) => {
   try {
-    const res = await axios.post('/api/user/update/email', { email })
+    const res = await axios.post('/api/user/update/email', { email }, config)
     dispatch({ type: UPDATE_EMAIL, payload: res.data })
-    toast.success(res.data.msg)
+    addToast(res.data.msg || 'Email has been updated!', {
+      appearance: 'success'
+    })
   } catch (err) {
     const data = err.response.data
-    if (data && data.type) {
-      if (data.type === 'VALIDATION')
-        dispatch({ type: UPDATE_EMAIL_ERROR, payload: err.response.data.errors })
-      else toast.error(data.msg || "Coudn't update email")
+    if (data.type && data.type === 'VALIDATION') {
+      dispatch({
+        type: UPDATE_EMAIL_ERROR,
+        payload: data.errors
+      })
     } else {
-      toast.error("Coudn't update email")
+      addToast(data.msg || 'Email update failed!', { appearance: 'error' })
     }
   }
 }
 
 export const updatePassword = (password) => async (dispatch) => {
   try {
-    const res = await axios.post('/api/user/update/password', password)
-    toast.success(res.data.msg)
+    const res = await axios.post('/api/user/update/password', password, config)
+    addToast(res.data.msg || 'Password updated!', { appearance: 'success' })
   } catch (err) {
     const data = err.response.data
-    if (data && data.type) {
-      if (data.type === 'VALIDATION')
-        dispatch({ type: UPDATE_PASSWORD_ERROR, payload: err.response.data.errors })
-      else toast.error(data.msg || "Coudn't update password")
+    if (data.type && data.type === 'VALIDATION') {
+      dispatch({
+        type: UPDATE_PASSWORD_ERROR,
+        payload: data.errors
+      })
     } else {
-      toast.error("Coudn't update password")
+      addToast(data.msg || "Coudn't update password", { appearance: 'error' })
     }
   }
 }
@@ -75,13 +87,17 @@ export const verifyEmail = (verify) => (dispatch) => {
 
 export const requestVerificationToken = (setState) => (dispatch) => {
   axios
-    .get('/api/user/confirm/request_token')
+    .get('/api/user/confirm/request_token', config)
     .then((res) => {
-      toast.success(res.data.msg)
+      addToast(res.data.msg || 'Verification token sent!', {
+        appearance: 'success'
+      })
       setState(false)
     })
     .catch((err) => {
-      toast.error(err.response.data.msg || 'Unable to send token')
+      addToast(err.response.data.msg || 'Unable to send token', {
+        appearance: 'error'
+      })
       setState(false)
     })
 }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { toast } from 'react-toastify'
+import { useToasts } from 'react-toast-notifications'
 import {
   GET_PROFILE,
   PROFILE_ERROR,
@@ -25,6 +25,8 @@ const config = {
   }
 }
 
+const { addToast } = useToasts()
+
 export const getCurrentProfile = () => async (dispatch) => {
   try {
     const profile = await axios.get('/api/profile/me', config)
@@ -45,10 +47,10 @@ export const setProfile = (data) => async (dispatch) => {
       if (data.type === 'VALIDATION') {
         dispatch({ type: PROFILE_ERROR, payload: data.errors })
       } else {
-        toast.error(data.msg || "Coudn't create profile")
+        addToast(data.msg || "Coudn't create profile", { appearance: 'error' })
       }
     } else {
-      toast.error("Coudn't create profile")
+      addToast("Coudn't create profile", { appearance: 'error' })
     }
   }
 }
@@ -60,7 +62,9 @@ export const uploadProfileImage = (formData, config) => async (dispatch) => {
     dispatch({ type: SET_PROFILE_IMAGE, payload: res.data })
     toast.success('Profile updated successfully')
   } catch (err) {
-    toast.error(err.response.data.msg || 'Image upload failed')
+    addToast(err.response.data.msg || 'Image upload failed', {
+      appearance: 'error'
+    })
   }
 }
 
@@ -122,6 +126,8 @@ export const updateFollowing = (id) => async (dispatch, getState) => {
       if (socket) socket.emit('new-notification', res.data.activity, id)
     }
   } catch (err) {
-    toast.error(err.response.data.msg || "Coudn't follow user")
+    addToast(err.response.data.msg || "Coudn't follow user", {
+      appearance: 'error'
+    })
   }
 }

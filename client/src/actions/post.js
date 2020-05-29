@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { setAlert } from './alert'
+import { useToasts } from 'react-toast-notifications'
 import {
   CREATE_POST,
   POST_ERROR,
@@ -21,21 +21,21 @@ const config = {
   }
 }
 
+const { addToast } = useToasts()
+
 export const createPost = (post) => async (dispatch) => {
   try {
     const res = await axios.post('/api/post', { content: post }, config)
 
     dispatch({ type: CREATE_POST, payload: res.data })
-    dispatch(setAlert('Success', 'Your post has been published!', 'success'))
+    addToast('Your post has been published', { appearance: 'success' })
   } catch (err) {
-    if (err.response.data.type) {
-      if (err.response.data.type === 'VALIDATION') {
-        dispatch({ type: POST_ERROR, payload: err.response.data.errors })
-      } else {
-        dispatch(setAlert('Failed!', err.response.data.msg, 'danger'))
-      }
+    const error = err.response.data
+
+    if (error.type && error.type === 'VALIDATION') {
+      dispatch({ type: POST_ERROR, payload: error.errors })
     } else {
-      dispatch(setAlert('Failed!', err.response, 'danger'))
+      addToast(err.msg || 'Post upload failed!', { appearance: 'error' })
     }
   }
 }
@@ -47,20 +47,18 @@ export const editPost = (post, postID) => async (dispatch) => {
       { content: post },
       config
     )
+
     dispatch({ type: CREATE_POST, payload: res.data })
-    dispatch(setAlert('Success', 'Your post has been updated!', 'success'))
+    addToast('Your post has been updated!', { appearance: 'success' })
   } catch (err) {
-    if (err.response.data.type) {
-      if (err.response.data.type === 'VALIDATION') {
-        dispatch({
-          type: POST_ERROR,
-          payload: err.response.data.errors
-        })
-      } else {
-        dispatch(setAlert('Failed!', err.response.data.msg, 'danger'))
-      }
+    const error = err.response.data
+    if (error.type && error.type === 'VALIDATION') {
+      dispatch({
+        type: POST_ERROR,
+        payload: error.errors
+      })
     } else {
-      dispatch(setAlert('Failed!', err.response, 'danger'))
+      addToast(error.msg || 'Post upload failed!', { appearance: 'error' })
     }
   }
 }
@@ -84,9 +82,11 @@ export const getTimelinePosts = () => async (dispatch, getState) => {
 
     const res = await axios.get(`/api/post?postID=${lastID}`, config)
 
-    if (res.data.length > 0)
+    if (res.data.length > 0) {
       dispatch({ type: SET_POSTS_FROM_FOLLOWING, payload: res.data })
-    else dispatch({ type: POSTS_FROM_FOLLOWING_END })
+    } else {
+      dispatch({ type: POSTS_FROM_FOLLOWING_END })
+    }
   } catch (err) {
     dispatch({ type: POSTS_FROM_FOLLOWING_END })
   }

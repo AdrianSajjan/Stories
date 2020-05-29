@@ -1,4 +1,4 @@
-import { toast } from 'react-toastify'
+import { useToast } from 'react-toast-notifications'
 import axios from 'axios'
 import {
   GET_ALL_CHATS,
@@ -15,6 +15,8 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
+
+const { addToast } = useToast()
 
 export const getAllChats = () => async (dispatch) => {
   dispatch({ type: GET_ALL_CHATS })
@@ -40,15 +42,26 @@ export const resetUserChat = () => (dispatch) => {
   dispatch({ type: GET_USER_CHAT })
 }
 
-export const sendMessage = (message, id, socket, profile) => async (dispatch) => {
+export const sendMessage = (message, id, socket, profile) => async (
+  dispatch
+) => {
   try {
     const res = await axios.post(`/api/chat/${id}`, { message }, config)
     dispatch({ type: SEND_MESSAGE, payload: res.data })
+
     let editedProfile = { ...profile }
     editedProfile.user = profile.user._id
-    if (socket) socket.emit('send-message', { receiver: editedProfile, chat: res.data.chat }, id)
+
+    if (socket)
+      socket.emit(
+        'send-message',
+        { receiver: editedProfile, chat: res.data.chat },
+        id
+      )
   } catch (err) {
-    toast.error(err.response.data.msg || 'Unable to send message')
+    addToast(err.response.data.msg || 'Unable to send message', {
+      appearance: 'error'
+    })
   }
 }
 

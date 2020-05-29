@@ -1,4 +1,9 @@
-import { GET_ACTIVITIES, SET_ACTIVITIES, PUSH_ACTIVITY, READ_ACTIVITY } from './types'
+import {
+  GET_ACTIVITIES,
+  SET_ACTIVITIES,
+  PUSH_ACTIVITY,
+  READ_ACTIVITY
+} from './types'
 import axios from 'axios'
 
 const config = {
@@ -23,7 +28,7 @@ export const readActivity = (activityID) => async (dispatch) => {
     const res = await axios.get(`/api/activity/${activityID}`, config)
     dispatch({ type: READ_ACTIVITY, payload: res.data })
   } catch (err) {
-    //Do Nothing
+    console.error(err.response.data)
   }
 }
 

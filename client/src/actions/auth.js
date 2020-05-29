@@ -42,17 +42,22 @@ export const register = (data, ownProps) => async (dispatch) => {
   try {
     dispatch({ type: REGISTRATION_REQUEST })
     const res = await axios.post('/api/user', data, config)
+
     dispatch({ type: REGISTER_SUCCESS, payload: res.data })
     dispatch(loadUser(ownProps, '/home/profile/edit'))
-    toast.success(res.data.msg)
+
+    addToast(res.data.msg || 'Registration successful!', {
+      appearance: 'success'
+    })
   } catch (err) {
     const data = err.response.data
-    if (data && data.type) {
-      if (data.type === 'VALIDATION') dispatch(setRegistrationErrors(data.errors))
-      else toast.error(data.msg || 'Registration failed!')
+
+    if (data.type && data.type === 'VALIDATION') {
+      dispatch(setRegistrationErrors(data.errors))
     } else {
-      toast.error('Registration failed!')
+      addToast(data.msg || 'Registration failed!', { appearance: 'error' })
     }
+
     dispatch({ type: REGISTER_FAILED })
   }
 }
@@ -60,18 +65,23 @@ export const register = (data, ownProps) => async (dispatch) => {
 export const login = (data, ownProps, redirect) => async (dispatch) => {
   try {
     dispatch({ type: LOGIN_REQUEST })
+
     const res = await axios.post('/api/auth', data, config)
+
     dispatch({ type: LOGIN_SUCCESS, payload: res.data })
     dispatch(loadUser(ownProps, redirect))
   } catch (err) {
     const data = err.response.data
+
     dispatch({ type: LOGIN_FAILED })
-    if (data && data.type) {
-      if (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION')
-        dispatch(setLoginErrors(data.errors))
-      else toast.error(data.msg || 'Login failed!')
+
+    if (
+      data.type &&
+      (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION')
+    ) {
+      dispatch(setLoginErrors(data.errors))
     } else {
-      toast.error('Login failed!')
+      addToast(data.msg || 'Login failed!', { appearance: 'error' })
     }
   }
 }

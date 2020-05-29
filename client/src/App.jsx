@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react'
 import store from './store'
-import setAuthToken from './utils/set-auth-token'
+import React, { useEffect } from 'react'
+import { ToastProvider } from 'react-toast-notifications'
 import { Provider } from 'react-redux'
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 import { loadUser } from './actions/auth'
+import setAuthToken from './utils/set-auth-token'
 import PrivateRoute from './components/Private-Route/Private-Route'
 import Landing from './pages/Landing/Landing'
-import Alert from './components/Alert/Alert'
-import Toast from './components/Toast/Toast'
 import Home from './pages/Home/Home'
 import Logout from './pages/Logout/Logout'
 import Verify from './pages/Verify/Verify'
@@ -27,14 +26,14 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <Alert />
-        <Toast />
-        <Switch>
-          <PrivateRoute path="/home" component={Home} />
-          <Route path="/logout" component={Logout} />
-          <Route exact path="/verify/:token" component={Verify} />
-          <Route path="/" component={Landing} />
-        </Switch>
+        <ToastProvider>
+          <Switch>
+            <PrivateRoute path="/home" component={Home} />
+            <Route path="/logout" component={Logout} />
+            <Route exact path="/verify/:token" component={Verify} />
+            <Route path="/" component={Landing} />
+          </Switch>
+        </ToastProvider>
       </Router>
     </Provider>
   )
