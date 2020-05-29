@@ -150,6 +150,7 @@ label {
   background-color: white !important;
   border-radius: 5px;
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+  z-index: 1000;
 }
 
 .sidebar-toggler-btn {

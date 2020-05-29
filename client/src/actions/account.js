@@ -88,7 +88,8 @@ export const requestVerificationToken = (setState, addToast) => (dispatch) => {
     .get('/api/user/confirm/request_token', config)
     .then((res) => {
       addToast(res.data.msg || 'Verification token sent!', {
-        appearance: 'success'
+        appearance: 'success',
+        autoDismiss: false
       })
       setState(false)
     })

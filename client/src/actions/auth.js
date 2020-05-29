@@ -49,7 +49,8 @@ export const register = (data, addToast, ownProps) => async (dispatch) => {
     dispatch(loadUser(ownProps, '/home/profile/edit'))
 
     addToast(res.data.msg || 'Registration successful!', {
-      appearance: 'info'
+      appearance: 'success',
+      autoDismiss: false
     })
   } catch (err) {
     const data = err.response.data

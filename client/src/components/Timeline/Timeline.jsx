@@ -7,7 +7,13 @@ import CreatePost from './CreatePost/CreatePost'
 import Discover from '../Discover/Discover'
 import Posts from '../Posts/Posts'
 
-const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProfile, checkNewTimelinePosts }) => {
+const Timeline = ({
+  getTimelinePosts,
+  postsByFollowing,
+  openSidebar,
+  currentProfile,
+  checkNewTimelinePosts
+}) => {
   const { posts, loading: postsLoading, endOfPosts } = postsByFollowing
   const { profile, loading: userLoading } = currentProfile
 
@@ -16,7 +22,8 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
   const loadTimelinePosts = useCallback(
     (entries) => {
       const target = entries[0]
-      if (target.isIntersecting && !postsLoading && !endOfPosts) getTimelinePosts()
+      if (target.isIntersecting && !postsLoading && !endOfPosts)
+        getTimelinePosts()
     },
     [postsLoading, getTimelinePosts, endOfPosts]
   )
@@ -25,10 +32,10 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
     if (!profile) return
     checkNewTimelinePosts()
 
-    const interHandler = setInterval(checkNewTimelinePosts, 300000)
+    const intervalHandler = setInterval(checkNewTimelinePosts, 300000)
 
     return () => {
-      clearInterval(interHandler)
+      clearInterval(intervalHandler)
     }
     //eslint-disable-next-line
   }, [profile])
@@ -42,7 +49,10 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
       threshold: 0.25
     }
 
-    const timelineObserver = new IntersectionObserver(loadTimelinePosts, observerOptions)
+    const timelineObserver = new IntersectionObserver(
+      loadTimelinePosts,
+      observerOptions
+    )
 
     if (timelineLoader && timelineLoader.current) {
       var currentTimelineLoader = timelineLoader.current
@@ -57,7 +67,12 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
   return (
     <Fragment>
       <Row>
-        <Col className="main-area" sm={{ size: 10, offset: 1 }} md={{ size: 12, offset: 0 }} lg="8">
+        <Col
+          className="main-area"
+          sm={{ size: 10, offset: 1 }}
+          md={{ size: 12, offset: 0 }}
+          lg="8"
+        >
           <div className="main-area-header sticky-top">
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
@@ -69,13 +84,19 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
               userLoading ? (
                 <Spinner color="primary" className="d-block mx-auto my-5" />
               ) : (
-                <p className="mt-4 text-center text-muted">Create your profile to see what others post.</p>
+                <p className="mt-4 text-center text-muted">
+                  Create your profile to see what others post.
+                </p>
               )
             ) : (
               <Fragment>
                 <CreatePost profile={profile} />
                 {posts.length === 0 ? (
-                  !postsLoading && <p className="mt-4 text-center text-muted">Start following users to see their posts.</p>
+                  !postsLoading && (
+                    <p className="mt-4 text-center text-muted">
+                      Start following users to see their posts.
+                    </p>
+                  )
                 ) : (
                   <Posts posts={posts} />
                 )}
@@ -85,13 +106,22 @@ const Timeline = ({ getTimelinePosts, postsByFollowing, openSidebar, currentProf
               {postsLoading ? (
                 <Spinner color="primary" className="d-block mx-auto my-3" />
               ) : (
-                <p className="text-muted text-center my-4">End of Posts</p>
+                profile !== null &&
+                posts.length !== 0 && (
+                  <p className="text-muted text-center my-4">End of Posts</p>
+                )
               )}
             </div>
           </div>
         </Col>
         <Col lg="4" className="side-area d-none d-lg-block">
-          {profile === null ? userLoading && <Spinner color="primary" className="d-block mx-auto my-5" /> : <Discover />}
+          {profile === null ? (
+            userLoading && (
+              <Spinner color="primary" className="d-block mx-auto my-5" />
+            )
+          ) : (
+            <Discover />
+          )}
         </Col>
       </Row>
     </Fragment>

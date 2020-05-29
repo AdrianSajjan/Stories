@@ -104,12 +104,10 @@ router.post(
 
       const errors = validationResult(req)
       if (!errors.isEmpty())
-        return res
-          .status(400)
-          .json({
-            type: VALIDATION,
-            errors: errors.array({ onlyFirstError: true })
-          })
+        return res.status(400).json({
+          type: VALIDATION,
+          errors: errors.array({ onlyFirstError: true })
+        })
 
       const { username, dob, locality, state, country, bio } = req.body
 
@@ -208,7 +206,7 @@ router.get('/discover', auth, async (req, res) => {
     const profile = await Profile.findOne({ user: userID })
 
     if (!profile)
-      res
+      return res
         .status(404)
         .json({ type: NOTFOUND, msg: 'Please create your profile' })
 
@@ -304,12 +302,10 @@ router.put('/follow/:id', auth, async (req, res) => {
 
     let profile = await Profile.findOne({ user: id })
     if (!profile)
-      return res
-        .status(404)
-        .json({
-          type: NOTFOUND,
-          msg: 'Create your profile before following other users'
-        })
+      return res.status(404).json({
+        type: NOTFOUND,
+        msg: 'Create your profile before following other users'
+      })
 
     if (profile.following.some((item) => item.user == otherUser)) {
       profile.following = profile.following.filter(

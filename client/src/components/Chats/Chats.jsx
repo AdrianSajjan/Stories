@@ -13,7 +13,12 @@ const Chats = ({ openSidebar }) => {
   return (
     <Fragment>
       <Row>
-        <Col className="main-area" sm={{ size: 10, offset: 1 }} md={{ size: 12, offset: 0 }} lg="8">
+        <Col
+          className="main-area"
+          sm={{ size: 10, offset: 1 }}
+          md={{ size: 12, offset: 0 }}
+          lg="8"
+        >
           <div className="main-area-header sticky-top bg-light">
             <button className="sidebar-toggler-btn" onClick={openSidebar}>
               <i className="fa fa-bars fa-lg"></i>
