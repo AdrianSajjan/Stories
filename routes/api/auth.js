@@ -82,10 +82,16 @@ router.post(
         }
       }
 
-      jwt.sign(payload, process.env.ID_SECRET, (err, token) => {
-        if (err) throw err
-        res.json({ token, validated: user.validated })
+      const access_token = jwt.sign(payload, process.env.ACCESS_SECRET, {
+        expiresIn: '1h'
       })
+
+      const refresh_token = jwt.sign(payload, process.env.REFRESH_SECRET, {
+        expiresIn: '2d'
+      })
+
+      res.cookie('refresh_token', refresh_token, { maxAge: 172800000 })
+      res.json({ access_token, validated: user.validated })
     } catch (err) {
       console.log(err.message)
       res.status(500).send(SERVER)

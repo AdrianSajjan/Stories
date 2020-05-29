@@ -3,6 +3,7 @@ const cors = require('cors')
 const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
+const cookieParser = require('cookie-parser')
 
 const connectDB = require('./config/database')
 const authRouter = require('./routes/api/auth')
@@ -21,6 +22,7 @@ const app = express()
 const server = http.createServer(app)
 
 app.use(express.json())
+app.use(cookieParser())
 app.use(cors())
 
 connectDB()

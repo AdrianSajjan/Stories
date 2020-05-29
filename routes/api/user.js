@@ -69,10 +69,10 @@ const sendMail = (mailOptions) => {
   return new Promise((resolve) => {
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        console.error("Coudn't send email")
         throw error
       }
 
-      console.log('Email sent succesfully')
       resolve()
     })
   })
@@ -163,12 +163,23 @@ router.post(
       const mailOptions = await encryptMail(payload_EMAIL, data.email)
 
       sendMail(mailOptions).then(() => {
-        const token = jwt.sign(payload_ID, process.env.ID_SECRET)
-        res.json({
-          token,
-          validated: data.validated,
-          msg: `Verification mail sent to ${data.email}. It will expire in 1 day`
-        })
+        console.log('Email sent successfully')
+      })
+
+      const access_token = jwt.sign(payload, process.env.ACCESS_SECRET, {
+        expiresIn: '1h'
+      })
+
+      const refresh_token = jwt.sign(payload, process.env.REFRESH_SECRET, {
+        expiresIn: '2d'
+      })
+
+      res.cookie('refresh_token', refresh_token, { maxAge: 172800000 })
+
+      res.json({
+        access_token,
+        validated: data.validated,
+        msg: `Verification mail sent to ${data.email}. It will expire in 1 day`
       })
     } catch (err) {
       console.log(err.message)
@@ -296,11 +307,13 @@ router.post(
       const mailOptions = await encryptMail(payload_EMAIL, user.email)
 
       sendMail(mailOptions).then(() => {
-        res.json({
-          email: user.email,
-          validated: user.validated,
-          msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
-        })
+        console.log('Email sent successfully')
+      })
+
+      res.json({
+        email: user.email,
+        validated: user.validated,
+        msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
       })
     } catch (err) {
       res.status(500).send(SERVER)

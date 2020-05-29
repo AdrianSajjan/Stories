@@ -4,7 +4,7 @@ import { ToastProvider } from 'react-toast-notifications'
 import { Provider } from 'react-redux'
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 import { loadUser } from './actions/auth'
-import setAuthToken from './utils/set-auth-token'
+import { setAuthToken, useInterceptors } from './utils/axios-interceptor'
 import PrivateRoute from './components/Private-Route/Private-Route'
 import Landing from './pages/Landing/Landing'
 import Home from './pages/Home/Home'
@@ -14,8 +14,9 @@ import Verify from './pages/Verify/Verify'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
-if (localStorage.token) {
-  setAuthToken(localStorage.token)
+if (localStorage.getItem('access_token')) {
+  setAuthToken(localStorage.getItem('access_token'))
+  useInterceptors(localStorage.getItem('access_token'))
 }
 
 const App = () => {
