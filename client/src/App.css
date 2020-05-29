@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@300;500&family=Ubuntu:wght@500&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Roboto+Mono:wght@300;500&family=Ubuntu:wght@500&display=swap');
 
 :root {
-  --heading-font: "Ubuntu", sans-serif;
-  --default-font: "Roboto", sans-serif;
-  --monospace-font: "Roboto Mono", monospace;
+  --heading-font: 'Ubuntu', sans-serif;
+  --default-font: 'Roboto', sans-serif;
+  --monospace-font: 'Roboto Mono', monospace;
 
   --eerie-black: #11151c;
   --yankees-blue: #212d40;
@@ -186,6 +186,11 @@ label {
 }
 
 .side-area-card-title {
+  font-family: var(--monospace-font);
+}
+
+.react-toast-notifications__toast__content {
+  font-size: 15px !important;
   font-family: var(--monospace-font);
 }
 

@@ -383,8 +383,6 @@ router.post(
       const salt = await bcrypt.genSalt(10)
       const hash = await bcrypt.hash(newPassword, salt)
 
-      console.log(newPassword)
-
       user.password = hash
       await user.save()
 
