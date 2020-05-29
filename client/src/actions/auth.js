@@ -1,6 +1,5 @@
 import axios from 'axios'
 import setAuthToken from '../utils/set-auth-token'
-import { toast } from 'react-toastify'
 import { setLoginErrors, setRegistrationErrors } from './error'
 import {
   REGISTER_SUCCESS,
@@ -30,15 +29,18 @@ export const initSocket = (socket) => (dispatch) => {
 export const loadUser = (ownProps, redirect) => async (dispatch) => {
   try {
     if (localStorage.token) setAuthToken(localStorage.token)
+
     const res = await axios.get('/api/auth', config)
+
     dispatch({ type: USER_LOADED, payload: res.data })
+
     if (ownProps && redirect) ownProps.history.push(redirect)
   } catch (err) {
     dispatch({ type: AUTH_ERROR })
   }
 }
 
-export const register = (data, ownProps) => async (dispatch) => {
+export const register = (data, addToast, ownProps) => async (dispatch) => {
   try {
     dispatch({ type: REGISTRATION_REQUEST })
     const res = await axios.post('/api/user', data, config)
@@ -62,7 +64,9 @@ export const register = (data, ownProps) => async (dispatch) => {
   }
 }
 
-export const login = (data, ownProps, redirect) => async (dispatch) => {
+export const login = (data, addToast, ownProps, redirect) => async (
+  dispatch
+) => {
   try {
     dispatch({ type: LOGIN_REQUEST })
 

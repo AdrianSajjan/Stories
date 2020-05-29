@@ -1,36 +1,39 @@
-import React, { Fragment, useState } from "react";
-import { Form, Input, Button, FormGroup, FormText } from "reactstrap";
-import DefaultImage from "../../../assets/images/sample-profile-picture.png";
-import { createPost } from "../../../actions/post";
-import { connect } from "react-redux";
-import "./CreatePost.css";
+import React, { Fragment, useState } from 'react'
+import { Form, Input, Button, FormGroup, FormText } from 'reactstrap'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
+import { createPost } from '../../../actions/post'
+import { connect } from 'react-redux'
+import { useToasts } from 'react-toast-notifications'
+import './CreatePost.css'
 
 const CreatePost = ({ createPost, profile }) => {
   // Create-Post
-  const minRows = 2;
-  const [post, setPost] = useState("");
-  const [row, setRow] = useState(minRows);
+  const minRows = 2
+  const [post, setPost] = useState('')
+  const [row, setRow] = useState(minRows)
+
+  const { addToast } = useToasts()
 
   const HandleChange = (event) => {
-    const input = event.target;
-    const lineHeight = 20;
-    const previousRows = input.rows;
-    input.rows = minRows;
-    const currentRows = ~~(input.scrollHeight / lineHeight);
+    const input = event.target
+    const lineHeight = 20
+    const previousRows = input.rows
+    input.rows = minRows
+    const currentRows = ~~(input.scrollHeight / lineHeight)
 
     if (currentRows === previousRows) {
-      input.rows = currentRows;
+      input.rows = currentRows
     }
 
-    setRow(currentRows);
-    setPost(input.value);
-  };
+    setRow(currentRows)
+    setPost(input.value)
+  }
 
   const HandleSubmit = (event) => {
-    event.preventDefault();
-    createPost(post);
-    setPost("");
-  };
+    event.preventDefault()
+    createPost(post, addToast)
+    setPost('')
+  }
 
   const getProfileImage = () => {
     if (
@@ -39,9 +42,9 @@ const CreatePost = ({ createPost, profile }) => {
       profile.avatar.url &&
       profile.avatar.url.length
     )
-      return profile.avatar.url;
-    else return DefaultImage;
-  };
+      return profile.avatar.url
+    else return DefaultImage
+  }
 
   return (
     <Fragment>
@@ -77,11 +80,11 @@ const CreatePost = ({ createPost, profile }) => {
         </Button>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
 const mapDispatchToProps = (dispatch) => ({
-  createPost: (data) => dispatch(createPost(data)),
-});
+  createPost: (data, addToast) => dispatch(createPost(data, addToast))
+})
 
-export default connect(null, mapDispatchToProps)(CreatePost);
+export default connect(null, mapDispatchToProps)(CreatePost)

@@ -1,9 +1,19 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import DatePicker from 'react-datepicker'
-import { Form, Input, Button, FormGroup, Label, FormFeedback, FormText, Spinner } from 'reactstrap'
+import {
+  Form,
+  Input,
+  Button,
+  FormGroup,
+  Label,
+  FormFeedback,
+  FormText,
+  Spinner
+} from 'reactstrap'
 import { connect } from 'react-redux'
 import { setProfile } from '../../../actions/profile'
+import { useToasts } from 'react-toast-notifications'
 import ProfileImage from './Profile-Image'
 import 'react-datepicker/dist/react-datepicker.css'
 import './Profile-Details.css'
@@ -11,6 +21,8 @@ import './Profile-Details.css'
 const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
   // Profile Info
   const { profile, loading: profileLoading, upload } = currentProfile
+
+  const { addToast } = useToasts()
 
   const [formData, setFormData] = useState({
     username: '',
@@ -55,7 +67,7 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
 
   const HandleSubmit = (event) => {
     event.preventDefault()
-    if (!upload) setProfile(formData)
+    if (!upload) setProfile(formData, addToast)
   }
 
   const ParamHasError = (param) => {
@@ -88,17 +100,30 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               {!ParamHasError('username') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">{GetParamError('username')}</FormFeedback>
+                <FormFeedback invalid="true">
+                  {GetParamError('username')}
+                </FormFeedback>
               )}
             </FormGroup>
             <FormGroup className="d-flex flex-column">
               <Label htmlFor="dob-input">Date of birth</Label>
-              <DatePicker name="dob" id="dob-input" className="form-control" selected={dob} onChange={HandleDate} />
-              <Input invalid={ParamHasError('dob') ? true : false} className="d-none" />
+              <DatePicker
+                name="dob"
+                id="dob-input"
+                className="form-control"
+                selected={dob}
+                onChange={HandleDate}
+              />
+              <Input
+                invalid={ParamHasError('dob') ? true : false}
+                className="d-none"
+              />
               {!ParamHasError('dob') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">{GetParamError('dob')}</FormFeedback>
+                <FormFeedback invalid="true">
+                  {GetParamError('dob')}
+                </FormFeedback>
               )}
             </FormGroup>
             <FormGroup>
@@ -114,7 +139,9 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               {!ParamHasError('country') ? (
                 <FormText>Field is required</FormText>
               ) : (
-                <FormFeedback invalid="true">{GetParamError('country')}</FormFeedback>
+                <FormFeedback invalid="true">
+                  {GetParamError('country')}
+                </FormFeedback>
               )}
             </FormGroup>
             <FormGroup>
@@ -153,10 +180,24 @@ const ProfileInfo = ({ currentProfile, setProfile, errors }) => {
               />
               <FormText>{250 - bio.length}/250</FormText>
             </FormGroup>
-            <Button type="submit" className="mt-2" color="primary" disabled={upload ? true : false}>
-              {profile !== null ? (!upload ? 'Update Profile' : 'Uploading...') : 'Create Profile'}
+            <Button
+              type="submit"
+              className="mt-2"
+              color="primary"
+              disabled={upload ? true : false}
+            >
+              {profile !== null
+                ? !upload
+                  ? 'Update Profile'
+                  : 'Uploading...'
+                : 'Create Profile'}
             </Button>
-            <Button type="button" className="mt-2 ml-2" color="secondary" onClick={InitFields}>
+            <Button
+              type="button"
+              className="mt-2 ml-2"
+              color="secondary"
+              onClick={InitFields}
+            >
               Cancel
             </Button>
           </Form>
@@ -178,7 +219,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  setProfile: (data) => dispatch(setProfile(data))
+  setProfile: (data, addToast) => dispatch(setProfile(data, addToast))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileInfo)

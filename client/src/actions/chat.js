@@ -1,4 +1,4 @@
-import { useToast } from 'react-toast-notifications'
+
 import axios from 'axios'
 import {
   GET_ALL_CHATS,
@@ -15,8 +15,6 @@ const config = {
     'Content-Type': 'application/json'
   }
 }
-
-const { addToast } = useToast()
 
 export const getAllChats = () => async (dispatch) => {
   dispatch({ type: GET_ALL_CHATS })
@@ -42,7 +40,7 @@ export const resetUserChat = () => (dispatch) => {
   dispatch({ type: GET_USER_CHAT })
 }
 
-export const sendMessage = (message, id, socket, profile) => async (
+export const sendMessage = (message, id, socket, profile, addToast) => async (
   dispatch
 ) => {
   try {

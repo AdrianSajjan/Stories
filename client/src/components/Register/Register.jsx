@@ -4,9 +4,27 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { register } from '../../actions/auth'
 import { resetFormErrors, removeRegistrationError } from '../../actions/error'
-import { Form, FormGroup, InputGroup, InputGroupAddon, Input, Label, FormFeedback, FormText, Button, Spinner } from 'reactstrap'
+import { useToasts } from 'react-toast-notifications'
+import {
+  Form,
+  FormGroup,
+  InputGroup,
+  InputGroupAddon,
+  Input,
+  Label,
+  FormFeedback,
+  FormText,
+  Button,
+  Spinner
+} from 'reactstrap'
 
-const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationError }) => {
+const Register = ({
+  auth,
+  errors,
+  register,
+  resetFormErrors,
+  removeRegistrationError
+}) => {
   const {
     request: { registrationRequest: request },
     isAuthenticated
@@ -21,6 +39,7 @@ const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationE
   })
 
   const { name, email, password, confirmPassword } = formData
+  const { addToast } = useToasts()
 
   const ResetFormError = () => {
     if (errors && errors.length > 0) resetFormErrors()
@@ -40,12 +59,15 @@ const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationE
     e.preventDefault()
     ResetFormError()
     !request &&
-      register({
-        name: name.trim(),
-        email: email.trim(),
-        password,
-        confirmPassword
-      })
+      register(
+        {
+          name: name.trim(),
+          email: email.trim(),
+          password,
+          confirmPassword
+        },
+        addToast
+      )
   }
 
   const ParamHasError = (param) => {
@@ -118,8 +140,17 @@ const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationE
               invalid={ParamHasError('password') ? true : false}
             />
             <InputGroupAddon addonType="append">
-              <button type="button" tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible}>
-                {passwordVisible ? <i className="fa fa-eye"></i> : <i className="fa fa-eye-slash"></i>}
+              <button
+                type="button"
+                tabIndex="-1"
+                className="toggle-password-btn"
+                onClick={TogglePasswordVisible}
+              >
+                {passwordVisible ? (
+                  <i className="fa fa-eye"></i>
+                ) : (
+                  <i className="fa fa-eye-slash"></i>
+                )}
               </button>
             </InputGroupAddon>
           </InputGroup>
@@ -147,7 +178,9 @@ const Register = ({ auth, errors, register, resetFormErrors, removeRegistrationE
           {!ParamHasError('confirmPassword') ? (
             <FormText>Retype your password.</FormText>
           ) : (
-            <FormFeedback invalid="true">{GetParamError('confirmPassword')}</FormFeedback>
+            <FormFeedback invalid="true">
+              {GetParamError('confirmPassword')}
+            </FormFeedback>
           )}
         </FormGroup>
         {request && !isAuthenticated ? (
@@ -185,7 +218,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  register: (data) => dispatch(register(data, ownProps)),
+  register: (data, addToast) => dispatch(register(data, addToast, ownProps)),
   removeRegistrationError: (param) => dispatch(removeRegistrationError(param)),
   resetFormErrors: () => dispatch(resetFormErrors())
 })

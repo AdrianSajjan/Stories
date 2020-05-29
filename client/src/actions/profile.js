@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { useToasts } from 'react-toast-notifications'
 import {
   GET_PROFILE,
   PROFILE_ERROR,
@@ -25,8 +24,6 @@ const config = {
   }
 }
 
-const { addToast } = useToasts()
-
 export const getCurrentProfile = () => async (dispatch) => {
   try {
     const profile = await axios.get('/api/profile/me', config)
@@ -36,11 +33,14 @@ export const getCurrentProfile = () => async (dispatch) => {
   }
 }
 
-export const setProfile = (data) => async (dispatch) => {
+export const setProfile = (data, addToast) => async (dispatch) => {
   try {
     const res = await axios.post('/api/profile', data, config)
+
     dispatch({ type: SET_PROFILE, payload: res.data })
     dispatch({ type: RESET_PROFILE_ERRORS })
+
+    addToast('Profile has been updated!', { appearance: 'success' })
   } catch (err) {
     const data = err.response.data
     if (data && data.type) {
@@ -55,12 +55,14 @@ export const setProfile = (data) => async (dispatch) => {
   }
 }
 
-export const uploadProfileImage = (formData, config) => async (dispatch) => {
+export const uploadProfileImage = (formData, config, addToast) => async (
+  dispatch
+) => {
   try {
     dispatch({ type: GET_PROFILE_IMAGE })
     const res = await axios.post('/api/uploads/profile', formData, config)
     dispatch({ type: SET_PROFILE_IMAGE, payload: res.data })
-    toast.success('Profile updated successfully')
+    addToast('Profile updated successfully', { appearance: 'success' })
   } catch (err) {
     addToast(err.response.data.msg || 'Image upload failed', {
       appearance: 'error'
@@ -101,6 +103,7 @@ export const loadSearchProfileResult = (match) => async (dispatch) => {
   try {
     dispatch(clearSearchProfileResult())
     dispatch({ type: GET_SEARCH_PROFILES, payload: match })
+
     const res = await axios.get(`/api/profile/search?match=${match}`, config)
 
     if (res.data.length > 0) {
@@ -117,7 +120,7 @@ export const clearSearchProfileResult = () => (dispatch) => {
   dispatch({ type: CLEAR_SEARCH_PROFILES })
 }
 
-export const updateFollowing = (id) => async (dispatch, getState) => {
+export const updateFollowing = (id, addToast) => async (dispatch, getState) => {
   try {
     const res = await axios.put(`/api/profile/follow/${id}`, config)
     dispatch({ type: SET_PROFILE, payload: res.data.profile })

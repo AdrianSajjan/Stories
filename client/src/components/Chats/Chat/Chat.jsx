@@ -1,17 +1,33 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import moment from 'moment'
-import { Form, InputGroup, InputGroupAddon, Input, Spinner, Button } from 'reactstrap'
 import { connect } from 'react-redux'
 import { getUserChat, resetUserChat, sendMessage } from '../../../actions/chat'
 import DefaultImage from '../../../assets/images/sample-profile-picture.png'
+import { useToasts } from 'react-toast-notifications'
+import {
+  Form,
+  InputGroup,
+  InputGroupAddon,
+  Input,
+  Spinner,
+  Button
+} from 'reactstrap'
 
-const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserChat, socket }) => {
+const Chat = ({
+  userChat,
+  getUserChat,
+  sendMessage,
+  currentProfile,
+  resetUserChat,
+  socket
+}) => {
   const { chat, loading, error } = userChat
   const { id } = useParams()
 
   const [message, setMessage] = useState('')
   const bottomRef = useRef(null)
+  const { addToast } = useToasts()
 
   const isDisabled = () => {
     return message.length === 0
@@ -20,7 +36,7 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
   const onSubmit = (e) => {
     e.preventDefault()
     if (message.length === 0) return
-    sendMessage(message, id, socket, currentProfile.profile)
+    sendMessage(message, id, socket, currentProfile.profile, addToast)
     setMessage('')
   }
 
@@ -41,18 +57,35 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
   }, [userChat, bottomRef.current])
 
   if (currentProfile.profile === null) {
-    if (currentProfile.loading) return <Spinner color="primary" className="d-block mx-auto mt-4" />
-    else return <p className="text-danger mt-4 text-center">Please create your profile</p>
+    if (currentProfile.loading)
+      return <Spinner color="primary" className="d-block mx-auto mt-4" />
+    else
+      return (
+        <p className="text-danger mt-4 text-center">
+          Please create your profile
+        </p>
+      )
   }
 
   if (!chat) {
-    if (loading) return <Spinner color="primary" className="d-block mx-auto mt-4" />
-    if (error) return <p className="text-danger mt-4 text-center">{error.msg ? error.msg : error}</p>
+    if (loading)
+      return <Spinner color="primary" className="d-block mx-auto mt-4" />
+    if (error)
+      return (
+        <p className="text-danger mt-4 text-center">
+          {error.msg ? error.msg : error}
+        </p>
+      )
     return null
   }
 
   const getProfileImage = () => {
-    if (chat.receiver.avatar && chat.receiver.avatar.url && chat.receiver.avatar.url.length) return chat.receiver.avatar.url
+    if (
+      chat.receiver.avatar &&
+      chat.receiver.avatar.url &&
+      chat.receiver.avatar.url.length
+    )
+      return chat.receiver.avatar.url
     else return DefaultImage
   }
 
@@ -63,19 +96,33 @@ const Chat = ({ userChat, getUserChat, sendMessage, currentProfile, resetUserCha
           <i className="fa fa-chevron-left fa-lg"></i>
         </Link>
         <div className="mx-auto pr-2 pr-sm-4 d-flex align-items-center">
-          <img src={getProfileImage()} alt="profile" className="chat-avatar mr-1 my-0" />
-          <p className="lead text-center text-muted mt-0 mb-1 ml-1">@{chat.receiver.username}</p>
+          <img
+            src={getProfileImage()}
+            alt="profile"
+            className="chat-avatar mr-1 my-0"
+          />
+          <p className="lead text-center text-muted mt-0 mb-1 ml-1">
+            @{chat.receiver.username}
+          </p>
         </div>
       </div>
       <hr />
       <div className="chat-box">
-        <Messages chat={chat.chat} receiver={chat.receiver} profile={currentProfile.profile} />
+        <Messages
+          chat={chat.chat}
+          receiver={chat.receiver}
+          profile={currentProfile.profile}
+        />
         <div className="ref-div" ref={bottomRef}></div>
       </div>
       <hr />
       <Form className="message-box" onSubmit={onSubmit}>
         <InputGroup>
-          <Input name="message" value={message} onChange={(e) => setMessage(e.target.value)} />
+          <Input
+            name="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
           <InputGroupAddon addonType="append">
             <Button color="primary" disabled={isDisabled()}>
               Send
@@ -92,7 +139,8 @@ const Messages = ({ chat, receiver, profile }) => {
     console.log(`sender: ${sender.user}`)
     console.log(profile.user)
     console.log(sender.user === profile.user._id)
-    if (sender.user === profile.user._id) return 'message-bubble ml-auto d-flex flex-column align-items-end'
+    if (sender.user === profile.user._id)
+      return 'message-bubble ml-auto d-flex flex-column align-items-end'
     else return 'message-bubble mr-auto d-flex flex-column align-items-start'
   }
 
@@ -105,13 +153,20 @@ const Messages = ({ chat, receiver, profile }) => {
     else return `${msgDate}, ${msgTime}`
   }
 
-  if (!chat) return <p className="text-center text-primary mt-2">Say Hi to @{receiver.username}</p>
+  if (!chat)
+    return (
+      <p className="text-center text-primary mt-2">
+        Say Hi to @{receiver.username}
+      </p>
+    )
 
   return (
     <div className="message-bubble-container">
       {chat.messages.map((message, index) => (
         <div key={index} className={getBubbleClass(message.sender)}>
-          <p className="message-bubble-text rounded py-1 px-3">{message.message}</p>
+          <p className="message-bubble-text rounded py-1 px-3">
+            {message.message}
+          </p>
           <small className="text-muted">{getDate(message.timestamp)}</small>
         </div>
       ))}
@@ -128,7 +183,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   getUserChat: (id) => dispatch(getUserChat(id)),
   resetUserChat: () => dispatch(resetUserChat()),
-  sendMessage: (message, id, socket, profile) => dispatch(sendMessage(message, id, socket, profile))
+  sendMessage: (message, id, socket, profile, addToast) =>
+    dispatch(sendMessage(message, id, socket, profile, addToast))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat)

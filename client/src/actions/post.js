@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { useToasts } from 'react-toast-notifications'
 import {
   CREATE_POST,
   POST_ERROR,
@@ -21,9 +20,7 @@ const config = {
   }
 }
 
-const { addToast } = useToasts()
-
-export const createPost = (post) => async (dispatch) => {
+export const createPost = (post, addToast) => async (dispatch) => {
   try {
     const res = await axios.post('/api/post', { content: post }, config)
 
@@ -40,7 +37,7 @@ export const createPost = (post) => async (dispatch) => {
   }
 }
 
-export const editPost = (post, postID) => async (dispatch) => {
+export const editPost = (post, postID, addToast) => async (dispatch) => {
   try {
     const res = await axios.put(
       `/api/post/${postID}`,

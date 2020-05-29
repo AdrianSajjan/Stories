@@ -26,7 +26,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <ToastProvider>
+        <ToastProvider autoDismiss={true} autoDismissTimeout={3000}>
           <Switch>
             <PrivateRoute path="/home" component={Home} />
             <Route path="/logout" component={Logout} />

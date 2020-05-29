@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useToast } from 'react-toast-notifications'
+
 import {
   UPDATE_NAME,
   UPDATE_NAME_ERROR,
@@ -11,15 +11,13 @@ import {
   VERIFY_EMAIL
 } from './types'
 
-const { addToast } = useToast()
-
 const config = {
   header: {
     'Content-Type': 'application/json'
   }
 }
 
-export const updateName = (name) => async (dispatch) => {
+export const updateName = (name, addToast) => async (dispatch) => {
   try {
     const res = await axios.post('/api/user/update/name', { name }, config)
     addToast(res.data.msg || 'Name has been updated!', {
@@ -36,7 +34,7 @@ export const updateName = (name) => async (dispatch) => {
   }
 }
 
-export const updateEmail = (email) => async (dispatch) => {
+export const updateEmail = (email, addToast) => async (dispatch) => {
   try {
     const res = await axios.post('/api/user/update/email', { email }, config)
     dispatch({ type: UPDATE_EMAIL, payload: res.data })
@@ -56,7 +54,7 @@ export const updateEmail = (email) => async (dispatch) => {
   }
 }
 
-export const updatePassword = (password) => async (dispatch) => {
+export const updatePassword = (password, addToast) => async (dispatch) => {
   try {
     const res = await axios.post('/api/user/update/password', password, config)
     addToast(res.data.msg || 'Password updated!', { appearance: 'success' })
@@ -85,7 +83,7 @@ export const verifyEmail = (verify) => (dispatch) => {
   dispatch({ type: VERIFY_EMAIL, payload: verify })
 }
 
-export const requestVerificationToken = (setState) => (dispatch) => {
+export const requestVerificationToken = (setState, addToast) => (dispatch) => {
   axios
     .get('/api/user/confirm/request_token', config)
     .then((res) => {

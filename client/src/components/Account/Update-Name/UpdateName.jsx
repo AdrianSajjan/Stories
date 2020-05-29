@@ -1,5 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react'
+import { useToasts } from 'react-toast-notifications'
+import { Link } from 'react-router-dom'
 import {
   Form,
   FormGroup,
@@ -7,42 +8,43 @@ import {
   Button,
   Input,
   FormText,
-  FormFeedback,
-} from "reactstrap";
+  FormFeedback
+} from 'reactstrap'
 
-import { resetAccountError, updateName } from "../../../actions/account";
-import { connect } from "react-redux";
+import { resetAccountError, updateName } from '../../../actions/account'
+import { connect } from 'react-redux'
 
 const UpdateName = ({ user, resetAccountError, errors, updateName }) => {
-  const [name, setName] = useState("");
+  const { addToast } = useToasts()
+  const [name, setName] = useState('')
 
   useEffect(() => {
-    errors.length > 0 && resetAccountError();
+    errors.length > 0 && resetAccountError()
     return () => {
-      errors.length > 0 && resetAccountError();
-    }; //eslint-disable-next-line
-  }, []);
+      errors.length > 0 && resetAccountError()
+    } //eslint-disable-next-line
+  }, [])
 
   const HandleChange = (e) => {
-    if (errors.length > 0) resetAccountError();
-    setName(e.target.value);
-  };
+    if (errors.length > 0) resetAccountError()
+    setName(e.target.value)
+  }
 
   const HandleSubmit = (e) => {
-    e.preventDefault();
-    if (errors.length > 0) resetAccountError();
-    updateName(name.trim());
-  };
+    e.preventDefault()
+    if (errors.length > 0) resetAccountError()
+    updateName(name.trim(), addToast)
+  }
 
   const NameHasError = () => {
-    if (!errors || errors.length === 0) return false;
-    return errors.some((error) => error.param === "name");
-  };
+    if (!errors || errors.length === 0) return false
+    return errors.some((error) => error.param === 'name')
+  }
 
   const GetNameError = () => {
-    const error = errors.find((error) => error.param === "name");
-    return error ? error.msg : "";
-  };
+    const error = errors.find((error) => error.param === 'name')
+    return error ? error.msg : ''
+  }
 
   return (
     <Fragment>
@@ -78,17 +80,17 @@ const UpdateName = ({ user, resetAccountError, errors, updateName }) => {
         </Link>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
-  errors: state.error.accountErrors,
-});
+  errors: state.error.accountErrors
+})
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
-  updateName: (name) => dispatch(updateName(name)),
-});
+  updateName: (name, addToast) => dispatch(updateName(name, addToast))
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateName);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateName)

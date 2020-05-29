@@ -1,60 +1,63 @@
-import React, { useState, useEffect } from "react";
-import DefaultImage from "../../../assets/images/sample-profile-picture.png";
-import { connect } from "react-redux";
-import { uploadProfileImage } from "../../../actions/profile";
-import { Spinner } from "reactstrap";
+import React, { useState, useEffect } from 'react'
+import DefaultImage from '../../../assets/images/sample-profile-picture.png'
+import { connect } from 'react-redux'
+import { uploadProfileImage } from '../../../actions/profile'
+import { Spinner } from 'reactstrap'
+import { useToasts } from 'react-toast-notifications'
 
 const ProfileImage = ({ profile, uploadProfileImage, upload }) => {
   // ProfileImage
-  const [image, setImage] = useState(null);
-  const [previewURL, setPreviewURL] = useState(null);
+  const [image, setImage] = useState(null)
+  const [previewURL, setPreviewURL] = useState(null)
+
+  const { addToast } = useToasts()
 
   useEffect(() => {
     if (image) {
-      const _previewURL = URL.createObjectURL(image);
-      setPreviewURL(_previewURL);
+      const _previewURL = URL.createObjectURL(image)
+      setPreviewURL(_previewURL)
 
       return () => {
-        URL.revokeObjectURL(_previewURL);
-        setPreviewURL(null);
-      };
+        URL.revokeObjectURL(_previewURL)
+        setPreviewURL(null)
+      }
     }
-  }, [image]);
+  }, [image])
 
   const handleChange = (e) => {
-    setImage(e.target.files[0]);
-  };
+    setImage(e.target.files[0])
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if (!image || upload) return;
+    if (!image || upload) return
 
-    const formData = new FormData();
-    formData.append("profile", image);
+    const formData = new FormData()
+    formData.append('profile', image)
     const config = {
       headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    uploadProfileImage(formData, config);
-  };
+        'content-type': 'multipart/form-data'
+      }
+    }
+    uploadProfileImage(formData, config, addToast)
+  }
 
   if (!profile)
     return (
       <p className="text-info text-center px-3">
         Create Your Profile To Access More Features.
       </p>
-    );
+    )
 
   const getProfileImage = () => {
     if (!previewURL)
       if (profile.avatar && profile.avatar.url && profile.avatar.url.length)
-        return profile.avatar.url;
-      else return DefaultImage;
+        return profile.avatar.url
+      else return DefaultImage
 
-    return previewURL;
-  };
+    return previewURL
+  }
 
   return (
     <form className="image-upload-form" onSubmit={handleSubmit}>
@@ -78,16 +81,16 @@ const ProfileImage = ({ profile, uploadProfileImage, upload }) => {
           className="btn btn-primary mb-2 ml-2"
           disabled={image !== null && !upload ? false : true}
         >
-          {!upload ? "Upload" : <Spinner size="sm" color="white" />}
+          {!upload ? 'Upload' : <Spinner size="sm" color="white" />}
         </button>
       </div>
     </form>
-  );
-};
+  )
+}
 
 const mapDispatchToProps = (dispatch) => ({
-  uploadProfileImage: (formData, config) =>
-    dispatch(uploadProfileImage(formData, config)),
-});
+  uploadProfileImage: (formData, config, addToast) =>
+    dispatch(uploadProfileImage(formData, config, addToast))
+})
 
-export default connect(null, mapDispatchToProps)(ProfileImage);
+export default connect(null, mapDispatchToProps)(ProfileImage)

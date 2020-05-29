@@ -1,5 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useToasts } from 'react-toast-notifications'
 import {
   Form,
   FormGroup,
@@ -8,72 +9,73 @@ import {
   Input,
   InputGroup,
   InputGroupAddon,
-  FormFeedback,
-} from "reactstrap";
+  FormFeedback
+} from 'reactstrap'
 
 import {
   removePasswordError,
   resetAccountError,
-  updatePassword,
-} from "../../../actions/account";
-import { connect } from "react-redux";
+  updatePassword
+} from '../../../actions/account'
+import { connect } from 'react-redux'
 
 const UpdatePassword = ({
   removePasswordError,
   resetAccountError,
   errors,
-  updatePassword,
+  updatePassword
 }) => {
-  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false)
+  const { addToast } = useToasts()
 
   useEffect(() => {
-    errors.length > 0 && resetAccountError();
+    errors.length > 0 && resetAccountError()
     return () => {
-      errors.length > 0 && resetAccountError();
-    }; //eslint-disable-next-line
-  }, []);
+      errors.length > 0 && resetAccountError()
+    } //eslint-disable-next-line
+  }, [])
 
   const [password, setPassword] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
-  });
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: ''
+  })
 
-  const { oldPassword, newPassword, confirmNewPassword } = password;
+  const { oldPassword, newPassword, confirmNewPassword } = password
 
   const HandleChange = (e) => {
     setPassword({
       ...password,
-      [e.target.name]: e.target.value,
-    });
-    if (ParamHasError(e.target.name)) removePasswordError(e.target.name);
-  };
+      [e.target.name]: e.target.value
+    })
+    if (ParamHasError(e.target.name)) removePasswordError(e.target.name)
+  }
 
   const HandleSubmit = (e) => {
-    e.preventDefault();
-    if (errors.length > 0) resetAccountError();
-    updatePassword(password);
+    e.preventDefault()
+    if (errors.length > 0) resetAccountError()
+    updatePassword(password, addToast)
     setPassword({
-      oldPassword: "",
-      newPassword: "",
-      confirmNewPassword: "",
-    });
-  };
+      oldPassword: '',
+      newPassword: '',
+      confirmNewPassword: ''
+    })
+  }
 
   const TogglePasswordVisible = (e) => {
-    e.preventDefault();
-    setPasswordVisible((prevState) => !prevState);
-  };
+    e.preventDefault()
+    setPasswordVisible((prevState) => !prevState)
+  }
 
   const ParamHasError = (param) => {
-    if (!errors || errors.length === 0) return false;
-    return errors.some((error) => error.param === param);
-  };
+    if (!errors || errors.length === 0) return false
+    return errors.some((error) => error.param === param)
+  }
 
   const GetParamError = (param) => {
-    const error = errors.find((error) => error.param === param);
-    return error ? error.msg : "";
-  };
+    const error = errors.find((error) => error.param === param)
+    return error ? error.msg : ''
+  }
 
   return (
     <Fragment>
@@ -82,13 +84,13 @@ const UpdatePassword = ({
           <Label for="old-password-input">Current Password</Label>
           <InputGroup>
             <Input
-              type={passwordVisible ? "text" : "password"}
+              type={passwordVisible ? 'text' : 'password'}
               id="old-password-input"
               placeholder="Enter Your Password"
               name="oldPassword"
               value={oldPassword}
               onChange={HandleChange}
-              invalid={ParamHasError("oldPassword")}
+              invalid={ParamHasError('oldPassword')}
             />
             <InputGroupAddon addonType="append">
               <button
@@ -105,37 +107,37 @@ const UpdatePassword = ({
             </InputGroupAddon>
           </InputGroup>
           <FormFeedback className="d-block" invalid="true">
-            {GetParamError("oldPassword")}
+            {GetParamError('oldPassword')}
           </FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="new-password-input">New Password</Label>
           <Input
-            type={passwordVisible ? "text" : "password"}
+            type={passwordVisible ? 'text' : 'password'}
             id="new-password-input"
             placeholder="Enter New Password"
             name="newPassword"
             value={newPassword}
             onChange={HandleChange}
-            invalid={ParamHasError("newPassword")}
+            invalid={ParamHasError('newPassword')}
           />
           <FormFeedback invalid="true">
-            {GetParamError("newPassword")}
+            {GetParamError('newPassword')}
           </FormFeedback>
         </FormGroup>
         <FormGroup>
           <Label for="confirm-new-password-input">Confirm Password</Label>
           <Input
-            type={passwordVisible ? "text" : "password"}
+            type={passwordVisible ? 'text' : 'password'}
             id="confirm-new-password-input"
             placeholder="Confirm New Password"
             name="confirmNewPassword"
             value={confirmNewPassword}
             onChange={HandleChange}
-            invalid={ParamHasError("confirmNewPassword")}
+            invalid={ParamHasError('confirmNewPassword')}
           />
           <FormFeedback invalid="true">
-            {GetParamError("confirmNewPassword")}
+            {GetParamError('confirmNewPassword')}
           </FormFeedback>
         </FormGroup>
         <Button color="primary" className="mt-3 btn-rounded">
@@ -149,18 +151,19 @@ const UpdatePassword = ({
         </Link>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
-  errors: state.error.accountErrors,
-});
+  errors: state.error.accountErrors
+})
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
   removePasswordError: (param) => dispatch(removePasswordError(param)),
-  updatePassword: (password) => dispatch(updatePassword(password)),
-});
+  updatePassword: (password, addToast) =>
+    dispatch(updatePassword(password, addToast))
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdatePassword);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdatePassword)

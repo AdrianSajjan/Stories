@@ -1,5 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
+import { useToasts } from 'react-toast-notifications'
 import {
   Form,
   FormGroup,
@@ -7,42 +8,43 @@ import {
   Button,
   Input,
   FormText,
-  FormFeedback,
-} from "reactstrap";
+  FormFeedback
+} from 'reactstrap'
 
-import { resetAccountError, updateEmail } from "../../../actions/account";
-import { connect } from "react-redux";
+import { resetAccountError, updateEmail } from '../../../actions/account'
+import { connect } from 'react-redux'
 
 const UpdateEmail = ({ user, resetAccountError, errors, updateEmail }) => {
-  const [email, setEmail] = useState("");
+  const { addToast } = useToasts()
+  const [email, setEmail] = useState('')
 
   useEffect(() => {
-    errors.length > 0 && resetAccountError();
+    errors.length > 0 && resetAccountError()
     return () => {
-      errors.length > 0 && resetAccountError();
-    }; // eslint-disable-next-line
-  }, []);
+      errors.length > 0 && resetAccountError()
+    } // eslint-disable-next-line
+  }, [])
 
   const HandleChange = (e) => {
-    if (errors.length > 0) resetAccountError();
-    setEmail(e.target.value);
-  };
+    if (errors.length > 0) resetAccountError()
+    setEmail(e.target.value)
+  }
 
   const HandleSubmit = (e) => {
-    e.preventDefault();
-    if (errors.length > 0) resetAccountError();
-    updateEmail(email.trim());
-  };
+    e.preventDefault()
+    if (errors.length > 0) resetAccountError()
+    updateEmail(email.trim(), addToast)
+  }
 
   const EmailHasError = () => {
-    if (!errors || errors.length === 0) return false;
-    return errors.some((error) => error.param === "email");
-  };
+    if (!errors || errors.length === 0) return false
+    return errors.some((error) => error.param === 'email')
+  }
 
   const GetEmailError = () => {
-    const error = errors.find((error) => error.param === "email");
-    return error ? error.msg : "";
-  };
+    const error = errors.find((error) => error.param === 'email')
+    return error ? error.msg : ''
+  }
 
   return (
     <Fragment>
@@ -77,17 +79,17 @@ const UpdateEmail = ({ user, resetAccountError, errors, updateEmail }) => {
         </Link>
       </Form>
     </Fragment>
-  );
-};
+  )
+}
 
 const mapStateToProps = (state) => ({
   user: state.auth.user,
-  errors: state.error.accountErrors,
-});
+  errors: state.error.accountErrors
+})
 
 const mapDispatchToProps = (dispatch) => ({
   resetAccountError: () => dispatch(resetAccountError()),
-  updateEmail: (email) => dispatch(updateEmail(email)),
-});
+  updateEmail: (email, addToast) => dispatch(updateEmail(email, addToast))
+})
 
-export default connect(mapStateToProps, mapDispatchToProps)(UpdateEmail);
+export default connect(mapStateToProps, mapDispatchToProps)(UpdateEmail)

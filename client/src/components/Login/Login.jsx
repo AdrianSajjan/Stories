@@ -5,9 +5,28 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { login } from '../../actions/auth'
 import { removeLoginError, resetFormErrors } from '../../actions/error'
-import { Form, FormGroup, InputGroup, InputGroupAddon, Input, FormText, FormFeedback, Label, Button, Spinner } from 'reactstrap'
+import {
+  Form,
+  FormGroup,
+  InputGroup,
+  InputGroupAddon,
+  Input,
+  FormText,
+  FormFeedback,
+  Label,
+  Button,
+  Spinner
+} from 'reactstrap'
+import { useToasts } from 'react-toast-notifications'
 
-const Login = ({ auth, errors, removeLoginError, resetFormErrors, login, location }) => {
+const Login = ({
+  auth,
+  errors,
+  removeLoginError,
+  resetFormErrors,
+  login,
+  location
+}) => {
   const {
     request: { loginRequest: request },
     isAuthenticated
@@ -20,6 +39,7 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login, locatio
   })
 
   const { email, password } = formData
+  const { addToast } = useToasts()
 
   const ResetFormError = () => {
     if (errors && errors.length > 0) resetFormErrors()
@@ -37,7 +57,7 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login, locatio
     const parsedQuery = queryString.parse(location.search)
     const next = parsedQuery.next
 
-    !request && login({ email: email.trim(), password }, next)
+    !request && login({ email: email.trim(), password }, addToast, next)
   }
 
   const TogglePasswordVisible = (e) => {
@@ -96,15 +116,25 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login, locatio
               invalid={ParamHasError('password') ? true : false}
             />
             <InputGroupAddon addonType="append">
-              <button tabIndex="-1" className="toggle-password-btn" onClick={TogglePasswordVisible}>
-                {passwordVisible ? <i className="fa fa-eye"></i> : <i className="fa fa-eye-slash"></i>}
+              <button
+                tabIndex="-1"
+                className="toggle-password-btn"
+                onClick={TogglePasswordVisible}
+              >
+                {passwordVisible ? (
+                  <i className="fa fa-eye"></i>
+                ) : (
+                  <i className="fa fa-eye-slash"></i>
+                )}
               </button>
             </InputGroupAddon>
           </InputGroup>
           {!ParamHasError('password') ? (
             <FormText>Password associated with your account</FormText>
           ) : (
-            <FormFeedback className="d-block">{GetParamError('password')}</FormFeedback>
+            <FormFeedback className="d-block">
+              {GetParamError('password')}
+            </FormFeedback>
           )}
         </FormGroup>
         {!isAuthenticated && request ? (
@@ -118,7 +148,11 @@ const Login = ({ auth, errors, removeLoginError, resetFormErrors, login, locatio
         )}
         <p className="text-muted mx-auto w-100 mt-4">
           {"Don't have an acount? "}
-          <Link to="/register" className="toggle-btn ml-1" onClick={ResetFormError}>
+          <Link
+            to="/register"
+            className="toggle-btn ml-1"
+            onClick={ResetFormError}
+          >
             Sign Up
           </Link>
         </p>
@@ -141,7 +175,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-  login: (data, next) => dispatch(login(data, ownProps, next)),
+  login: (data, addToast, next) =>
+    dispatch(login(data, addToast, ownProps, next)),
   removeLoginError: (param) => dispatch(removeLoginError(param)),
   resetFormErrors: () => dispatch(resetFormErrors())
 })
