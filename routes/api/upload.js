@@ -34,20 +34,30 @@ router.post('/profile', [auth, parser.single('profile')], async (req, res) => {
       .populate('following.profile')
       .populate('followers.profile')
 
-    if (!profile) return res.status(404).json({ type: NOTFOUND, msg: "Profile doesn't exist" })
+    if (!profile)
+      return res
+        .status(404)
+        .json({ type: NOTFOUND, msg: "Profile doesn't exist" })
 
     let avatar = {
       public_id: req.file.public_id,
       url: req.file.url
     }
 
-    if (profile.avatar && profile.avatar.public_id && profile.avatar.public_id.length) {
-      cloudinary.v2.uploader.destroy(profile.avatar.public_id, async (error, result) => {
-        profile.avatar = avatar
-        await profile.save()
-        console.log(`Result: ${result} | Error: ${error}`)
-        return res.json(profile)
-      })
+    if (
+      profile.avatar &&
+      profile.avatar.public_id &&
+      profile.avatar.public_id.length
+    ) {
+      cloudinary.v2.uploader.destroy(
+        profile.avatar.public_id,
+        async (error, result) => {
+          profile.avatar = avatar
+          await profile.save()
+          console.log(`Result: ${result} | Error: ${error}`)
+          return res.json(profile)
+        }
+      )
     } else {
       profile.avatar = avatar
       await profile.save()

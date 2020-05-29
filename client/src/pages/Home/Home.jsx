@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import io from 'socket.io-client'
+
 import { Route, Switch } from 'react-router-dom'
 import { Container } from 'reactstrap'
 import { connect } from 'react-redux'
+
 import Sidebar from '../../components/Sidebar/Sidebar'
 import Timeline from '../../components/Timeline/Timeline'
 import Profile from '../../components/Profile/Profile'
@@ -12,11 +14,13 @@ import Account from '../../components/Account/Account'
 import Chats from '../../components/Chats/Chats'
 import Activity from '../../components/Activity/Activity'
 import Error404 from '../../components/Error-404/Error-404'
+
 import { getCurrentProfile } from '../../actions/profile'
 import { getCurrentUserPosts } from '../../actions/post'
 import { getAllChats, receiveMessage } from '../../actions/chat'
 import { getActivities, pushActivity } from '../../actions/activity'
 import { initSocket } from '../../actions/auth'
+
 import './Home.css'
 
 const Home = ({

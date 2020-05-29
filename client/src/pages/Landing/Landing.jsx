@@ -1,11 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import LandingPromotion from '../../components/Landing-Promotion/Landing-Promotion'
 import Register from '../../components/Register/Register'
 import Login from '../../components/Login/Login'
 import Error404 from '../../components/Error-404/Error-404'
-import { connect } from 'react-redux'
+
 import './Landing.css'
 
 const Landing = ({ User }) => {
@@ -20,7 +21,9 @@ const Landing = ({ User }) => {
       <div className="grid-row">
         <div className="grid-col grid-col-branding bg-charcoal">
           <h1 className="brand-name text-light m-0">stories!</h1>
-          <p className="lead text-jellybean m-0 brand-text">Because words are special</p>
+          <p className="lead text-jellybean m-0 brand-text">
+            Because words are special
+          </p>
         </div>
         <div className="grid-col grid-col-form d-flex flex-column justify-content-center bg-light py-5">
           <Switch>

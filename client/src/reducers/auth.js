@@ -1,6 +1,18 @@
-import { REGISTER_SUCCESS, REGISTER_FAILED, LOGIN_FAILED, LOGIN_REQUEST, REGISTRATION_REQUEST } from '../actions/types'
-import { USER_LOADED, AUTH_ERROR, LOGOUT, UPDATE_NAME, UPDATE_EMAIL, VERIFY_EMAIL, LOGIN_SUCCESS } from '../actions/types'
-import { INIT_SOCKET } from '../actions/types'
+import {
+  REGISTER_SUCCESS,
+  REGISTER_FAILED,
+  LOGIN_FAILED,
+  LOGIN_REQUEST,
+  REGISTRATION_REQUEST,
+  USER_LOADED,
+  AUTH_ERROR,
+  LOGOUT,
+  UPDATE_NAME,
+  UPDATE_EMAIL,
+  VERIFY_EMAIL,
+  LOGIN_SUCCESS,
+  INIT_SOCKET
+} from '../actions/types'
 
 const initialState = {
   token: localStorage.getItem('token'),

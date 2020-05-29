@@ -3,6 +3,7 @@ const cors = require('cors')
 const http = require('http')
 const path = require('path')
 const socketio = require('socket.io')
+
 const connectDB = require('./config/database')
 const authRouter = require('./routes/api/auth')
 const userRouter = require('./routes/api/user')
@@ -12,6 +13,7 @@ const uploadRouter = require('./routes/api/upload')
 const chatRouter = require('./routes/api/chat')
 const activityRouter = require('./routes/api/activity')
 const socketMethods = require('./utils/socket')
+
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000
@@ -33,7 +35,7 @@ app.use('/api/activity', activityRouter)
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/build'))
-  app.get('*', (req, res) => {
+  app.get('*', (_req, res) => {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   })
 }

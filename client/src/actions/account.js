@@ -19,7 +19,8 @@ export const updateName = (name) => async (dispatch) => {
   } catch (err) {
     const data = err.response.data
     if (data && data.type) {
-      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_NAME_ERROR, payload: err.response.data.errors })
+      if (data.type === 'VALIDATION')
+        dispatch({ type: UPDATE_NAME_ERROR, payload: err.response.data.errors })
       else toast.error(data.msg || "Coudn't update name")
     } else {
       toast.error("Coudn't update name")
@@ -35,7 +36,8 @@ export const updateEmail = (email) => async (dispatch) => {
   } catch (err) {
     const data = err.response.data
     if (data && data.type) {
-      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_EMAIL_ERROR, payload: err.response.data.errors })
+      if (data.type === 'VALIDATION')
+        dispatch({ type: UPDATE_EMAIL_ERROR, payload: err.response.data.errors })
       else toast.error(data.msg || "Coudn't update email")
     } else {
       toast.error("Coudn't update email")
@@ -50,7 +52,8 @@ export const updatePassword = (password) => async (dispatch) => {
   } catch (err) {
     const data = err.response.data
     if (data && data.type) {
-      if (data.type === 'VALIDATION') dispatch({ type: UPDATE_PASSWORD_ERROR, payload: err.response.data.errors })
+      if (data.type === 'VALIDATION')
+        dispatch({ type: UPDATE_PASSWORD_ERROR, payload: err.response.data.errors })
       else toast.error(data.msg || "Coudn't update password")
     } else {
       toast.error("Coudn't update password")

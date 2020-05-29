@@ -1,4 +1,9 @@
-import { GET_ACTIVITIES, SET_ACTIVITIES, READ_ACTIVITY, PUSH_ACTIVITY } from '../actions/types'
+import {
+  GET_ACTIVITIES,
+  SET_ACTIVITIES,
+  READ_ACTIVITY,
+  PUSH_ACTIVITY
+} from '../actions/types'
 
 const initialState = {
   activities: [],
@@ -23,7 +28,9 @@ export default function (state = initialState, action) {
     case READ_ACTIVITY: {
       return {
         ...state,
-        activities: state.activities.map((activity) => (activity._id === payload._id ? payload : activity))
+        activities: state.activities.map((activity) =>
+          activity._id === payload._id ? payload : activity
+        )
       }
     }
     case PUSH_ACTIVITY:

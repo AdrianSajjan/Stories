@@ -4,7 +4,12 @@ const Profile = require('../../models/Profile')
 const User = require('../../models/User')
 const auth = require('../../middleware/token-auth')
 const { check, validationResult } = require('express-validator')
-const { VALIDATION, SERVER, NOTFOUND, AUTHENTICATION } = require('../../config/errors')
+const {
+  VALIDATION,
+  SERVER,
+  NOTFOUND,
+  AUTHENTICATION
+} = require('../../config/errors')
 
 const { followActivity } = require('../../utils/activity')
 
@@ -54,13 +59,19 @@ router.post(
         .isLength({ min: 4 })
         .withMessage('Username should be more than 3 letters')
         .matches(/^[a-zA-Z0-9._]*$/)
-        .withMessage('Only letters, numbers, dot (.) and underscore (_) allowed')
+        .withMessage(
+          'Only letters, numbers, dot (.) and underscore (_) allowed'
+        )
         .custom(async (value, { req }) => {
           const profile = await Profile.findOne({ username: value })
-          if (profile && profile.user != req.user.id) throw new Error('Username is already taken')
+          if (profile && profile.user != req.user.id)
+            throw new Error('Username is already taken')
           return true
         }),
-      check('country').not().isEmpty().withMessage('Please specify the country you reside presently'),
+      check('country')
+        .not()
+        .isEmpty()
+        .withMessage('Please specify the country you reside presently'),
       check('dob')
         .not()
         .isEmpty()
@@ -68,7 +79,8 @@ router.post(
         .custom((value) => {
           const time = Date.parse(value) / 3.154e10
           const currentTime = Date.parse(new Date()) / 3.154e10
-          if (!time || currentTime < time || Math.trunc(time) < -50) throw new Error('Provide a valid date of birth')
+          if (!time || currentTime < time || Math.trunc(time) < -50)
+            throw new Error('Provide a valid date of birth')
           return true
         })
     ]
@@ -79,7 +91,10 @@ router.post(
     try {
       let user = await User.findById(userID)
 
-      if (!user) return res.status(404).json({ type: NOTFOUND, msg: "User doesn't exist" })
+      if (!user)
+        return res
+          .status(404)
+          .json({ type: NOTFOUND, msg: "User doesn't exist" })
 
       if (!user.validated)
         return res.status(401).json({
@@ -88,7 +103,13 @@ router.post(
         })
 
       const errors = validationResult(req)
-      if (!errors.isEmpty()) return res.status(400).json({ type: VALIDATION, errors: errors.array({ onlyFirstError: true }) })
+      if (!errors.isEmpty())
+        return res
+          .status(400)
+          .json({
+            type: VALIDATION,
+            errors: errors.array({ onlyFirstError: true })
+          })
 
       const { username, dob, locality, state, country, bio } = req.body
 
@@ -104,7 +125,11 @@ router.post(
       let profile = await Profile.findOne({ user: userID })
 
       if (profile) {
-        profile = await Profile.findOneAndUpdate({ user: userID }, { $set: profileData }, { new: true })
+        profile = await Profile.findOneAndUpdate(
+          { user: userID },
+          { $set: profileData },
+          { new: true }
+        )
 
         await profile
           .populate('user', ['name', 'email'])
@@ -117,7 +142,11 @@ router.post(
       profile = new Profile(profileData)
 
       await profile.save()
-      await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
+      await profile
+        .populate('user', ['name', 'email'])
+        .populate('following.profile')
+        .populate('followers.profile')
+        .execPopulate()
 
       res.json(profile)
     } catch (err) {
@@ -142,10 +171,16 @@ router.get('/search', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: userID })
 
-    if (!profile) return res.status(404).json({ type: NOTFOUND, msg: 'Please create your profile' })
+    if (!profile)
+      return res
+        .status(404)
+        .json({ type: NOTFOUND, msg: 'Please create your profile' })
 
     const profiles = await Profile.find({
-      $and: [{ username: { $regex: match, $options: 'i' } }, { _id: { $ne: profile._id } }]
+      $and: [
+        { username: { $regex: match, $options: 'i' } },
+        { _id: { $ne: profile._id } }
+      ]
     })
       .limit(limit)
       .populate('following.profile')
@@ -172,7 +207,10 @@ router.get('/discover', auth, async (req, res) => {
   try {
     const profile = await Profile.findOne({ user: userID })
 
-    if (!profile) res.status(404).json({ type: NOTFOUND, msg: 'Please create your profile' })
+    if (!profile)
+      res
+        .status(404)
+        .json({ type: NOTFOUND, msg: 'Please create your profile' })
 
     const locality = profile.locality || ''
     const state = profile.state || ''
@@ -228,9 +266,12 @@ router.get('/:userID', auth, async (req, res) => {
     return res.status(400).json({ type: NOTFOUND, msg: 'Profile Not Found' })
 
   try {
-    const profile = await Profile.findOne({ user: userID }).populate('following.profile').populate('followers.profile')
+    const profile = await Profile.findOne({ user: userID })
+      .populate('following.profile')
+      .populate('followers.profile')
 
-    if (!profile) return res.status(400).json({ type: NOTFOUND, msg: 'Profile Not Found' })
+    if (!profile)
+      return res.status(400).json({ type: NOTFOUND, msg: 'Profile Not Found' })
 
     res.json(profile)
   } catch (err) {
@@ -248,24 +289,42 @@ router.put('/follow/:id', auth, async (req, res) => {
   const id = req.user.id
   const otherUser = req.params.id
 
-  if (otherUser === id) return res.status(400).json({ type: VALIDATION, msg: 'You cannot follow yourself' })
+  if (otherUser === id)
+    return res
+      .status(400)
+      .json({ type: VALIDATION, msg: 'You cannot follow yourself' })
 
   if (!ObjectID.isValid(otherUser) || new ObjectID(otherUser) != otherUser)
     return res.status(400).json({ type: NOTFOUND, msg: 'Profile not found!' })
 
   try {
     let otherProfile = await Profile.findOne({ user: otherUser })
-    if (!otherProfile) return res.status(400).json({ type: NOTFOUND, msg: 'Profile not found' })
+    if (!otherProfile)
+      return res.status(400).json({ type: NOTFOUND, msg: 'Profile not found' })
 
     let profile = await Profile.findOne({ user: id })
-    if (!profile) return res.status(404).json({ type: NOTFOUND, msg: 'Create your profile before following other users' })
+    if (!profile)
+      return res
+        .status(404)
+        .json({
+          type: NOTFOUND,
+          msg: 'Create your profile before following other users'
+        })
 
     if (profile.following.some((item) => item.user == otherUser)) {
-      profile.following = profile.following.filter((item) => item.user != otherUser)
-      otherProfile.followers = otherProfile.followers.filter((item) => item.user != id)
+      profile.following = profile.following.filter(
+        (item) => item.user != otherUser
+      )
+      otherProfile.followers = otherProfile.followers.filter(
+        (item) => item.user != id
+      )
 
       await profile.save()
-      await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
+      await profile
+        .populate('user', ['name', 'email'])
+        .populate('following.profile')
+        .populate('followers.profile')
+        .execPopulate()
 
       await otherProfile.save()
 
@@ -289,7 +348,11 @@ router.put('/follow/:id', auth, async (req, res) => {
     await otherProfile.save()
 
     const activity = await followActivity(profile, otherProfile)
-    await profile.populate('user', ['name', 'email']).populate('following.profile').populate('followers.profile').execPopulate()
+    await profile
+      .populate('user', ['name', 'email'])
+      .populate('following.profile')
+      .populate('followers.profile')
+      .execPopulate()
 
     return res.json({ profile, activity })
   } catch (err) {

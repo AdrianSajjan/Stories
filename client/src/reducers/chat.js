@@ -1,5 +1,12 @@
-import { GET_ALL_CHATS, SET_ALL_CHATS, SEND_MESSAGE, RECEIVE_MESSAGE } from '../actions/types'
-import { GET_USER_CHAT, SET_USER_CHAT, SET_USER_CHAT_ERROR } from '../actions/types'
+import {
+  GET_ALL_CHATS,
+  SET_ALL_CHATS,
+  SEND_MESSAGE,
+  RECEIVE_MESSAGE,
+  GET_USER_CHAT,
+  SET_USER_CHAT,
+  SET_USER_CHAT_ERROR
+} from '../actions/types'
 
 const initialState = {
   allChats: {
@@ -66,9 +73,13 @@ export default function (state = initialState, action) {
     case SEND_MESSAGE:
       const { receiver } = payload
 
-      let isActiveChat = state.userChat.chat && state.userChat.chat.receiver.user === receiver.user
+      let isActiveChat =
+        state.userChat.chat &&
+        state.userChat.chat.receiver.user === receiver.user
 
-      let isExistingChat = state.allChats.chats.find((chat) => chat.receiver.user === receiver.user)
+      let isExistingChat = state.allChats.chats.find(
+        (chat) => chat.receiver.user === receiver.user
+      )
 
       if (isExistingChat) {
         if (isActiveChat)
@@ -80,7 +91,9 @@ export default function (state = initialState, action) {
             },
             allChats: {
               ...state.allChats,
-              chats: state.allChats.chats.map((chat) => (chat.receiver.user === receiver.user ? payload : chat))
+              chats: state.allChats.chats.map((chat) =>
+                chat.receiver.user === receiver.user ? payload : chat
+              )
             }
           }
 
@@ -88,7 +101,9 @@ export default function (state = initialState, action) {
           ...state,
           allChats: {
             ...state.allChats,
-            chats: state.allChats.chats.map((chat) => (chat.receiver.user === receiver.user ? payload : chat))
+            chats: state.allChats.chats.map((chat) =>
+              chat.receiver.user === receiver.user ? payload : chat
+            )
           }
         }
       } else {

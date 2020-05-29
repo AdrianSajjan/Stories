@@ -42,7 +42,11 @@ export const createPost = (post) => async (dispatch) => {
 
 export const editPost = (post, postID) => async (dispatch) => {
   try {
-    const res = await axios.put(`/api/post/${postID}`, { content: post }, config)
+    const res = await axios.put(
+      `/api/post/${postID}`,
+      { content: post },
+      config
+    )
     dispatch({ type: CREATE_POST, payload: res.data })
     dispatch(setAlert('Success', 'Your post has been updated!', 'success'))
   } catch (err) {
@@ -75,11 +79,13 @@ export const getTimelinePosts = () => async (dispatch, getState) => {
     dispatch({ type: GET_POSTS_FROM_FOLLOWING })
 
     const length = getState().post.postsByFollowing.posts.length
-    const lastID = length > 0 ? getState().post.postsByFollowing.posts[length - 1]._id : ''
+    const lastID =
+      length > 0 ? getState().post.postsByFollowing.posts[length - 1]._id : ''
 
     const res = await axios.get(`/api/post?postID=${lastID}`, config)
 
-    if (res.data.length > 0) dispatch({ type: SET_POSTS_FROM_FOLLOWING, payload: res.data })
+    if (res.data.length > 0)
+      dispatch({ type: SET_POSTS_FROM_FOLLOWING, payload: res.data })
     else dispatch({ type: POSTS_FROM_FOLLOWING_END })
   } catch (err) {
     dispatch({ type: POSTS_FROM_FOLLOWING_END })

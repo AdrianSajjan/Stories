@@ -43,7 +43,10 @@ router.get('/', auth, async (req, res) => {
         .sort('-date')
     else
       posts = await Post.find({
-        $and: [{ user: { $in: profile.following.map(({ user }) => user) } }, { _id: { $lt: lastPostID } }]
+        $and: [
+          { user: { $in: profile.following.map(({ user }) => user) } },
+          { _id: { $lt: lastPostID } }
+        ]
       })
         .limit(limit)
         .populate('profile')
@@ -80,7 +83,10 @@ router.get('/new', auth, async (req, res) => {
     if (profile.following.length == 0) return res.json([])
 
     const posts = await Post.find({
-      $and: [{ user: { $in: profile.following.map(({ user }) => user) } }, { _id: { $gt: firstPostID } }]
+      $and: [
+        { user: { $in: profile.following.map(({ user }) => user) } },
+        { _id: { $gt: firstPostID } }
+      ]
     })
       .limit(limit)
       .populate('profile')
@@ -143,36 +149,47 @@ router.get('/user/:id', auth, async (req, res) => {
  * @desc : Create a post
  * @access : Private
  */
-router.post('/', [auth, [check('content').not().isEmpty().withMessage('Content cannot be empty')]], async (req, res) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty())
-    return res.status(400).json({
-      type: VALIDATION,
-      errors: errors.array({ onlyFirstError: true })
-    })
-
-  try {
-    const profile = await Profile.findOne({ user: req.user.id })
-    if (!profile)
+router.post(
+  '/',
+  [
+    auth,
+    [check('content').not().isEmpty().withMessage('Content cannot be empty')]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty())
       return res.status(400).json({
-        type: NOTFOUND,
-        msg: 'Create your profile in order to post.'
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true })
       })
 
-    const post = new Post({
-      user: req.user.id,
-      profile: profile._id,
-      content: req.body.content
-    })
-    await post.save()
-    await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+    try {
+      const profile = await Profile.findOne({ user: req.user.id })
+      if (!profile)
+        return res.status(400).json({
+          type: NOTFOUND,
+          msg: 'Create your profile in order to post.'
+        })
 
-    res.json(post)
-  } catch (err) {
-    console.log(err.message)
-    res.status(500).send(SERVER)
+      const post = new Post({
+        user: req.user.id,
+        profile: profile._id,
+        content: req.body.content
+      })
+      await post.save()
+      await post
+        .populate('profile')
+        .populate('comments.profile')
+        .populate('likes.profile')
+        .execPopulate()
+
+      res.json(post)
+    } catch (err) {
+      console.log(err.message)
+      res.status(500).send(SERVER)
+    }
   }
-})
+)
 
 /**
  * @route : GET api/post/:post
@@ -185,15 +202,18 @@ router.get('/:id', auth, async (req, res) => {
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
     return res.status(400).json({
       type: NOTFOUND,
-      error: 'Post Not Found'
+      msg: 'Post Not Found'
     })
 
   try {
-    const post = await Post.findById(postID).populate('profile').populate('comments.profile').populate('likes.profile')
+    const post = await Post.findById(postID)
+      .populate('profile')
+      .populate('comments.profile')
+      .populate('likes.profile')
     if (!post)
       return res.status(400).json({
         type: NOTFOUND,
-        error: 'Post Not Found'
+        msg: 'Post Not Found'
       })
 
     res.json(post)
@@ -208,34 +228,46 @@ router.get('/:id', auth, async (req, res) => {
  * @desc : Edit a Post
  * @access : Private
  */
-router.put('/:post', [auth, [check('content').not().isEmpty().withMessage('Content cannot be empty')]], async (req, res) => {
-  const errors = validationResult(req)
-  if (!errors.isEmpty())
-    return res.status(400).json({
-      type: VALIDATION,
-      errors: errors.array({ onlyFirstError: true })
-    })
+router.put(
+  '/:post',
+  [
+    auth,
+    [check('content').not().isEmpty().withMessage('Content cannot be empty')]
+  ],
+  async (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty())
+      return res.status(400).json({
+        type: VALIDATION,
+        errors: errors.array({ onlyFirstError: true })
+      })
 
-  try {
-    const postID = req.params.post
+    try {
+      const postID = req.params.post
 
-    if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
-      return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+      if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
+        return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
 
-    const post = await Post.findById(postID)
+      const post = await Post.findById(postID)
 
-    if (!post) return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+      if (!post)
+        return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
 
-    post.content = req.body.content
-    await post.save()
-    await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+      post.content = req.body.content
+      await post.save()
+      await post
+        .populate('profile')
+        .populate('comments.profile')
+        .populate('likes.profile')
+        .execPopulate()
 
-    return res.json(post)
-  } catch (err) {
-    console.log(err.message)
-    res.status(500).send(SERVER)
+      return res.json(post)
+    } catch (err) {
+      console.log(err.message)
+      res.status(500).send(SERVER)
+    }
   }
-})
+)
 
 /**
  * @route : DELETE api/post/:post
@@ -251,7 +283,8 @@ router.delete('/:post', auth, async (req, res) => {
   try {
     const post = await Post.findByIdAndDelete(postID)
 
-    if (!post) return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+    if (!post)
+      return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
 
     res.json({ msg: 'Post deleted successfully' })
   } catch (err) {
@@ -295,14 +328,22 @@ router.put('/like/:post', auth, async (req, res) => {
     if (post.likes.some((like) => like.user == id)) {
       post.likes = post.likes.filter((like) => like.user != id)
       await post.save()
-      await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+      await post
+        .populate('profile')
+        .populate('comments.profile')
+        .populate('likes.profile')
+        .execPopulate()
 
       return res.json(post)
     }
 
     post.likes.push({ user: id, profile: profile.id, date: new Date() })
     await post.save()
-    await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+    await post
+      .populate('profile')
+      .populate('comments.profile')
+      .populate('likes.profile')
+      .execPopulate()
 
     res.json(post)
   } catch (err) {
@@ -318,11 +359,15 @@ router.put('/like/:post', auth, async (req, res) => {
  */
 router.put(
   '/comment/:post',
-  [auth, [check('comment').not().isEmpty().withMessage('Comment cannot be empty')]],
+  [
+    auth,
+    [check('comment').not().isEmpty().withMessage('Comment cannot be empty')]
+  ],
   async (req, res) => {
     const errors = validationResult(req)
 
-    if (!errors.isEmpty()) return res.status(400).json({ type: VALIDATION, errors: errors.array() })
+    if (!errors.isEmpty())
+      return res.status(400).json({ type: VALIDATION, errors: errors.array() })
 
     const id = req.user.id
     const postID = req.params.post
@@ -359,7 +404,11 @@ router.put(
       })
 
       await post.save()
-      await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+      await post
+        .populate('profile')
+        .populate('comments.profile')
+        .populate('likes.profile')
+        .execPopulate()
 
       const activity = await commentActivity(post, profile)
 
@@ -406,7 +455,11 @@ router.delete('/comment/:comment', auth, async (req, res) => {
     post.comments = post.comments.filter((comment) => comment._id != commentID)
 
     await post.save()
-    await post.populate('profile').populate('comments.profile').populate('likes.profile').execPopulate()
+    await post
+      .populate('profile')
+      .populate('comments.profile')
+      .populate('likes.profile')
+      .execPopulate()
 
     res.json(post)
   } catch (err) {

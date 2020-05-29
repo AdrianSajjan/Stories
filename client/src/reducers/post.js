@@ -52,11 +52,15 @@ export default function (state = initialState, action) {
             ...state,
             postsByFollowing: {
               ...state.postsByFollowing,
-              posts: state.postsByFollowing.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             },
             postsByUser: {
               ...state.postsByUser,
-              posts: state.postsByUser.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByUser.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             }
           }
         else
@@ -64,7 +68,9 @@ export default function (state = initialState, action) {
             ...state,
             postsByFollowing: {
               ...state.postsByFollowing,
-              posts: state.postsByFollowing.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             }
           }
       else
@@ -72,7 +78,9 @@ export default function (state = initialState, action) {
           ...state,
           userPosts: {
             ...state.userPosts,
-            posts: state.userPosts.posts.map((post) => (post._id === payload._id ? payload : post))
+            posts: state.userPosts.posts.map((post) =>
+              post._id === payload._id ? payload : post
+            )
           }
         }
 
@@ -83,11 +91,15 @@ export default function (state = initialState, action) {
             ...state,
             postsByFollowing: {
               ...state.postsByFollowing,
-              posts: state.postsByFollowing.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             },
             postsByUser: {
               ...state.postsByUser,
-              posts: state.postsByUser.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByUser.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             }
           }
         else
@@ -95,7 +107,9 @@ export default function (state = initialState, action) {
             ...state,
             postsByFollowing: {
               ...state.postsByFollowing,
-              posts: state.postsByFollowing.posts.map((post) => (post._id === payload._id ? payload : post))
+              posts: state.postsByFollowing.posts.map((post) =>
+                post._id === payload._id ? payload : post
+              )
             }
           }
       else
@@ -103,7 +117,9 @@ export default function (state = initialState, action) {
           ...state,
           userPosts: {
             ...state.userPosts,
-            posts: state.userPosts.posts.map((post) => (post._id === payload._id ? payload : post))
+            posts: state.userPosts.posts.map((post) =>
+              post._id === payload._id ? payload : post
+            )
           }
         }
 

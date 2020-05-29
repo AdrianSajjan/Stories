@@ -1,30 +1,31 @@
-const express = require("express");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const User = require("../../models/User");
-const auth = require("../../middleware/token-auth");
-const { check, validationResult } = require("express-validator");
-const { AUTHENTICATION, VALIDATION, SERVER } = require("../../config/errors");
+const express = require('express')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const User = require('../../models/User')
+const auth = require('../../middleware/token-auth')
 
-require("dotenv").config();
-const router = express.Router();
+const { check, validationResult } = require('express-validator')
+const { AUTHENTICATION, VALIDATION, SERVER } = require('../../config/errors')
+
+require('dotenv').config()
+const router = express.Router()
 
 /**
  * @route : GET api/auth
  * @desc : Return User Info
  * @access : Private
  */
-router.get("/", auth, async (req, res) => {
-  const userID = req.user.id;
+router.get('/', auth, async (req, res) => {
+  const userID = req.user.id
 
   try {
-    const user = await User.findById(userID).select("-password");
-    res.json(user);
+    const user = await User.findById(userID).select('-password')
+    res.json(user)
   } catch (err) {
-    console.log(err.message);
-    res.status(500).send(SERVER);
+    console.log(err.message)
+    res.status(500).send(SERVER)
   }
-});
+})
 
 /**
  * @type: POST api/auth
@@ -32,64 +33,64 @@ router.get("/", auth, async (req, res) => {
  * @access: Public
  */
 router.post(
-  "/",
+  '/',
   [
-    check("email").not().isEmpty().withMessage("Email cannot be empty"),
-    check("password").not().isEmpty().withMessage("Password cannot be empty"),
+    check('email').not().isEmpty().withMessage('Email cannot be empty'),
+    check('password').not().isEmpty().withMessage('Password cannot be empty')
   ],
   async (req, res) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req)
 
     if (!errors.isEmpty())
       return res.status(400).json({
         type: VALIDATION,
-        errors: errors.array(),
-      });
+        errors: errors.array({ onlyFirstError: true })
+      })
 
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email })
 
       if (!user)
         return res.status(404).json({
           type: AUTHENTICATION,
           errors: [
             {
-              param: "email",
-              msg: "Account doesn't exist",
-            },
-          ],
-        });
+              param: 'email',
+              msg: "Account doesn't exist"
+            }
+          ]
+        })
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password)
 
       if (!isMatch)
-        return res.status(403).json({
+        return res.status(400).json({
           type: AUTHENTICATION,
           errors: [
             {
-              param: "password",
-              msg: "Password is incorrect",
-            },
-          ],
-        });
+              param: 'password',
+              msg: 'Password is incorrect'
+            }
+          ]
+        })
 
       const payload = {
         user: {
-          id: user.id,
-        },
-      };
+          id: user.id
+        }
+      }
 
       jwt.sign(payload, process.env.ID_SECRET, (err, token) => {
-        if (err) throw err;
-        res.json({ token, validated: user.validated });
-      });
+        if (err) throw err
+        res.json({ token, validated: user.validated })
+      })
     } catch (err) {
-      console.log(err.message);
-      res.status(500).send(SERVER);
+      console.log(err.message)
+      res.status(500).send(SERVER)
     }
   }
-);
+)
 
-module.exports = router;
+module.exports = router

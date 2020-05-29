@@ -106,7 +106,9 @@ export default function (state = initialState, action) {
         ...state,
         discoverProfiles: {
           ...state.discoverProfiles,
-          profiles: state.discoverProfiles.profiles.filter((profile) => profile._id !== payload)
+          profiles: state.discoverProfiles.profiles.filter(
+            (profile) => profile._id !== payload
+          )
         }
       }
     case DISCOVER_PROFILES_END:

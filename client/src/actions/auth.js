@@ -2,8 +2,20 @@ import axios from 'axios'
 import setAuthToken from '../utils/set-auth-token'
 import { toast } from 'react-toastify'
 import { setLoginErrors, setRegistrationErrors } from './error'
-import { REGISTER_SUCCESS, REGISTER_FAILED, USER_LOADED, LOGIN_REQUEST, REGISTRATION_REQUEST, INIT_SOCKET } from './types'
-import { AUTH_ERROR, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, CLEAR_PROFILES, REMOVE_ALL_POSTS } from './types'
+import {
+  REGISTER_SUCCESS,
+  REGISTER_FAILED,
+  USER_LOADED,
+  LOGIN_REQUEST,
+  REGISTRATION_REQUEST,
+  INIT_SOCKET,
+  AUTH_ERROR,
+  LOGIN_SUCCESS,
+  LOGIN_FAILED,
+  LOGOUT,
+  CLEAR_PROFILES,
+  REMOVE_ALL_POSTS
+} from './types'
 
 const config = {
   header: {
@@ -18,7 +30,7 @@ export const initSocket = (socket) => (dispatch) => {
 export const loadUser = (ownProps, redirect) => async (dispatch) => {
   try {
     if (localStorage.token) setAuthToken(localStorage.token)
-    const res = await axios.get('/api/auth')
+    const res = await axios.get('/api/auth', config)
     dispatch({ type: USER_LOADED, payload: res.data })
     if (ownProps && redirect) ownProps.history.push(redirect)
   } catch (err) {
@@ -55,7 +67,8 @@ export const login = (data, ownProps, redirect) => async (dispatch) => {
     const data = err.response.data
     dispatch({ type: LOGIN_FAILED })
     if (data && data.type) {
-      if (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION') dispatch(setLoginErrors(data.errors))
+      if (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION')
+        dispatch(setLoginErrors(data.errors))
       else toast.error(data.msg || 'Login failed!')
     } else {
       toast.error('Login failed!')

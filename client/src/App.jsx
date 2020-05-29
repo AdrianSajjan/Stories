@@ -11,6 +11,7 @@ import Toast from './components/Toast/Toast'
 import Home from './pages/Home/Home'
 import Logout from './pages/Logout/Logout'
 import Verify from './pages/Verify/Verify'
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
