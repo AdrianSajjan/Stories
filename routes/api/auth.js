@@ -1,11 +1,11 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+
 const User = require('../../models/User')
 const auth = require('../../middleware/token-auth')
-
+const { generateTokens } = require('../../utils/OAuth2')
 const { check, validationResult } = require('express-validator')
-const { AUTHENTICATION, VALIDATION, SERVER } = require('../../config/errors')
 
 require('dotenv').config()
 const router = express.Router()
@@ -23,7 +23,7 @@ router.get('/', auth, async (req, res) => {
     res.json(user)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -43,7 +43,7 @@ router.post(
 
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -54,7 +54,7 @@ router.post(
 
       if (!user)
         return res.status(404).json({
-          type: AUTHENTICATION,
+          authentication: true,
           errors: [
             {
               param: 'email',
@@ -67,7 +67,7 @@ router.post(
 
       if (!isMatch)
         return res.status(400).json({
-          type: AUTHENTICATION,
+          authentication: true,
           errors: [
             {
               param: 'password',
@@ -82,21 +82,41 @@ router.post(
         }
       }
 
-      const access_token = jwt.sign(payload, process.env.ACCESS_SECRET, {
-        expiresIn: '1h'
-      })
+      const { access_token, refresh_token } = generateTokens(payload)
 
-      const refresh_token = jwt.sign(payload, process.env.REFRESH_SECRET, {
-        expiresIn: '2d'
-      })
-
-      res.cookie('refresh_token', refresh_token, { maxAge: 172800000 })
-      res.json({ access_token, validated: user.validated })
+      res.json({ access_token, refresh_token, validated: user.validated })
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
+
+/**
+ * @type: Get api/auth/oauth2
+ * @desc: Generate OAuth2 Tokens
+ * @access: Public
+ */
+router.post('/oauth2', (req, res) => {
+  try {
+    const { refreshToken } = req.body
+
+    if (!refreshToken)
+      return res.status(401).json({
+        authentication: true,
+        msg: 'Not Authorized! Access Rejected.'
+      })
+
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET)
+    const { access_token, refresh_token } = generateTokens(decoded)
+
+    res.json({ access_token, refresh_token })
+  } catch (err) {
+    res.status(401).json({
+      authentication: true,
+      msg: 'Token Invalid! Access Rejected.'
+    })
+  }
+})
 
 module.exports = router

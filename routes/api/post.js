@@ -4,7 +4,6 @@ const Post = require('../../models/Post')
 const Profile = require('../../models/Profile')
 const auth = require('../../middleware/token-auth')
 const { commentActivity } = require('../../utils/activity')
-const { VALIDATION, SERVER, NOTFOUND } = require('../../config/errors')
 const { check, validationResult } = require('express-validator')
 
 const router = express.Router()
@@ -24,7 +23,7 @@ router.get('/', auth, async (req, res) => {
 
     if (!profile)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Create your profile to see what other people share.'
       })
 
@@ -57,7 +56,7 @@ router.get('/', auth, async (req, res) => {
     res.json(posts)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -76,7 +75,7 @@ router.get('/new', auth, async (req, res) => {
 
     if (!profile)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Create your profile to see what other people share.'
       })
 
@@ -97,7 +96,7 @@ router.get('/new', auth, async (req, res) => {
     res.json(posts)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -117,7 +116,7 @@ router.get('/me', auth, async (req, res) => {
     res.json(posts)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -140,7 +139,7 @@ router.get('/user/:id', auth, async (req, res) => {
     res.json(posts)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -159,7 +158,7 @@ router.post(
     const errors = validationResult(req)
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -167,7 +166,7 @@ router.post(
       const profile = await Profile.findOne({ user: req.user.id })
       if (!profile)
         return res.status(400).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: 'Create your profile in order to post.'
         })
 
@@ -186,7 +185,7 @@ router.post(
       res.json(post)
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
@@ -201,7 +200,7 @@ router.get('/:id', auth, async (req, res) => {
 
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
     return res.status(400).json({
-      type: NOTFOUND,
+      notFound: true,
       msg: 'Post Not Found'
     })
 
@@ -212,14 +211,14 @@ router.get('/:id', auth, async (req, res) => {
       .populate('likes.profile')
     if (!post)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Post Not Found'
       })
 
     res.json(post)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -238,7 +237,7 @@ router.put(
     const errors = validationResult(req)
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -246,12 +245,12 @@ router.put(
       const postID = req.params.post
 
       if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
-        return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+        return res.status(404).json({ notFound: true, msg: 'Post not found' })
 
       const post = await Post.findById(postID)
 
       if (!post)
-        return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+        return res.status(404).json({ notFound: true, msg: 'Post not found' })
 
       post.content = req.body.content
       await post.save()
@@ -264,7 +263,7 @@ router.put(
       return res.json(post)
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
@@ -278,18 +277,18 @@ router.delete('/:post', auth, async (req, res) => {
   const postID = req.params.post
 
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
-    return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+    return res.status(404).json({ notFound: true, msg: 'Post not found' })
 
   try {
     const post = await Post.findByIdAndDelete(postID)
 
     if (!post)
-      return res.status(404).json({ type: NOTFOUND, msg: 'Post not found' })
+      return res.status(404).json({ notFound: true, msg: 'Post not found' })
 
     res.json({ msg: 'Post deleted successfully' })
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -304,7 +303,7 @@ router.put('/like/:post', auth, async (req, res) => {
 
   if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
     return res.status(404).json({
-      type: NOTFOUND,
+      notFound: true,
       msg: 'Post not found'
     })
 
@@ -313,7 +312,7 @@ router.put('/like/:post', auth, async (req, res) => {
 
     if (!profile)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Create your profile before liking a post'
       })
 
@@ -321,7 +320,7 @@ router.put('/like/:post', auth, async (req, res) => {
 
     if (!post)
       return res.status(404).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Post not found'
       })
 
@@ -348,7 +347,7 @@ router.put('/like/:post', auth, async (req, res) => {
     res.json(post)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -367,7 +366,7 @@ router.put(
     const errors = validationResult(req)
 
     if (!errors.isEmpty())
-      return res.status(400).json({ type: VALIDATION, errors: errors.array() })
+      return res.status(400).json({ validation: true, errors: errors.array() })
 
     const id = req.user.id
     const postID = req.params.post
@@ -375,7 +374,7 @@ router.put(
 
     if (!ObjectID.isValid(postID) || new ObjectID(postID) != postID)
       return res.status(404).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Post not found'
       })
 
@@ -384,7 +383,7 @@ router.put(
 
       if (!profile)
         return res.status(400).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: 'Create your profile before commenting on a post'
         })
 
@@ -392,7 +391,7 @@ router.put(
 
       if (!post)
         return res.status(404).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: 'Post not found'
         })
 
@@ -415,7 +414,7 @@ router.put(
       res.json({ post, activity })
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
@@ -431,7 +430,7 @@ router.delete('/comment/:comment', auth, async (req, res) => {
 
   if (!ObjectID.isValid(commentID) || new ObjectID(commentID) != commentID)
     return res.status(404).json({
-      type: NOTFOUND,
+      notFound: true,
       msg: 'Comment not found'
     })
 
@@ -440,7 +439,7 @@ router.delete('/comment/:comment', auth, async (req, res) => {
 
     if (!profile)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Comment not found'
       })
 
@@ -448,7 +447,7 @@ router.delete('/comment/:comment', auth, async (req, res) => {
 
     if (!post)
       return res.status(404).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: 'Comment not found'
       })
 
@@ -464,7 +463,7 @@ router.delete('/comment/:comment', auth, async (req, res) => {
     res.json(post)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 

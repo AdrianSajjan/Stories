@@ -11,6 +11,7 @@ import {
   AUTH_ERROR,
   LOGIN_SUCCESS,
   LOGIN_FAILED,
+  UPDATE_TOKENS,
   LOGOUT,
   CLEAR_PROFILES,
   REMOVE_ALL_POSTS
@@ -55,7 +56,7 @@ export const register = (data, addToast, ownProps) => async (dispatch) => {
   } catch (err) {
     const data = err.response.data
 
-    if (data.type && data.type === 'VALIDATION') {
+    if (data && data.validation) {
       dispatch(setRegistrationErrors(data.errors))
     } else {
       addToast(data.msg || 'Registration failed!', { appearance: 'error' })
@@ -80,15 +81,19 @@ export const login = (data, addToast, ownProps, redirect) => async (
 
     dispatch({ type: LOGIN_FAILED })
 
-    if (
-      data.type &&
-      (data.type === 'VALIDATION' || data.type === 'AUTHENTICATION')
-    ) {
+    if (data && (data.validation || data.authentication)) {
       dispatch(setLoginErrors(data.errors))
     } else {
       addToast(data.msg || 'Login failed!', { appearance: 'error' })
     }
   }
+}
+
+export const updateTokens = (payload) => (dispatch) => {
+  dispatch({
+    type: UPDATE_TOKENS,
+    payload
+  })
 }
 
 export const logout = () => (dispatch) => {

@@ -43,7 +43,7 @@ export const setProfile = (data, addToast) => async (dispatch) => {
     addToast('Profile has been updated!', { appearance: 'success' })
   } catch (err) {
     const data = err.response.data
-    if (data.type && data.type === 'VALIDATION') {
+    if (data && data.validation) {
       dispatch({ type: PROFILE_ERROR, payload: data.errors })
     } else {
       addToast(data.msg || "Coudn't set profile", { appearance: 'warning' })

@@ -27,12 +27,12 @@ export const createPost = (post, addToast) => async (dispatch) => {
     dispatch({ type: CREATE_POST, payload: res.data })
     addToast('Your post has been published', { appearance: 'success' })
   } catch (err) {
-    const error = err.response.data
+    const data = err.response.data
 
-    if (error.type && error.type === 'VALIDATION') {
-      dispatch({ type: POST_ERROR, payload: error.errors })
+    if (data && data.validation) {
+      dispatch({ type: POST_ERROR, payload: data.errors })
     } else {
-      addToast(err.msg || 'Post upload failed!', { appearance: 'error' })
+      addToast(data.msg || 'Post upload failed!', { appearance: 'error' })
     }
   }
 }
@@ -48,14 +48,14 @@ export const editPost = (post, postID, addToast) => async (dispatch) => {
     dispatch({ type: CREATE_POST, payload: res.data })
     addToast('Your post has been updated!', { appearance: 'success' })
   } catch (err) {
-    const error = err.response.data
-    if (error.type && error.type === 'VALIDATION') {
+    const data = err.response.data
+    if (data && data.validation) {
       dispatch({
         type: POST_ERROR,
-        payload: error.errors
+        payload: data.errors
       })
     } else {
-      addToast(error.msg || 'Post upload failed!', { appearance: 'error' })
+      addToast(data.msg || 'Post upload failed!', { appearance: 'error' })
     }
   }
 }

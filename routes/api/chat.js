@@ -4,7 +4,6 @@ const Profile = require('../../models/Profile')
 const Chat = require('../../models/Chat')
 const auth = require('../../middleware/token-auth')
 const { check, validationResult } = require('express-validator')
-const { VALIDATION, SERVER, NOTFOUND } = require('../../config/errors')
 
 const router = express.Router()
 
@@ -28,14 +27,14 @@ router.post(
 
       if (!sender)
         return res.status(400).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: 'Please create your profile.'
         })
 
       const errors = validationResult(req)
       if (!errors.isEmpty())
         return res.status(400).json({
-          type: VALIDATION,
+          validation: true,
           errors: errors.array({ onlyFirstError: true })
         })
 
@@ -44,7 +43,7 @@ router.post(
       if (!receiver)
         return res
           .status(404)
-          .json({ type: NOTFOUND, msg: "User doesn't exist" })
+          .json({ notFound: true, msg: "User doesn't exist" })
 
       if (
         !ObjectID.isValid(receiverID) ||
@@ -52,12 +51,12 @@ router.post(
       )
         return res
           .status(400)
-          .json({ type: NOTFOUND, msg: "User doesn't exist" })
+          .json({ notFound: true, msg: "User doesn't exist" })
 
       if (senderID === receiverID)
         return res
           .status(500)
-          .json({ type: NOTFOUND, msg: "You cant't message yourself" })
+          .json({ notFound: true, msg: "You cant't message yourself" })
 
       let chat = await Chat.findOne({
         $and: [
@@ -100,7 +99,7 @@ router.post(
       res.json({ receiver, chat })
     } catch (err) {
       console.error(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
@@ -134,7 +133,7 @@ router.get('/', auth, async (req, res) => {
     res.json(allChats)
   } catch (err) {
     console.error(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -150,7 +149,7 @@ router.get('/:id', auth, async (req, res) => {
   try {
     if (!ObjectID.isValid(receiverID) || new ObjectID(receiverID) != receiverID)
       return res.status(400).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: "User doesn't exist"
       })
 
@@ -158,7 +157,7 @@ router.get('/:id', auth, async (req, res) => {
 
     if (!receiver)
       return res.status(404).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: "User doesn't exist"
       })
 
@@ -173,7 +172,7 @@ router.get('/:id', auth, async (req, res) => {
     res.json({ receiver, chat })
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 

@@ -5,8 +5,6 @@ const multer = require('multer')
 const cloudinary = require('cloudinary')
 const cloudinaryStorage = require('multer-storage-cloudinary')
 
-const { SERVER } = require('../../config/errors')
-
 require('dotenv').config()
 const router = express.Router()
 
@@ -65,7 +63,7 @@ router.post('/profile', [auth, parser.single('profile')], async (req, res) => {
     }
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 

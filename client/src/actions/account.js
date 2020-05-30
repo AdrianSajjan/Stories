@@ -26,7 +26,7 @@ export const updateName = (name, addToast) => async (dispatch) => {
     dispatch({ type: UPDATE_NAME, payload: res.data.name })
   } catch (err) {
     const data = err.response.data
-    if (data.type && data.type === 'VALIDATION') {
+    if (data && data.validation) {
       dispatch({ type: UPDATE_NAME_ERROR, payload: data.errors })
     } else {
       addToast(data.msg || 'Name update failed!', { appearance: 'error' })
@@ -43,7 +43,7 @@ export const updateEmail = (email, addToast) => async (dispatch) => {
     })
   } catch (err) {
     const data = err.response.data
-    if (data.type && data.type === 'VALIDATION') {
+    if (data && data.validation) {
       dispatch({
         type: UPDATE_EMAIL_ERROR,
         payload: data.errors
@@ -60,7 +60,7 @@ export const updatePassword = (password, addToast) => async (dispatch) => {
     addToast(res.data.msg || 'Password updated!', { appearance: 'success' })
   } catch (err) {
     const data = err.response.data
-    if (data.type && data.type === 'VALIDATION') {
+    if (data && data.validation) {
       dispatch({
         type: UPDATE_PASSWORD_ERROR,
         payload: data.errors

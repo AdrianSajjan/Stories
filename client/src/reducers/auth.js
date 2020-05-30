@@ -6,6 +6,7 @@ import {
   REGISTRATION_REQUEST,
   USER_LOADED,
   AUTH_ERROR,
+  UPDATE_TOKENS,
   LOGOUT,
   UPDATE_NAME,
   UPDATE_EMAIL,
@@ -15,7 +16,8 @@ import {
 } from '../actions/types'
 
 const initialState = {
-  token: localStorage.getItem('access_token'),
+  access_token: localStorage.getItem('access_token'),
+  refresh_token: localStorage.getItem('refresh_token'),
   isAuthenticated: null,
   loading: true,
   user: null,
@@ -65,6 +67,7 @@ export default function (state = initialState, action) {
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
       localStorage.setItem('access_token', payload.access_token)
+      localStorage.setItem('refresh_token', payload.refresh_token)
       return {
         ...state,
         ...payload,
@@ -75,6 +78,15 @@ export default function (state = initialState, action) {
           registrationRequest: false
         }
       }
+
+    case UPDATE_TOKENS:
+      localStorage.setItem('access_token', payload.access_token)
+      localStorage.setItem('refresh_token', payload.refresh_token)
+      return {
+        ...state,
+        ...payload
+      }
+
     case UPDATE_NAME:
       return {
         ...state,
@@ -110,6 +122,7 @@ export default function (state = initialState, action) {
     case LOGIN_FAILED:
     case LOGOUT:
       localStorage.removeItem('access_token')
+      localStorage.removeItem('refresh_token')
       return {
         ...state,
         token: null,

@@ -9,12 +9,7 @@ const User = require('../../models/User')
 const Profile = require('../../models/Profile')
 const Post = require('../../models/Post')
 const auth = require('../../middleware/token-auth')
-const {
-  VALIDATION,
-  SERVER,
-  NOTFOUND,
-  AUTHENTICATION
-} = require('../../config/errors')
+const { generateTokens } = require('../../utils/OAuth2')
 
 require('dotenv').config()
 
@@ -131,7 +126,7 @@ router.post(
 
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -166,24 +161,17 @@ router.post(
         console.log('Email sent successfully')
       })
 
-      const access_token = jwt.sign(payload, process.env.ACCESS_SECRET, {
-        expiresIn: '1h'
-      })
-
-      const refresh_token = jwt.sign(payload, process.env.REFRESH_SECRET, {
-        expiresIn: '2d'
-      })
-
-      res.cookie('refresh_token', refresh_token, { maxAge: 172800000 })
+      const { refresh_token, access_token } = generateTokens(payload_ID)
 
       res.json({
         access_token,
+        refresh_token,
         validated: data.validated,
         msg: `Verification mail sent to ${data.email}. It will expire in 1 day`
       })
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )
@@ -219,7 +207,7 @@ router.post(
     const errors = validationResult(req)
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -231,7 +219,7 @@ router.post(
 
       if (!user)
         return res.status(404).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: "Account doesn't exist"
         })
 
@@ -240,7 +228,7 @@ router.post(
 
       res.json({ name: user.name, msg: 'Name updated successfully!' })
     } catch (err) {
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
       console.error(err.message)
     }
   }
@@ -279,7 +267,7 @@ router.post(
 
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -292,7 +280,7 @@ router.post(
       if (!user)
         return res
           .status(404)
-          .json({ type: NOTFOUND, msg: "Account doesn't exist" })
+          .json({ notFound: true, msg: "Account doesn't exist" })
 
       user.email = email.trim()
       user.validated = false
@@ -316,7 +304,7 @@ router.post(
         msg: `New verification mail sent to ${user.email}. It will expire in 1 day`
       })
     } catch (err) {
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
       console.error(err.message)
     }
   }
@@ -377,7 +365,7 @@ router.post(
 
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -389,7 +377,7 @@ router.post(
 
       if (!user)
         return res.status(404).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: "Account doesn't exist"
         })
 
@@ -401,7 +389,7 @@ router.post(
 
       res.json({ msg: 'Password has been updated' })
     } catch (err) {
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
       console.error(err.message)
     }
   }
@@ -420,7 +408,7 @@ router.get('/confirm/request_token', auth, async (req, res) => {
 
     if (!user)
       return res.status(404).json({
-        type: NOTFOUND,
+        notFound: true,
         msg: "Account doesn't exist"
       })
 
@@ -444,7 +432,7 @@ router.get('/confirm/request_token', auth, async (req, res) => {
       })
     })
   } catch (err) {
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
     console.error(err.message)
   }
 })
@@ -493,7 +481,7 @@ router.get('/confirm/:email_token', async (req, res) => {
     })
   } catch (err) {
     console.log(err)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -512,7 +500,7 @@ router.delete(
     const errors = validationResult(req)
     if (!errors.isEmpty())
       return res.status(400).json({
-        type: VALIDATION,
+        validation: true,
         errors: errors.array({ onlyFirstError: true })
       })
 
@@ -523,7 +511,7 @@ router.delete(
 
       if (!user)
         return res.status(404).json({
-          type: NOTFOUND,
+          notFound: true,
           msg: "Account doesn't exist"
         })
 
@@ -531,7 +519,7 @@ router.delete(
 
       if (!isMatch)
         return res.status(400).json({
-          type: AUTHENTICATION,
+          authentication: true,
           errors: [
             {
               param: 'password',
@@ -561,83 +549,86 @@ router.delete(
       }
 
       // Delete User Comments
-      const commentedPost = await Post.find({ 'comments.user': userID })
+      Post.find({ 'comments.user': userID }).then((commentedPost) => {
+        if (commentedPost.length > 0) {
+          let arrLength = commentedPost.length
 
-      if (commentedPost.length > 0) {
-        let arrLength = commentedPost.length
+          const DeleteAllCommentsFromPosts = async () => {
+            const post = likedPost.pop()
 
-        const DeleteAllCommentsFromPosts = async () => {
-          const post = likedPost.pop()
+            console.log(
+              `Deleting associated comments of user: ${userID} from post: ${post._id}`
+            )
 
-          console.log(
-            `Deleting associated comments of user: ${userID} from post: ${post._id}`
-          )
-
-          post.comments = post.comments.filter(
-            (comment) => comment.user != userID
-          )
-          await post.save()
-          if (--arrLength) DeleteAllCommentsFromPosts()
+            post.comments = post.comments.filter(
+              (comment) => comment.user != userID
+            )
+            await post.save()
+            if (--arrLength) DeleteAllCommentsFromPosts()
+          }
+          DeleteAllCommentsFromPosts()
         }
-        DeleteAllCommentsFromPosts()
-      }
+      })
 
       // Delete User Following and Followers
-      const followingProfile = await Profile.find({ 'following.user': userID })
+      Profile.find({ 'following.user': userID }).then((followingProfile) => {
+        if (followingProfile.length > 0) {
+          let arrLength = followingProfile.length
 
-      if (followingProfile.length > 0) {
-        let arrLength = followingProfile.length
+          const DeleteAllFollowing = async () => {
+            const profile = followingProfile.pop()
 
-        const DeleteAllFollowing = async () => {
-          const profile = followingProfile.pop()
+            console.log(
+              `Deleting associated following of user: ${userID} from post: ${post._id}`
+            )
 
-          console.log(
-            `Deleting associated following of user: ${userID} from post: ${post._id}`
-          )
-
-          profile.following = profile.following.filter(
-            (follow) => follow.user != userID
-          )
-          await profile.save()
-          if (--arrLength) DeleteAllFollowing()
+            profile.following = profile.following.filter(
+              (follow) => follow.user != userID
+            )
+            await profile.save()
+            if (--arrLength) DeleteAllFollowing()
+          }
+          DeleteAllFollowing()
         }
-        DeleteAllFollowing()
-      }
+      })
 
-      const followerProfile = await Profile.find({ 'followers.user': userID })
+      Profile.find({ 'followers.user': userID }).then((followerProfile) => {
+        if (followerProfile.length > 0) {
+          let arrLength = followerProfile.length
 
-      if (followerProfile.length > 0) {
-        let arrLength = followerProfile.length
+          const DeleteAllfollower = async () => {
+            const profile = followerProfile.pop()
 
-        const DeleteAllfollower = async () => {
-          const profile = followerProfile.pop()
+            console.log(
+              `Deleting associated followers of user: ${userID} from post: ${post._id}`
+            )
 
-          console.log(
-            `Deleting associated followers of user: ${userID} from post: ${post._id}`
-          )
-
-          profile.followers = profile.followers.filter(
-            (follow) => follow.user != userID
-          )
-          await profile.save()
-          if (--arrLength) DeleteAllfollower()
+            profile.followers = profile.followers.filter(
+              (follow) => follow.user != userID
+            )
+            await profile.save()
+            if (--arrLength) DeleteAllfollower()
+          }
+          DeleteAllfollower()
         }
-        DeleteAllfollower()
-      }
+      })
 
-      await Profile.findOneAndRemove({ user: userID })
-      console.log(`Deleted profile of user ${userID}`)
+      Profile.findOneAndRemove({ user: userID }).then(() => {
+        console.log(`Deleted profile of user ${userID}`)
+      })
 
-      await Post.deleteMany({ user: userID })
-      console.log(`Deleted posts of user ${userID}`)
+      Post.deleteMany({ user: userID }).then(() => {
+        console.log(`Deleted posts of user ${userID}`)
+      })
 
-      await user.remove()
-      console.log(`Completely deleted user: ${userID}`)
+      user.remove().then(() => {
+        console.log(`Completely deleted user: ${userID}`)
+      })
 
       res.json({ msg: 'Account deleted successfully' })
     } catch (err) {
       console.log(err.message)
-      res.status(500).send(SERVER)
+      res.status(500).send('Something Went Wrong! Please Try Again!')
     }
   }
 )

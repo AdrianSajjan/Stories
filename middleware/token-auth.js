@@ -1,24 +1,23 @@
 const jwt = require('jsonwebtoken')
-const { AUTHENTICATION } = require('../config/errors')
 
 require('dotenv').config()
 
 const auth = (req, res, next) => {
-  const token = req.header('access-token')
+  const access_token = req.header('access-token')
 
-  if (!token)
+  if (!access_token)
     return res.status(401).json({
-      type: AUTHENTICATION,
+      authentication: true,
       msg: 'Not Authorized! Access Rejected.'
     })
 
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET)
+    const decoded = jwt.verify(access_token, process.env.ACCESS_SECRET)
     req.user = decoded.user
     next()
   } catch (err) {
     return res.status(401).json({
-      type: AUTHENTICATION,
+      authentication: true,
       msg: 'Token Invalid! Access Rejected.'
     })
   }

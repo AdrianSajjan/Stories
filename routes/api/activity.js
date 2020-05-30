@@ -1,8 +1,7 @@
 const express = require('express')
 const auth = require('../../middleware/token-auth')
-const ObjectID = require('mongoose').Types.ObjectId
 const Activity = require('../../models/Activity')
-const { SERVER, NOTFOUND } = require('../../config/errors')
+const ObjectID = require('mongoose').Types.ObjectId
 
 const router = express.Router()
 
@@ -21,7 +20,7 @@ router.get('/', auth, async (req, res) => {
     return res.json(activities)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
@@ -34,7 +33,7 @@ router.get('/:activityID', auth, async (req, res) => {
   const activityID = req.params.activityID
 
   if (!ObjectID.isValid(activityID) || new ObjectID(activityID) != activityID)
-    return res.status(404).json({ type: NOTFOUND, msg: 'Invalid activity' })
+    return res.status(404).json({ notFound: true, msg: 'Invalid activity' })
 
   try {
     const activity = await Activity.findById(activityID).populate(
@@ -42,7 +41,7 @@ router.get('/:activityID', auth, async (req, res) => {
     )
 
     if (!activity)
-      return res.status(404).json({ type: NOTFOUND, msg: 'Invalid activity' })
+      return res.status(404).json({ notFound: true, msg: 'Invalid activity' })
 
     activity.seen = true
     await activity.save()
@@ -50,7 +49,7 @@ router.get('/:activityID', auth, async (req, res) => {
     return res.json(activity)
   } catch (err) {
     console.log(err.message)
-    res.status(500).send(SERVER)
+    res.status(500).send('Something Went Wrong! Please Try Again!')
   }
 })
 
