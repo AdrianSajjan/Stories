@@ -108,7 +108,14 @@ router.post('/oauth2', (req, res) => {
       })
 
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET)
-    const { access_token, refresh_token } = generateTokens(decoded)
+
+    const payload = {
+      user: {
+        id: decoded.user.id
+      }
+    }
+
+    const { access_token, refresh_token } = generateTokens(payload)
 
     res.json({ access_token, refresh_token })
   } catch (err) {

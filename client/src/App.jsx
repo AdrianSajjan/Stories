@@ -4,20 +4,21 @@ import { ToastProvider } from 'react-toast-notifications'
 import { Provider } from 'react-redux'
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom'
 import { loadUser } from './actions/auth'
-import { setAuthToken, useInterceptors } from './utils/axios-interceptor'
 import PrivateRoute from './components/Private-Route/Private-Route'
 import Landing from './pages/Landing/Landing'
 import Home from './pages/Home/Home'
 import Logout from './pages/Logout/Logout'
 import Verify from './pages/Verify/Verify'
+import {
+  useRequestInterceptors,
+  useResponseInterceptors
+} from './utils/axios-interceptor'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 
-if (localStorage.getItem('access_token')) {
-  setAuthToken(localStorage.getItem('access_token'))
-  useInterceptors(localStorage.getItem('access_token'))
-}
+useRequestInterceptors()
+useResponseInterceptors()
 
 const App = () => {
   useEffect(() => {

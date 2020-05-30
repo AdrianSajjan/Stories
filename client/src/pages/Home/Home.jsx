@@ -2,7 +2,8 @@ import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import io from 'socket.io-client'
 
-import { Route, Switch } from 'react-router-dom'
+import { useToasts } from 'react-toast-notifications'
+import { Route, Switch, useLocation } from 'react-router-dom'
 import { Container } from 'reactstrap'
 import { connect } from 'react-redux'
 
@@ -33,6 +34,9 @@ const Home = ({
   getActivities,
   pushActivity
 }) => {
+  const { addToast } = useToasts()
+  const location = useLocation()
+
   useEffect(() => {
     getCurrentProfile()
     getCurrentUserPosts()
@@ -48,9 +52,13 @@ const Home = ({
       socket.emit('login', user._id)
       socket.on('receive-message', (payload) => {
         receiveMessage(payload)
+        if (!location.pathname.includes('/chats'))
+          addToast('You have a new message', { appearance: 'info' })
       })
       socket.on('receive-notification', (payload) => {
         pushActivity(payload)
+        if (!location.pathname.includes('/activities'))
+          addToast('You have a new activity', { appearance: 'info' })
       })
     }
     // eslint-disable-next-line

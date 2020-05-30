@@ -162,7 +162,6 @@ router.get('/:id', auth, async (req, res) => {
       })
 
     const chat = await Chat.findOne({
-      //participants: { $all: [{ $elemMatch: { user: userID } }, { $elemMatch: { user: receiverID } }] }
       $and: [
         { 'participants.user': userID },
         { 'participants.user': receiverID }

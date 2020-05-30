@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { setAuthToken } from '../utils/axios-interceptor'
 import { setLoginErrors, setRegistrationErrors } from './error'
 import {
   REGISTER_SUCCESS,
@@ -29,9 +28,6 @@ export const initSocket = (socket) => (dispatch) => {
 
 export const loadUser = (ownProps, redirect) => async (dispatch) => {
   try {
-    if (localStorage.getItem('access_token'))
-      setAuthToken(localStorage.getItem('access_token'))
-
     const res = await axios.get('/api/auth', config)
     dispatch({ type: USER_LOADED, payload: res.data })
 
