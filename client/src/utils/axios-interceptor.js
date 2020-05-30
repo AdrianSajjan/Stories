@@ -7,7 +7,6 @@ export const useRequestInterceptors = () => {
     (config) => {
       const token = localStorage.getItem('access_token')
       if (token) {
-        console.log(token)
         config.headers['access-token'] = token
       }
       return config
