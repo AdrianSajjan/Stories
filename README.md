@@ -22,7 +22,21 @@
   - **Real Time Communication**
   - **Cloudinary Storage Bucket**
 
-- ### **Models**
+- ### **Required Config (.env) Variables**
+
+  - **DATABASE_URI**
+  - **ACCESS_SECRET**
+  - **REFRESH_SECRET**
+  - **EMAIL_SECRET**
+  - **MAIL_USER**
+  - **MAILING_SERVICE_CLIENT_ID**
+  - **MAILING_SERVICE_CLIENT_SECRET**
+  - **MAILING_SERVICE_REFRESH_TOKEN**
+  - **CLOUDINARY_CLOUD_NAME**
+  - **CLOUDINARY_API_KEY**
+  - **CLOUDINARY_API_SECRET**
+
+* ### **Models**
 
   - **User**
   - **Profile**
@@ -30,7 +44,7 @@
   - **Chat**
   - **Activity**
 
-- ### **Routes API**
+* ### **Routes API**
 
   - **User route**
   - **Profile route**
